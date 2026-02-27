@@ -70,14 +70,12 @@ final class DeeplApiHelper
 
         try {
             $translator = new Translator($apiKey);
-            // @extensionScannerIgnoreLine
             $languages = $type === 'source'
                 ? $translator->getSourceLanguages()
                 : $translator->getTargetLanguages();
 
             $result = [];
             foreach ($languages as $language) {
-                // @extensionScannerIgnoreLine
                 $result[] = [$language->name, $language->code];
             }
 

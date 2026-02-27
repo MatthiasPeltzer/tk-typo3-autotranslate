@@ -42,7 +42,6 @@ final class Tca
         try {
             $site = $siteFinder->getSiteByPageId($pageId);
             foreach ($site->getAllLanguages() as $siteLanguage) {
-                // @extensionScannerIgnoreLine
                 if ($siteLanguage->getLanguageId() === $languageId) {
                     $parameters['title'] = $siteLanguage->getTitle() . ' - ' . $parameters['title'];
                     break;

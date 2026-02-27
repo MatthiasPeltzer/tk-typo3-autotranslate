@@ -119,14 +119,14 @@ final class Records
     }
 
     /**
-     * Get record field values by table and constraints
+     * Get record field values by table and optional query constraints
      *
      * @param string $table Table name
      * @param string $fields Comma-separated field names
-     * @param array $constraints Array of WHERE constraints
+     * @param null|callable $constraintsBuilder Optional callback receiving the QueryBuilder
      * @return array First column values of matching records
      */
-    public static function getRecords(string $table, string $fields, array $constraints = []): array
+    public static function getRecords(string $table, string $fields, ?callable $constraintsBuilder = null): array
     {
         $queryBuilder = self::getQueryBuilder($table);
         $fieldList = GeneralUtility::trimExplode(',', $fields, true);
@@ -135,8 +135,8 @@ final class Records
             ->select(...$fieldList)
             ->from($table);
 
-        foreach ($constraints as $constraint) {
-            $query->andWhere($constraint);
+        if ($constraintsBuilder !== null) {
+            $constraintsBuilder($queryBuilder);
         }
 
         return $query->executeQuery()->fetchFirstColumn();
