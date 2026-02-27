@@ -27,6 +27,84 @@
             <trans-unit id="site_configuration.deepl.title">
                 <source>DeepL Settings Autotranslate</source>
             </trans-unit>
+            <trans-unit id="site_configuration.deepl.auth_key.label">
+                <source>DeepL API key (overwrites the one from the extension settings to use a special key for this page configuration)</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.auth_key.help">
+                <source>Enter your generated API key or generate a new one at https://www.deepl.com/account/</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.auth_key.defined_prefix">
+                <source>Defined:</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.auth_key.characters_suffix">
+                <source>Characters</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.glossary.label">
+                <source>Enable the use of the DeepL Translate glossary</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.glossary.description">
+                <source>Use DeepL Glossaries from https://extensions.typo3.org/extension/deepltranslate_glossary</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.formality.label">
+                <source>DeepL formality</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.formality.description">
+                <source>Choose translation tone. "Informal" and "Formal" use DeepL fallbacks for unsupported languages.</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.formality.option.default">
+                <source>Default</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.formality.option.informal">
+                <source>Informal</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.formality.option.formal">
+                <source>Formal</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.enabled.label_prefix">
+                <source>Enable Autotranslation for</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.languages.label">
+                <source>Translate into the following languages by default</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.languages.description_prefix">
+                <source>Comma separated list of language uids.</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.languages.description_no_languages">
+                <source>First define Languages in Site Configuration.</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.textfields.label">
+                <source>Text fields</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.file_references.label">
+                <source>File references</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.reference_textfields.label_prefix">
+                <source>Autotranslation textfields for</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.columns_comma_list.description">
+                <source>Comma separated list of columns.</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.table.unused_prefix">
+                <source>Unused:</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.select.invalid_api_key">
+                <source>Please define valid DeepL api key first</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.select.please_choose">
+                <source>Please Choose</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.source_language.label">
+                <source>Source language (Iso code)</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.source_language.description">
+                <source>Select the source language for DeepL translations. The automatic language detection may be inaccurate for individual words.</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.target_language.label">
+                <source>Target language (Iso code)</source>
+            </trans-unit>
+            <trans-unit id="site_configuration.deepl.target_language.description">
+                <source>Select the target language into which DeepL should translate.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
