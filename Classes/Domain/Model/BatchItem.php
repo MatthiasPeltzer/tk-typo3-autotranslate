@@ -139,7 +139,6 @@ class BatchItem extends AbstractEntity
         try {
             $site = $siteFinder->getSiteByPageId($this->pid);
             foreach ($site->getAllLanguages() as $siteLanguage) {
-                // @extensionScannerIgnoreLine
                 if ($siteLanguage->getLanguageId() === $this->getSysLanguageUid()) {
                     return $siteLanguage->getTitle();
                 }
@@ -170,12 +169,18 @@ class BatchItem extends AbstractEntity
     public function isRecurring(): bool
     {
         $now = new \DateTime();
+        $translateAt = $this->getTranslate();
+        $translatedAt = $this->getTranslated();
 
-        if ($this->getTranslated() > $this->getTranslate()) {
+        if ($translateAt === null) {
             return false;
         }
 
-        if ($now > $this->getTranslate()) {
+        if ($translatedAt !== null && $translatedAt > $translateAt) {
+            return false;
+        }
+
+        if ($now > $translateAt) {
             return false;
         }
 
@@ -189,6 +194,7 @@ class BatchItem extends AbstractEntity
     public function isWaitingForRun(): bool
     {
         $now = new \DateTime();
+        $translateAt = $this->getTranslate();
 
         if (!empty($this->getError())) {
             return false;
@@ -198,12 +204,19 @@ class BatchItem extends AbstractEntity
             return false;
         }
 
-        return $now > $this->getTranslate();
+        if ($translateAt === null) {
+            return false;
+        }
+
+        return $now > $translateAt;
     }
 
     public function isFinishedRun(): bool
     {
-        if ($this->getTranslated() > $this->getTranslate()) {
+        $translateAt = $this->getTranslate();
+        $translatedAt = $this->getTranslated();
+
+        if ($translateAt !== null && $translatedAt !== null && $translatedAt > $translateAt) {
             return true;
         }
 

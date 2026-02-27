@@ -12,6 +12,8 @@ use ThieleUndKlose\Autotranslate\Utility\LogUtility;
 use ThieleUndKlose\Autotranslate\Utility\Records;
 use ThieleUndKlose\Autotranslate\Utility\TranslationHelper;
 use ThieleUndKlose\Autotranslate\Utility\Translator;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Site\SiteFinder;
@@ -139,7 +141,6 @@ final class BatchTranslationService implements LoggerAwareInterface
             return;
         }
 
-        // @extensionScannerIgnoreLine
         $constraints = $this->buildConstraints($table, $item->getPid(), $defaultLanguage->getLanguageId());
 
         if ($table === 'tt_content') {
@@ -152,26 +153,28 @@ final class BatchTranslationService implements LoggerAwareInterface
     /**
      * Build query constraints for fetching records
      */
-    private function buildConstraints(string $table, int $pid, int $languageId): array
+    private function buildConstraints(string $table, int $pid, int $languageId): \Closure
     {
-        $constraints = [
-            "pid = {$pid}",
-            "sys_language_uid = {$languageId}",
-        ];
+        return static function (QueryBuilder $queryBuilder) use ($table, $pid, $languageId): void {
+            $queryBuilder->where(
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($languageId, Connection::PARAM_INT))
+            );
 
-        // Exclude deleted records if delete field exists
-        $deleteField = $GLOBALS['TCA'][$table]['ctrl']['delete'] ?? null;
-        if ($deleteField) {
-            $constraints[] = "{$deleteField} = 0";
-        }
-
-        return $constraints;
+            // Exclude deleted records if delete field exists
+            $deleteField = $GLOBALS['TCA'][$table]['ctrl']['delete'] ?? null;
+            if (is_string($deleteField) && $deleteField !== '') {
+                $queryBuilder->andWhere(
+                    $queryBuilder->expr()->eq($deleteField, $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+                );
+            }
+        };
     }
 
     /**
      * Translate tt_content records (handles Grid Elements)
      */
-    private function translateContent(Translator $translator, array $constraints, int $targetLanguageUid, string $mode): void
+    private function translateContent(Translator $translator, callable $constraints, int $targetLanguageUid, string $mode): void
     {
         // Translate Grid Elements first (if extension is loaded)
         $this->translateGridElements($translator, $constraints, $targetLanguageUid, $mode);
@@ -183,17 +186,20 @@ final class BatchTranslationService implements LoggerAwareInterface
     /**
      * Translate Grid Elements containers and their children
      */
-    private function translateGridElements(Translator $translator, array $constraints, int $targetLanguageUid, string $mode): void
+    private function translateGridElements(Translator $translator, callable $constraints, int $targetLanguageUid, string $mode): void
     {
         if (!ExtensionManagementUtility::isLoaded('gridelements')) {
             return;
         }
 
         // Find top-level containers only
-        $containerConstraints = array_merge($constraints, [
-            "CType = 'gridelements_pi1'",
-            "tx_gridelements_container = 0"
-        ]);
+        $containerConstraints = static function (QueryBuilder $queryBuilder) use ($constraints): void {
+            $constraints($queryBuilder);
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq('CType', $queryBuilder->createNamedParameter('gridelements_pi1')),
+                $queryBuilder->expr()->eq('tx_gridelements_container', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+            );
+        };
 
         $containers = Records::getRecords('tt_content', 'uid', $containerConstraints);
 
@@ -207,7 +213,7 @@ final class BatchTranslationService implements LoggerAwareInterface
      */
     private function translateContainerRecursively(
         Translator $translator,
-        array $constraints,
+        callable $constraints,
         int $containerUid,
         int $targetLanguageUid,
         string $mode
@@ -216,7 +222,15 @@ final class BatchTranslationService implements LoggerAwareInterface
         $translator->translate('tt_content', $containerUid, null, (string)$targetLanguageUid, $mode);
 
         // Find and translate children
-        $childConstraints = array_merge($constraints, ["tx_gridelements_container = {$containerUid}"]);
+        $childConstraints = static function (QueryBuilder $queryBuilder) use ($constraints, $containerUid): void {
+            $constraints($queryBuilder);
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq(
+                    'tx_gridelements_container',
+                    $queryBuilder->createNamedParameter($containerUid, Connection::PARAM_INT)
+                )
+            );
+        };
         $children = Records::getRecords('tt_content', 'uid', $childConstraints);
 
         foreach ($children as $childUid) {
@@ -239,7 +253,7 @@ final class BatchTranslationService implements LoggerAwareInterface
     /**
      * Translate regular (non-Grid Element) content
      */
-    private function translateRegularContent(Translator $translator, array $constraints, int $targetLanguageUid, string $mode): void
+    private function translateRegularContent(Translator $translator, callable $constraints, int $targetLanguageUid, string $mode): void
     {
         $records = Records::getRecords('tt_content', 'uid', $constraints);
 
@@ -275,7 +289,7 @@ final class BatchTranslationService implements LoggerAwareInterface
     /**
      * Translate records from a generic table
      */
-    private function translateRecords(Translator $translator, string $table, array $constraints, int $targetLanguageUid, string $mode): void
+    private function translateRecords(Translator $translator, string $table, callable $constraints, int $targetLanguageUid, string $mode): void
     {
         $records = Records::getRecords($table, 'uid', $constraints);
 

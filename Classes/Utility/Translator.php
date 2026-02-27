@@ -10,6 +10,8 @@ use Psr\Log\LoggerAwareTrait;
 use ThieleUndKlose\Autotranslate\Service\GlossaryService;
 use ThieleUndKlose\Autotranslate\Service\TranslationCacheService;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Glossary\Domain\Dto\Glossary;
@@ -183,23 +185,27 @@ final class Translator implements LoggerAwareInterface
                         $foreignField = $GLOBALS['TCA'][$table]['columns'][$referenceColumn]['config']['foreign_field'];
 
                         $references = match ($type) {
-                            'file' => Records::getRecords($referenceTable, 'uid', [
-                                "{$foreignField} = " . $recordUid,
-                                "deleted = 0",
-                                "sys_language_uid = 0",
-                                "tablenames = '{$table}'",
-                                "fieldname = '{$referenceColumn}'",
-                            ]),
-                            'inline' => Records::getRecords($referenceTable, 'uid', array_merge(
-                                [
-                                    "{$foreignField} = " . $recordUid,
-                                    "deleted = 0",
-                                    "sys_language_uid = 0",
-                                ],
-                                isset($GLOBALS['TCA'][$referenceTable]['columns']['fieldname'])
-                                    ? ["fieldname = '{$referenceColumn}'"]
-                                    : []
-                            )),
+                            'file' => Records::getRecords($referenceTable, 'uid', static function (QueryBuilder $queryBuilder) use ($foreignField, $recordUid, $table, $referenceColumn): void {
+                                $queryBuilder->where(
+                                    $queryBuilder->expr()->eq($foreignField, $queryBuilder->createNamedParameter($recordUid, Connection::PARAM_INT)),
+                                    $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                                    $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($table)),
+                                    $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($referenceColumn))
+                                );
+                            }),
+                            'inline' => Records::getRecords($referenceTable, 'uid', static function (QueryBuilder $queryBuilder) use ($foreignField, $recordUid, $referenceTable, $referenceColumn): void {
+                                $queryBuilder->where(
+                                    $queryBuilder->expr()->eq($foreignField, $queryBuilder->createNamedParameter($recordUid, Connection::PARAM_INT)),
+                                    $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+                                );
+                                if (isset($GLOBALS['TCA'][$referenceTable]['columns']['fieldname'])) {
+                                    $queryBuilder->andWhere(
+                                        $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($referenceColumn))
+                                    );
+                                }
+                            }),
                             default => null,
                         };
 
@@ -393,7 +399,13 @@ final class Translator implements LoggerAwareInterface
             }
 
             if (!empty($translatedColumns)) {
-                $translatedColumns['l10n_state'] = $this->buildL10nState($table, $targetLanguageUid, array_keys($translatedColumns), $localizedUid);
+                $translatedColumns['l10n_state'] = $this->buildL10nState(
+                    $table,
+                    $targetLanguageUid,
+                    array_keys($translatedColumns),
+                    $localizedUid,
+                    (int)($record['uid'] ?? 0)
+                );
             }
 
             // Set date and time of translation
@@ -737,14 +749,20 @@ final class Translator implements LoggerAwareInterface
     /**
      * Builds l10n_state array for translated fields
      */
-    private function buildL10nState(string $table, int $targetLanguageUid, array $translatedFields, int $localizedUid): string
+    private function buildL10nState(string $table, int $targetLanguageUid, array $translatedFields, int $localizedUid, int $sourceUid): string
     {
         if (!isset($GLOBALS['TCA'][$table]['ctrl']['transOrigDiffSourceField'])) {
             return '{}';
         }
 
         try {
-            $existingTranslation = Records::getRecordTranslation($table, $localizedUid, $targetLanguageUid);
+            $existingTranslation = null;
+            if ($sourceUid > 0) {
+                $existingTranslation = Records::getRecordTranslation($table, $sourceUid, $targetLanguageUid);
+            }
+            if ($existingTranslation === null) {
+                $existingTranslation = Records::getRecord($table, $localizedUid);
+            }
 
             $l10nState = [];
             if ($existingTranslation && !empty($existingTranslation['l10n_state'])) {

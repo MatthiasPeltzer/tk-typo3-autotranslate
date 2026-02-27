@@ -83,7 +83,6 @@ final class DataHandler implements SingletonInterface
                 ContextualFeedbackSeverity::WARNING,
                 true
             );
-            // @extensionScannerIgnoreLine
             GeneralUtility::makeInstance(FlashMessageService::class)
                 ->getMessageQueueByIdentifier()
                 ->addMessage($flashMessage);

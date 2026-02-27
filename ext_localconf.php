@@ -11,8 +11,11 @@ use TYPO3\CMS\Core\Log\Writer\DatabaseWriter;
 defined('TYPO3') or die();
 
 // DataHandler hooks for automatic translation
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['autotranslate'] = DataHandler::class;
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['autotranslate'] = DataHandler::class;
+// TYPO3 core (v13/v14) still resolves DataHandler hooks via this legacy identifier.
+// Keep this in one variable to simplify future migration when core switches to a new key/API.
+$dataHandlerHookIdentifier = 't3lib/class.t3lib_tcemain.php';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processCmdmapClass']['autotranslate'] = DataHandler::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processDatamapClass']['autotranslate'] = DataHandler::class;
 
 // Logging configuration — all extension loggers write to the custom log table
 $logWriterConfig = [

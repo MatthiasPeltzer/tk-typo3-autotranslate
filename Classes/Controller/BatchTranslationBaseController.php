@@ -424,7 +424,6 @@ class BatchTranslationBaseController extends ActionController
 
         $filtered = array_filter(
             $languages,
-            // @extensionScannerIgnoreLine
             fn($lang) => $backendUser->checkLanguageAccess($lang->getLanguageId())
         );
 

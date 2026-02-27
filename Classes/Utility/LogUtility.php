@@ -30,7 +30,7 @@ final class LogUtility
 
         match ($type) {
             self::MESSAGE_WARNING => $logger->warning($message, $data),
-            self::MESSAGE_ERROR => $logger->error($message, $data), // @extensionScannerIgnoreLine
+            self::MESSAGE_ERROR => $logger->error($message, $data),
             default => $logger->info($message, $data),
         };
     }
