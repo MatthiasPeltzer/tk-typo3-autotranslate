@@ -28,12 +28,15 @@ final class Translator implements LoggerAwareInterface
 
     private readonly ?string $apiKey;
     private readonly array $siteLanguages;
+    private readonly string $deeplFormality;
     private readonly GlossaryService $glossaryService;
 
     public function __construct(private readonly int $pageId)
     {
         ['key' => $this->apiKey] = TranslationHelper::apiKey($this->pageId);
+        $siteConfiguration = TranslationHelper::siteConfigurationValue($this->pageId);
         $this->siteLanguages = TranslationHelper::siteConfigurationValue($this->pageId, ['languages']) ?? [];
+        $this->deeplFormality = is_array($siteConfiguration) ? (string)($siteConfiguration['autotranslateDeeplFormality'] ?? 'default') : 'default';
         $this->glossaryService = GeneralUtility::makeInstance(GlossaryService::class);
     }
 
@@ -529,6 +532,10 @@ final class Translator implements LoggerAwareInterface
         $baseOptions = [
             TranslateTextOptions::SPLIT_SENTENCES => true,
         ];
+        $formality = $this->resolvedFormalityOption();
+        if ($formality !== null) {
+            $baseOptions[TranslateTextOptions::FORMALITY] = $formality;
+        }
 
         if ($glossary) {
             $baseOptions[TranslateTextOptions::GLOSSARY] = $glossary->glossaryId;
@@ -595,6 +602,14 @@ final class Translator implements LoggerAwareInterface
         }
 
         return $mergedResults;
+    }
+
+    private function resolvedFormalityOption(): ?string
+    {
+        return match ($this->deeplFormality) {
+            'prefer_less', 'prefer_more' => $this->deeplFormality,
+            default => null,
+        };
     }
 
     /**

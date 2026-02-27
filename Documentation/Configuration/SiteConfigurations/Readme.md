@@ -12,6 +12,16 @@ You should set the DeepL source language to your base language, otherwise DeepL 
 You have to set the DeepL target language for each language to be translated.
 ![DeeplTargetLanguage](../../Images/DeeplTargetLanguage.png)
 
+### DeepL formality (tone)
+
+You can configure the translation tone in the site configuration via **DeepL formality**:
+
+- **Default**: no explicit formality is sent to DeepL.
+- **Informal**: sends `prefer_less`.
+- **Formal**: sends `prefer_more`.
+
+For target languages that do not support formality, DeepL falls back automatically.
+
 ### Translatable types
 
 You can choose for which of the supported content types (pages, tt_content or additional tables configured in [extension settings](../ExtensionConfiguration/Readme.md)) the automatic translation should be active.
