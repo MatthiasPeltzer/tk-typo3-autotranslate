@@ -33,8 +33,12 @@ final class AutotranslateLanguagesItems
         $table = $config['table'];
         $row = $config['row'];
 
+        // Resolve the actual language field from TCA (may differ from 'sys_language_uid')
+        $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'] ?? 'sys_language_uid';
+
         // cancel filling for translated records because it is not needed
-        if (!is_array($row['sys_language_uid']) && !empty($row['sys_language_uid'])) {
+        $languageValue = $row[$languageField] ?? null;
+        if (!is_array($languageValue) && !empty($languageValue)) {
             return;
         }
 
