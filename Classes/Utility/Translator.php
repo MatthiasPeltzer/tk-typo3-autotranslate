@@ -159,7 +159,7 @@ final class Translator implements LoggerAwareInterface
             if (!$existingTranslation) {
                 $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
                 $dataHandler->start([], []);
-                $localizedUid = $dataHandler->localize($table, $recordUid, $languageId);
+                $localizedUid = $dataHandler->localize($table, $recordUid, (int)$languageId);
             } else {
                 $localizedUid = (int)$existingTranslation['uid'];
             }
@@ -246,7 +246,7 @@ final class Translator implements LoggerAwareInterface
                                 if (empty($referenceTranslation)) {
                                     $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
                                     $dataHandler->start([], []);
-                                    $translatedReferenceUid = (int)$dataHandler->localize($referenceTable, $referenceUid, $languageId);
+                                    $translatedReferenceUid = (int)$dataHandler->localize($referenceTable, $referenceUid, (int)$languageId);
 
                                     Records::updateRecord(
                                         $referenceTable,
