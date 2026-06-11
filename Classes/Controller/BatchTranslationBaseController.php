@@ -40,6 +40,9 @@ class BatchTranslationBaseController extends ActionController
     protected const MODULE_NAME = 'web_autotranslate';
     protected const MENU_LEVEL_ITEMS = [0, 1, 2, 3, 4, 250];
 
+    /** @var list<string> */
+    private const MUTATION_ARGUMENTS = ['clearCache', 'delete', 'execute', 'reset', 'deleteAll'];
+
     protected ?TranslationCacheService $translationCacheService = null;
     protected ?PersistenceManager $persistenceManager = null;
     protected ?BatchTranslationService $batchTranslationService = null;
@@ -104,10 +107,18 @@ class BatchTranslationBaseController extends ActionController
 
     protected function handleLogActions(): void
     {
+        if ($this->warnIfGetMutationAttempt()) {
+            return;
+        }
+
+        if (!$this->isPostRequest()) {
+            return;
+        }
+
         $shouldReload = false;
 
-        if ($this->request->hasArgument('delete')) {
-            $requestIds = GeneralUtility::trimExplode(',', $this->request->getArgument('delete'));
+        if ($this->hasMutationParam('delete')) {
+            $requestIds = GeneralUtility::trimExplode(',', (string)$this->getMutationParam('delete'));
             foreach ($requestIds as $requestId) {
                 $this->logRepository->deleteByRequestId($requestId);
             }
@@ -115,7 +126,7 @@ class BatchTranslationBaseController extends ActionController
             $shouldReload = true;
         }
 
-        if ($this->request->hasArgument('deleteAll')) {
+        if ($this->hasMutationParam('deleteAll')) {
             $this->logRepository->deleteAll();
             $this->showSuccess('Successfully deleted', 'All log entries were deleted.');
             $shouldReload = true;
@@ -245,22 +256,32 @@ class BatchTranslationBaseController extends ActionController
 
     protected function handleBatchActions(): void
     {
+        if ($this->warnIfGetMutationAttempt()) {
+            $this->showCacheInfo();
+            return;
+        }
+
+        if (!$this->isPostRequest()) {
+            $this->showCacheInfo();
+            return;
+        }
+
         $shouldReload = false;
 
-        if ($this->request->hasArgument('clearCache')) {
+        if ($this->hasMutationParam('clearCache')) {
             $shouldReload = $this->handleClearCache();
         }
 
-        if ($this->request->hasArgument('delete')) {
+        if ($this->hasMutationParam('delete')) {
             $shouldReload = $this->handleDelete() || $shouldReload;
         }
 
-        if ($this->request->hasArgument('execute')) {
+        if ($this->hasMutationParam('execute')) {
             $this->handleExecute();
             $shouldReload = true;
         }
 
-        if ($this->request->hasArgument('reset')) {
+        if ($this->hasMutationParam('reset')) {
             $this->handleReset();
             $shouldReload = true;
         }
@@ -312,22 +333,37 @@ class BatchTranslationBaseController extends ActionController
 
     private function getBatchItemsFromArgument(string $argument): array
     {
-        if (!$this->request->hasArgument($argument)) {
+        if (!$this->hasMutationParam($argument)) {
             return [];
         }
 
-        $argumentValue = $this->request->getArgument($argument);
+        $argumentValue = $this->getMutationParam($argument);
         $uids = is_array($argumentValue)
             ? $argumentValue
             : GeneralUtility::trimExplode(',', (string)$argumentValue, true);
 
-        return array_filter(
+        $items = array_filter(
             array_map(
                 fn($uid) => $this->batchItemRepository->findByUid((int)$uid),
                 $uids
             ),
             fn($item) => $item instanceof BatchItem
         );
+
+        $accessibleItems = [];
+        foreach ($items as $item) {
+            if ($this->isBatchItemAccessible($item)) {
+                $accessibleItems[] = $item;
+                continue;
+            }
+
+            $this->showWarning(
+                'Access denied',
+                sprintf('You do not have permission to modify batch item %d.', $item->getUid())
+            );
+        }
+
+        return $accessibleItems;
     }
 
     private function handleExecute(): void
@@ -438,16 +474,91 @@ class BatchTranslationBaseController extends ActionController
     {
         $pageId = (int)($this->request->hasArgument('id') ? $this->request->getArgument('id') : 0);
         $items = $this->batchItemRepository->findAllRecursive($this->levels, $pageId);
-        $backendUser = $this->getBackendUser();
+
+        if ($items === null) {
+            return [];
+        }
 
         return array_filter(
             $items->toArray(),
-            function (BatchItem $item) use ($backendUser, $languages) {
-                $pageRecord = BackendUtility::getRecordWSOL('pages', $item->getPid());
-                return isset($languages[$item->getSysLanguageUid()])
-                    && $backendUser->doesUserHaveAccess($pageRecord, Permission::CONTENT_EDIT);
-            }
+            fn(BatchItem $item) => $this->isBatchItemAccessible($item, $languages)
         );
+    }
+
+    private function isBatchItemAccessible(BatchItem $item, ?array $languages = null): bool
+    {
+        $pageRecord = BackendUtility::getRecordWSOL('pages', $item->getPid());
+        if ($pageRecord === null) {
+            return false;
+        }
+
+        $backendUser = $this->getBackendUser();
+        if (!$backendUser->doesUserHaveAccess($pageRecord, Permission::CONTENT_EDIT)) {
+            return false;
+        }
+
+        if (!$backendUser->checkLanguageAccess($item->getSysLanguageUid())) {
+            return false;
+        }
+
+        if ($languages === null) {
+            try {
+                $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($item->getPid());
+                $languages = TranslationHelper::possibleTranslationLanguages($site->getLanguages());
+            } catch (Exception) {
+                return false;
+            }
+        }
+
+        return isset($languages[$item->getSysLanguageUid()]);
+    }
+
+    private function isPostRequest(): bool
+    {
+        return strtoupper($this->request->getMethod()) === 'POST';
+    }
+
+    private function hasMutationParam(string $name): bool
+    {
+        if ($this->request->hasArgument($name)) {
+            return true;
+        }
+
+        return isset($this->queryParams[$name]) && $this->queryParams[$name] !== '';
+    }
+
+    private function getMutationParam(string $name): mixed
+    {
+        if ($this->request->hasArgument($name)) {
+            return $this->request->getArgument($name);
+        }
+
+        return $this->queryParams[$name] ?? null;
+    }
+
+    private function hasMutationArguments(): bool
+    {
+        foreach (self::MUTATION_ARGUMENTS as $argument) {
+            if ($this->hasMutationParam($argument)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function warnIfGetMutationAttempt(): bool
+    {
+        if ($this->isPostRequest() || !$this->hasMutationArguments()) {
+            return false;
+        }
+
+        $this->showWarning(
+            'Action not permitted',
+            'This action must be submitted via POST. Please use the module buttons or forms.'
+        );
+
+        return true;
     }
 
     private function buildCreateFormData(array $languages, ?array $pageRecord): array

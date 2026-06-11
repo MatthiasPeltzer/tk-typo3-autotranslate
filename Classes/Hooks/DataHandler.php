@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\Hooks;
 
+use ThieleUndKlose\Autotranslate\Utility\Records;
 use ThieleUndKlose\Autotranslate\Utility\TranslationHelper;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -51,6 +52,11 @@ final class DataHandler implements SingletonInterface
             $recordUid = $parentObject->substNEWwithIDs[$recordUid];
         }
 
+        if (in_array($table, TranslationHelper::additionalReferenceTables(), true)) {
+            $this->processReferenceTableSave($table, (int)$recordUid, $status, $fields, $parentObject);
+            return;
+        }
+
         if (!isset($GLOBALS['TCA'][$table]['columns']['autotranslate_languages'])) {
             return;
         }
@@ -73,8 +79,82 @@ final class DataHandler implements SingletonInterface
 
         try {
             if (in_array($table, TranslationHelper::tablesToTranslate(), true)) {
-                $translator->translate($table, (int)$recordUid, $parentObject);
+                $translator->translate(
+                    $table,
+                    (int)$recordUid,
+                    $parentObject,
+                    null,
+                    Translator::TRANSLATE_MODE_BOTH,
+                    $status,
+                    $fields
+                );
             }
+        } catch (\Exception $e) {
+            $flashMessage = GeneralUtility::makeInstance(
+                FlashMessage::class,
+                'Error during translation: ' . $e->getMessage(),
+                'Translation Error',
+                ContextualFeedbackSeverity::WARNING,
+                true
+            );
+            GeneralUtility::makeInstance(FlashMessageService::class)
+                ->getMessageQueueByIdentifier()
+                ->addMessage($flashMessage);
+        }
+    }
+
+    /**
+     * Handle direct saves on configured reference tables (e.g. sys_file_reference).
+     */
+    private function processReferenceTableSave(
+        string $referenceTable,
+        int $referenceUid,
+        string $status,
+        array $fields,
+        CoreDataHandler $parentObject
+    ): void {
+        $record = Records::getRecord($referenceTable, $referenceUid);
+        if ($record === null) {
+            return;
+        }
+
+        if ((int)($record['sys_language_uid'] ?? 0) > 0) {
+            return;
+        }
+
+        $parentInfo = TranslationHelper::resolveReferenceParent($referenceTable, $record);
+        if ($parentInfo === null) {
+            return;
+        }
+
+        $pageId = $this->getRecordPid($parentInfo['table'], $parentInfo['uid']);
+        if ($pageId === 0 && $parentInfo['table'] === 'pages') {
+            $pageId = $parentInfo['uid'];
+        }
+
+        if ($pageId === 0) {
+            return;
+        }
+
+        if (!TranslationHelper::isReferenceAutotranslateEnabled(
+            $pageId,
+            $parentInfo['table'],
+            $referenceTable,
+            $parentInfo['column']
+        )) {
+            return;
+        }
+
+        $translator = GeneralUtility::makeInstance(Translator::class, $pageId);
+
+        try {
+            $translator->translateReferenceRecord(
+                $referenceTable,
+                $referenceUid,
+                $parentObject,
+                $status,
+                $fields
+            );
         } catch (\Exception $e) {
             $flashMessage = GeneralUtility::makeInstance(
                 FlashMessage::class,
