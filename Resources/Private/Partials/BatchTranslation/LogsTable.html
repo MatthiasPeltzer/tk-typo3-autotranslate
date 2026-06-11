@@ -6,7 +6,7 @@
 >
 
 <f:variable name="reloadHref" value="{be:moduleLink(route:moduleName, arguments:{id:pageUid, action:'showLogs'})}" />
-<f:variable name="deleteAllHref" value="{be:moduleLink(route:moduleName, arguments:{id:pageUid, action:'showLogs', deleteAll:1})}" />
+<f:variable name="postActionUrl" value="{be:moduleLink(route:moduleName, arguments:{id:pageUid, action:'showLogs'})}" />
 <f:variable name="hasLogs" value="{logsGroupedByRequestId -> f:count()}" />
 
 <!-- Page Header -->
@@ -19,18 +19,21 @@
                 <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:refresh" default="Refresh" />
             </a>
             <f:if condition="{hasLogs}">
-                <a href="{deleteAllHref}"
-                   class="btn btn-danger ms-2 t3js-modal-trigger"
-                   data-bs-toggle="tooltip"
-                   data-severity="warning"
-                   data-title="{f:translate(key:'LLL:EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf:label.confirm.delete_record.title')}"
-                   data-button-close-text="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel')}"
-                   data-bs-content="{f:translate(key:'confirm_log', arguments:'{0:requestId}')}"
-                   data-button-ok-text="{f:translate(key:'confirm_log.delete.yes')}"
-                   title="{f:translate(key:'delete')}">
-                    <core:icon identifier="actions-edit-delete" />
-                    <f:translate key="LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:clear_all_logs" default="Clear All Logs" />
-                </a>
+                <form method="post" action="{postActionUrl}" class="d-inline ms-2">
+                    <input type="hidden" name="deleteAll" value="1" />
+                    <button type="submit"
+                            class="btn btn-danger t3js-modal-trigger"
+                            data-bs-toggle="tooltip"
+                            data-severity="warning"
+                            data-title="{f:translate(key:'LLL:EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf:label.confirm.delete_record.title')}"
+                            data-button-close-text="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel')}"
+                            data-bs-content="{f:translate(key:'confirm_log', arguments:'{0:requestId}')}"
+                            data-button-ok-text="{f:translate(key:'confirm_log.delete.yes')}"
+                            title="{f:translate(key:'delete')}">
+                        <core:icon identifier="actions-edit-delete" />
+                        <f:translate key="LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:clear_all_logs" default="Clear All Logs" />
+                    </button>
+                </form>
             </f:if>
         </div>
     </div>
@@ -64,7 +67,7 @@
         </div>
 
         <!-- Table Form -->
-        <form data-multi-record-selection-form="task-group-list" method="post">
+        <form data-multi-record-selection-form="task-group-list" method="post" action="{postActionUrl}">
             <div class="panel-collapse collapse show" id="autotranslate-task-group-list" data-table="task-group-list">
                 <div class="table-fit">
                     <table class="table table-striped table-hover table-autotranslate-logs">
@@ -87,7 +90,7 @@
                         <!-- Table Body -->
                         <tbody data-multi-record-selection-row-selection="true">
                             <f:for each="{logsGroupedByRequestId}" as="logGroup" key="requestId">
-                                <f:render section="LogGroupRow" arguments="{requestId:requestId, logGroup:logGroup, pageUid:pageUid, moduleName:moduleName}" />
+                                <f:render section="LogGroupRow" arguments="{requestId:requestId, logGroup:logGroup, postActionUrl:postActionUrl}" />
                             </f:for>
                         </tbody>
 
@@ -148,8 +151,6 @@
 
 <!-- Log Group Row Section -->
 <f:section name="LogGroupRow">
-    <f:variable name="deleteHref" value="{be:moduleLink(route:moduleName, arguments:{id:pageUid, action:'showLogs', delete:requestId})}" />
-
     <!-- Group Header Row -->
     <tr title="id={requestId}"
         data-multi-record-selection-element="true"
@@ -162,17 +163,20 @@
         <td><strong>{requestId}</strong></td>
         <td class="nowrap col-control">
             <div class="btn-group">
-                <a href="{deleteHref}"
-                   class="btn btn-default t3js-modal-trigger"
-                   data-bs-toggle="tooltip"
-                   data-severity="warning"
-                   data-title="{f:translate(key:'LLL:EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf:label.confirm.delete_record.title')}"
-                   data-button-close-text="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel')}"
-                   data-bs-content="{f:translate(key:'confirm_log', arguments:'{0:requestId}')}"
-                   data-button-ok-text="{f:translate(key:'LLL:EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf:buttons.confirm.delete_record.yes')}"
-                   title="{f:translate(key:'delete')}">
-                    <core:icon identifier="actions-edit-delete" />
-                </a>
+                <form method="post" action="{postActionUrl}" class="d-inline">
+                    <input type="hidden" name="delete" value="{requestId}" />
+                    <button type="submit"
+                            class="btn btn-default t3js-modal-trigger"
+                            data-bs-toggle="tooltip"
+                            data-severity="warning"
+                            data-title="{f:translate(key:'LLL:EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf:label.confirm.delete_record.title')}"
+                            data-button-close-text="{f:translate(key:'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:cancel')}"
+                            data-bs-content="{f:translate(key:'confirm_log', arguments:'{0:requestId}')}"
+                            data-button-ok-text="{f:translate(key:'LLL:EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf:buttons.confirm.delete_record.yes')}"
+                            title="{f:translate(key:'delete')}">
+                        <core:icon identifier="actions-edit-delete" />
+                    </button>
+                </form>
             </div>
         </td>
     </tr>

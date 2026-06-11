@@ -328,4 +328,81 @@ final class TranslationHelper
 
         return array_filter($tables, static fn(string $table): bool => isset($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']));
     }
+
+    /**
+     * Resolve the parent record for a reference/localized child record.
+     *
+     * @return array{table: string, uid: int, column: string}|null
+     */
+    public static function resolveReferenceParent(string $referenceTable, array $record): ?array
+    {
+        if ($referenceTable === 'sys_file_reference') {
+            $parentTable = (string)($record['tablenames'] ?? '');
+            $parentUid = (int)($record['uid_foreign'] ?? 0);
+            $column = (string)($record['fieldname'] ?? '');
+
+            if ($parentTable === '' || $parentUid <= 0 || $column === '') {
+                return null;
+            }
+
+            if (!isset($GLOBALS['TCA'][$parentTable])) {
+                return null;
+            }
+
+            return [
+                'table' => $parentTable,
+                'uid' => $parentUid,
+                'column' => $column,
+            ];
+        }
+
+        foreach (self::tablesToTranslate() as $parentTable) {
+            if (!isset($GLOBALS['TCA'][$parentTable]['columns'])) {
+                continue;
+            }
+
+            foreach ($GLOBALS['TCA'][$parentTable]['columns'] as $columnName => $columnConfig) {
+                $config = $columnConfig['config'] ?? [];
+                if (($config['foreign_table'] ?? '') !== $referenceTable) {
+                    continue;
+                }
+
+                $foreignField = (string)($config['foreign_field'] ?? '');
+                if ($foreignField === '' || !array_key_exists($foreignField, $record)) {
+                    continue;
+                }
+
+                $parentUid = (int)$record[$foreignField];
+                if ($parentUid <= 0) {
+                    continue;
+                }
+
+                return [
+                    'table' => $parentTable,
+                    'uid' => $parentUid,
+                    'column' => $columnName,
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check whether autotranslate is configured for a parent reference column.
+     */
+    public static function isReferenceAutotranslateEnabled(
+        int $pageId,
+        string $parentTable,
+        string $referenceTable,
+        string $referenceColumn
+    ): bool {
+        $referenceColumns = self::translationReferenceColumns($pageId, $parentTable, $referenceTable);
+
+        if ($referenceColumns === null) {
+            return false;
+        }
+
+        return in_array($referenceColumn, $referenceColumns, true);
+    }
 }

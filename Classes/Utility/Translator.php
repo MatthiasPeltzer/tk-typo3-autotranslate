@@ -28,6 +28,36 @@ final class Translator implements LoggerAwareInterface
     public const TRANSLATE_MODE_UPDATE_ONLY = 'update_only';
     public const TRANSLATE_MODE_CREATE_ONLY = 'create_only';
 
+    /** @var list<string> Fields ignored when detecting changes on record update */
+    private const CHANGE_DETECTION_IGNORE_FIELDS = [
+        'pid',
+        'sorting',
+        'crdate',
+        'tstamp',
+        'cruser_id',
+        'deleted',
+        'hidden',
+        'starttime',
+        'endtime',
+        'fe_group',
+        'sys_language_uid',
+        'l10n_parent',
+        'l10n_diffsource',
+        'l10n_state',
+        't3ver_oid',
+        't3ver_id',
+        't3ver_wsid',
+        't3ver_label',
+        't3ver_state',
+        't3ver_stage',
+        't3ver_count',
+        't3ver_tstamp',
+        't3ver_move_id',
+        self::AUTOTRANSLATE_LAST,
+        self::AUTOTRANSLATE_EXCLUDE,
+        self::AUTOTRANSLATE_LANGUAGES,
+    ];
+
     private readonly ?string $apiKey;
     private readonly array $siteLanguages;
     private readonly string $deeplFormality;
@@ -52,28 +82,10 @@ final class Translator implements LoggerAwareInterface
         int $recordUid,
         ?DataHandler $parentObject = null,
         ?string $languagesToTranslate = null,
-        string $translateMode = self::TRANSLATE_MODE_BOTH
+        string $translateMode = self::TRANSLATE_MODE_BOTH,
+        ?string $datamapStatus = null,
+        ?array $changedFields = null,
     ): void {
-        $deeplApiKeyDetails = DeeplApiHelper::checkApiKey($this->apiKey);
-        if ($deeplApiKeyDetails['error']) {
-            LogUtility::log($this->logger, 'DeepL API Key is not valid: {error}', [
-                'error' => $deeplApiKeyDetails['error'],
-            ]);
-            throw new \RuntimeException('DeepL API Key is not valid: ' . $deeplApiKeyDetails['error']);
-        }
-        if (!$deeplApiKeyDetails['isValid']) {
-            LogUtility::log($this->logger, 'DeepL API Key is not valid: {error}', [
-                'error' => 'No API Key given.',
-            ]);
-            throw new \RuntimeException('DeepL API Key is not valid: No API Key given.');
-        }
-        if ($deeplApiKeyDetails['charactersLeft'] <= 0) {
-            LogUtility::log($this->logger, 'DeepL API Key has no characters left: {charactersLeft}', [
-                'charactersLeft' => $deeplApiKeyDetails['charactersLeft'],
-            ]);
-            throw new \RuntimeException('DeepL API Key has no characters left: ' . $deeplApiKeyDetails['charactersLeft']);
-        }
-
         $record = Records::getRecord($table, $recordUid);
 
         if ($record === null) {
@@ -105,6 +117,17 @@ final class Translator implements LoggerAwareInterface
             return;
         }
 
+        $columnsToTranslate = $this->resolveColumnsToTranslate($columns, $datamapStatus, $changedFields);
+        if ($columnsToTranslate === []) {
+            LogUtility::log($this->logger, 'No changed translatable fields for {table}:{uid}, skipping translation.', [
+                'table' => $table,
+                'uid' => $recordUid,
+            ]);
+            return;
+        }
+
+        $this->assertApiKeyIsUsable();
+
         // Set target languages by record if null is given
         if ($languagesToTranslate === null) {
             $languagesToTranslate = $record[self::AUTOTRANSLATE_LANGUAGES] ?? '';
@@ -129,6 +152,8 @@ final class Translator implements LoggerAwareInterface
             ], LogUtility::MESSAGE_WARNING);
             return;
         }
+
+        $didTranslate = false;
 
         foreach ($languageIds as $languageId) {
             $localizedContents[$languageId] = [];
@@ -172,14 +197,36 @@ final class Translator implements LoggerAwareInterface
                 continue;
             }
 
+            // First localization needs all configured fields, not just fields changed in this save
+            $columnsForLanguage = $this->resolveColumnsForRecord(
+                $columns,
+                $existingTranslation,
+                $datamapStatus,
+                $changedFields
+            );
+            if ($columnsForLanguage === []) {
+                continue;
+            }
+
+            $translateReferences = $this->shouldTranslateReferences(
+                $table,
+                $datamapStatus,
+                $changedFields,
+                (bool)$existingTranslation
+            );
+
             $localizedContents[$languageId][$recordUid] = $localizedUid;
             $referenceTables = TranslationHelper::additionalReferenceTables();
 
-            foreach ($referenceTables as $referenceTable) {
-                $columnsReference = TranslationHelper::translationTextfields($this->pageId, $referenceTable);
-                $autotranslateReferences = TranslationHelper::translationReferenceColumns($this->pageId, $table, $referenceTable);
+            if ($translateReferences) {
+                foreach ($referenceTables as $referenceTable) {
+                    $columnsReference = TranslationHelper::translationTextfields($this->pageId, $referenceTable);
+                    $autotranslateReferences = TranslationHelper::translationReferenceColumns($this->pageId, $table, $referenceTable);
 
-                if (!empty($autotranslateReferences)) {
+                    if (empty($autotranslateReferences)) {
+                        continue;
+                    }
+
                     foreach ($autotranslateReferences as $referenceColumn) {
                         $type = $GLOBALS['TCA'][$table]['columns'][$referenceColumn]['config']['type'] ?? null;
                         $foreignField = $GLOBALS['TCA'][$table]['columns'][$referenceColumn]['config']['foreign_field'];
@@ -218,61 +265,28 @@ final class Translator implements LoggerAwareInterface
                             continue;
                         }
 
-                        if (!empty($references)) {
-                            foreach ($references as $referenceUid) {
-                                $referenceUid = (int)$referenceUid;
-                                $referenceTranslation = Records::getRecordTranslation($referenceTable, $referenceUid, (int)$languageId);
+                        if (empty($references) || empty($columnsReference)) {
+                            continue;
+                        }
 
-                                if ($translateMode === self::TRANSLATE_MODE_UPDATE_ONLY && empty($referenceTranslation)) {
-                                    LogUtility::log($this->logger, 'No {referenceTable} {referenceUid} Translation of {table} with uid {uid} because mode "update only".', [
-                                        'referenceTable' => $referenceTable,
-                                        'table' => $table,
-                                        'uid' => $recordUid,
-                                        'referenceUid' => $referenceUid,
-                                    ]);
-                                    continue;
-                                }
-
-                                if ($translateMode === self::TRANSLATE_MODE_CREATE_ONLY && !empty($referenceTranslation)) {
-                                    LogUtility::log($this->logger, 'Skipping {referenceTable} {referenceUid} of {table} with uid {uid} because mode "create only" and translation already exists.', [
-                                        'referenceTable' => $referenceTable,
-                                        'table' => $table,
-                                        'uid' => $recordUid,
-                                        'referenceUid' => $referenceUid,
-                                    ]);
-                                    continue;
-                                }
-
-                                if (empty($referenceTranslation)) {
-                                    $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-                                    $dataHandler->start([], []);
-                                    $translatedReferenceUid = (int)$dataHandler->localize($referenceTable, $referenceUid, (int)$languageId);
-
-                                    Records::updateRecord(
-                                        $referenceTable,
-                                        $translatedReferenceUid,
-                                        [
-                                            $foreignField => $localizedContents[$languageId][$recordUid],
-                                        ]
-                                    );
-                                } else {
-                                    $translatedReferenceUid = (int)$referenceTranslation['uid'];
-                                }
-
-                                if (!empty($columnsReference)) {
-                                    $recordReference = ($parentObject !== null && isset($parentObject->datamap[$referenceTable][$referenceUid]))
-                                        ? $parentObject->datamap[$referenceTable][$referenceUid]
-                                        : Records::getRecord($referenceTable, $referenceUid);
-
-                                    if ($recordReference === null) {
-                                        continue;
-                                    }
-
-                                    $translatedColumns = $this->translateRecordProperties($recordReference, (int)$languageId, $columnsReference, $table, $translatedReferenceUid);
-                                    if (count($translatedColumns)) {
-                                        Records::updateRecord($referenceTable, $translatedReferenceUid, $translatedColumns);
-                                    }
-                                }
+                        foreach ($references as $referenceUid) {
+                            $referenceUid = (int)$referenceUid;
+                            if ($this->translateReferenceChild(
+                                $table,
+                                $recordUid,
+                                (int)$localizedUid,
+                                $referenceTable,
+                                $referenceColumn,
+                                $referenceUid,
+                                (int)$languageId,
+                                (string)$foreignField,
+                                $columnsReference,
+                                $parentObject,
+                                $datamapStatus,
+                                $changedFields,
+                                $translateMode
+                            )) {
+                                $didTranslate = true;
                             }
                         }
                     }
@@ -280,10 +294,11 @@ final class Translator implements LoggerAwareInterface
             }
 
             // Translate properties with given service
-            $translatedColumns = $this->translateRecordProperties($record, (int)$languageId, $columns, $table, $localizedUid);
+            $translatedColumns = $this->translateRecordProperties($record, (int)$languageId, $columnsForLanguage, $table, $localizedUid);
 
             if (count($translatedColumns) > 0) {
                 Records::updateRecord($table, $localizedUid, $translatedColumns);
+                $didTranslate = true;
             }
 
             if (!$existingTranslation) {
@@ -291,9 +306,425 @@ final class Translator implements LoggerAwareInterface
             }
         }
 
-        Records::updateRecord($table, $recordUid, [
-            self::AUTOTRANSLATE_LAST => time(),
-        ]);
+        if ($didTranslate) {
+            Records::updateRecord($table, $recordUid, [
+                self::AUTOTRANSLATE_LAST => time(),
+            ]);
+        }
+    }
+
+    /**
+     * Translate a reference record saved directly (e.g. sys_file_reference alt/title edit).
+     *
+     * @throws \RuntimeException If DeepL API key is invalid or has no characters left
+     */
+    public function translateReferenceRecord(
+        string $referenceTable,
+        int $referenceUid,
+        ?DataHandler $parentObject = null,
+        ?string $datamapStatus = null,
+        ?array $changedFields = null,
+        string $translateMode = self::TRANSLATE_MODE_BOTH,
+    ): void {
+        $record = Records::getRecord($referenceTable, $referenceUid);
+        if ($record === null) {
+            return;
+        }
+
+        $parentField = TranslationHelper::translationOrigPointerField($referenceTable);
+        if ($parentField === null || (int)($record[$parentField] ?? 0) > 0) {
+            return;
+        }
+
+        if ((int)($record['sys_language_uid'] ?? 0) > 0) {
+            return;
+        }
+
+        if ((int)($record[self::AUTOTRANSLATE_EXCLUDE] ?? 0) === 1) {
+            return;
+        }
+
+        $parentInfo = TranslationHelper::resolveReferenceParent($referenceTable, $record);
+        if ($parentInfo === null) {
+            return;
+        }
+
+        $parentTable = $parentInfo['table'];
+        $parentUid = $parentInfo['uid'];
+        $referenceColumn = $parentInfo['column'];
+
+        if (!TranslationHelper::isReferenceAutotranslateEnabled(
+            $this->pageId,
+            $parentTable,
+            $referenceTable,
+            $referenceColumn
+        )) {
+            return;
+        }
+
+        $parentRecord = Records::getRecord($parentTable, $parentUid);
+        if ($parentRecord === null) {
+            return;
+        }
+
+        $parentOrigField = TranslationHelper::translationOrigPointerField($parentTable);
+        if ($parentOrigField !== null && (int)($parentRecord[$parentOrigField] ?? 0) > 0) {
+            return;
+        }
+
+        if ((int)($parentRecord[self::AUTOTRANSLATE_EXCLUDE] ?? 0) === 1) {
+            return;
+        }
+
+        $columnsReference = TranslationHelper::translationTextfields($this->pageId, $referenceTable);
+        if ($columnsReference === null || $columnsReference === []) {
+            return;
+        }
+
+        $columnsToTranslate = $this->resolveColumnsToTranslate($columnsReference, $datamapStatus, $changedFields);
+        if ($columnsToTranslate === []) {
+            LogUtility::log($this->logger, 'No changed translatable fields for {referenceTable}:{uid}, skipping translation.', [
+                'referenceTable' => $referenceTable,
+                'uid' => $referenceUid,
+            ]);
+            return;
+        }
+
+        $foreignField = $this->getReferenceForeignField($parentTable, $referenceColumn);
+        if ($foreignField === null) {
+            return;
+        }
+
+        $this->assertApiKeyIsUsable();
+
+        $languagesToTranslate = $parentRecord[self::AUTOTRANSLATE_LANGUAGES] ?? '';
+        if ($languagesToTranslate === '') {
+            $siteConfig = TranslationHelper::siteConfigurationValue($this->pageId);
+            if (is_array($siteConfig)) {
+                $settings = TranslationHelper::translationSettingsDefaults($siteConfig, $parentTable);
+                $languagesToTranslate = $settings['autotranslateLanguages'] ?? '';
+            }
+        }
+
+        $languageIds = GeneralUtility::trimExplode(',', $languagesToTranslate, true);
+        if ($languageIds === []) {
+            return;
+        }
+
+        $didTranslate = false;
+
+        foreach ($languageIds as $languageId) {
+            if ((int)$languageId === (int)($parentRecord['sys_language_uid'] ?? 0)) {
+                continue;
+            }
+
+            $localizedParent = Records::getRecordTranslation($parentTable, $parentUid, (int)$languageId);
+            if ($localizedParent === null) {
+                LogUtility::log($this->logger, 'Skipping {referenceTable}:{uid} for language {languageId}: parent {parentTable}:{parentUid} has no translation.', [
+                    'referenceTable' => $referenceTable,
+                    'uid' => $referenceUid,
+                    'languageId' => $languageId,
+                    'parentTable' => $parentTable,
+                    'parentUid' => $parentUid,
+                ]);
+                continue;
+            }
+
+            if ($this->translateReferenceChild(
+                $parentTable,
+                $parentUid,
+                (int)$localizedParent['uid'],
+                $referenceTable,
+                $referenceColumn,
+                $referenceUid,
+                (int)$languageId,
+                $foreignField,
+                $columnsReference,
+                $parentObject,
+                $datamapStatus,
+                $changedFields,
+                $translateMode
+            )) {
+                $didTranslate = true;
+            }
+        }
+
+        if ($didTranslate) {
+            Records::updateRecord($referenceTable, $referenceUid, [
+                self::AUTOTRANSLATE_LAST => time(),
+            ]);
+        }
+    }
+
+    /**
+     * @param list<string> $columnsReference
+     */
+    private function translateReferenceChild(
+        string $parentTable,
+        int $parentUid,
+        int $localizedParentUid,
+        string $referenceTable,
+        string $referenceColumn,
+        int $referenceUid,
+        int $languageId,
+        string $foreignField,
+        array $columnsReference,
+        ?DataHandler $parentObject,
+        ?string $datamapStatus,
+        ?array $changedFields,
+        string $translateMode
+    ): bool {
+        $referenceTranslation = Records::getRecordTranslation($referenceTable, $referenceUid, $languageId);
+
+        if ($translateMode === self::TRANSLATE_MODE_UPDATE_ONLY && empty($referenceTranslation)) {
+            LogUtility::log($this->logger, 'No {referenceTable} {referenceUid} Translation of {parentTable} with uid {uid} because mode "update only".', [
+                'referenceTable' => $referenceTable,
+                'parentTable' => $parentTable,
+                'uid' => $parentUid,
+                'referenceUid' => $referenceUid,
+            ]);
+            return false;
+        }
+
+        if ($translateMode === self::TRANSLATE_MODE_CREATE_ONLY && !empty($referenceTranslation)) {
+            LogUtility::log($this->logger, 'Skipping {referenceTable} {referenceUid} of {parentTable} with uid {uid} because mode "create only" and translation already exists.', [
+                'referenceTable' => $referenceTable,
+                'parentTable' => $parentTable,
+                'uid' => $parentUid,
+                'referenceUid' => $referenceUid,
+            ]);
+            return false;
+        }
+
+        if (empty($referenceTranslation)) {
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start([], []);
+            $translatedReferenceUid = (int)$dataHandler->localize($referenceTable, $referenceUid, $languageId);
+
+            Records::updateRecord(
+                $referenceTable,
+                $translatedReferenceUid,
+                [
+                    $foreignField => $localizedParentUid,
+                ]
+            );
+        } else {
+            $translatedReferenceUid = (int)$referenceTranslation['uid'];
+        }
+
+        if ($translatedReferenceUid <= 0) {
+            return false;
+        }
+
+        $referenceChangedFields = ($parentObject !== null && isset($parentObject->datamap[$referenceTable][$referenceUid]))
+            ? $parentObject->datamap[$referenceTable][$referenceUid]
+            : null;
+
+        $effectiveStatus = $datamapStatus;
+        $effectiveChangedFields = $referenceChangedFields;
+        if (
+            $referenceChangedFields === null
+            && $datamapStatus === 'update'
+            && $this->isTranslateChangedFieldsOnlyEnabled()
+        ) {
+            $effectiveStatus = null;
+        }
+
+        $columnsForReference = $this->resolveColumnsForRecord(
+            $columnsReference,
+            $referenceTranslation ?: null,
+            $effectiveStatus,
+            $effectiveChangedFields
+        );
+        if ($columnsForReference === []) {
+            return false;
+        }
+
+        $recordReference = ($parentObject !== null && isset($parentObject->datamap[$referenceTable][$referenceUid]))
+            ? $parentObject->datamap[$referenceTable][$referenceUid]
+            : Records::getRecord($referenceTable, $referenceUid);
+
+        if ($recordReference === null) {
+            return false;
+        }
+
+        $translatedColumns = $this->translateRecordProperties(
+            $recordReference,
+            $languageId,
+            $columnsForReference,
+            $referenceTable,
+            $translatedReferenceUid
+        );
+        if ($translatedColumns === []) {
+            return false;
+        }
+
+        Records::updateRecord($referenceTable, $translatedReferenceUid, $translatedColumns);
+
+        return true;
+    }
+
+    private function getReferenceForeignField(string $parentTable, string $referenceColumn): ?string
+    {
+        $config = $GLOBALS['TCA'][$parentTable]['columns'][$referenceColumn]['config'] ?? null;
+        if (!is_array($config)) {
+            return null;
+        }
+
+        $foreignField = (string)($config['foreign_field'] ?? '');
+
+        return $foreignField !== '' ? $foreignField : null;
+    }
+
+    /**
+     * @param list<string> $configuredColumns
+     * @return list<string>
+     */
+    private function resolveColumnsForRecord(
+        array $configuredColumns,
+        ?array $existingTranslation,
+        ?string $datamapStatus,
+        ?array $changedFields
+    ): array {
+        $columns = $existingTranslation === null
+            ? $configuredColumns
+            : $this->resolveColumnsToTranslate($configuredColumns, $datamapStatus, $changedFields);
+
+        return $this->filterColumnsRespectingCustomTranslation(
+            $columns,
+            $existingTranslation,
+            $changedFields,
+            $datamapStatus
+        );
+    }
+
+    /**
+     * Skip fields marked custom in l10n_state unless the source field changed in this save.
+     *
+     * @param list<string> $columns
+     * @return list<string>
+     */
+    private function filterColumnsRespectingCustomTranslation(
+        array $columns,
+        ?array $existingTranslation,
+        ?array $changedFields,
+        ?string $datamapStatus
+    ): array {
+        if ($existingTranslation === null || empty($existingTranslation['l10n_state'])) {
+            return $columns;
+        }
+
+        $l10nState = json_decode((string)$existingTranslation['l10n_state'], true);
+        if (!is_array($l10nState) || $l10nState === []) {
+            return $columns;
+        }
+
+        $sourceChangedFields = null;
+        if ($datamapStatus === 'update' && $changedFields !== null) {
+            $sourceChangedFields = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
+        }
+
+        return array_values(array_filter(
+            $columns,
+            static function (string $column) use ($l10nState, $sourceChangedFields): bool {
+                if (($l10nState[$column] ?? null) !== 'custom') {
+                    return true;
+                }
+
+                if ($sourceChangedFields === null) {
+                    return false;
+                }
+
+                return in_array($column, $sourceChangedFields, true);
+            }
+        ));
+    }
+
+    /**
+     * @param list<string> $configuredColumns
+     * @return list<string>
+     */
+    private function resolveColumnsToTranslate(array $configuredColumns, ?string $datamapStatus, ?array $changedFields): array
+    {
+        if (!$this->isTranslateChangedFieldsOnlyEnabled()) {
+            return $configuredColumns;
+        }
+
+        if ($datamapStatus !== 'update' || $changedFields === null) {
+            return $configuredColumns;
+        }
+
+        $changedFieldNames = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
+
+        return array_values(array_intersect($configuredColumns, $changedFieldNames));
+    }
+
+    private function shouldTranslateReferences(
+        string $table,
+        ?string $datamapStatus,
+        ?array $changedFields,
+        bool $existingTranslation
+    ): bool {
+        if (!$existingTranslation) {
+            return true;
+        }
+
+        if (!$this->isTranslateChangedFieldsOnlyEnabled()) {
+            return true;
+        }
+
+        if ($datamapStatus !== 'update' || $changedFields === null) {
+            return true;
+        }
+
+        $changedFieldNames = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
+        $referenceColumns = [];
+
+        foreach (TranslationHelper::additionalReferenceTables() as $referenceTable) {
+            $columns = TranslationHelper::translationReferenceColumns($this->pageId, $table, $referenceTable);
+            if ($columns !== null) {
+                $referenceColumns = array_merge($referenceColumns, $columns);
+            }
+        }
+
+        return array_intersect($referenceColumns, $changedFieldNames) !== [];
+    }
+
+    private function isTranslateChangedFieldsOnlyEnabled(): bool
+    {
+        try {
+            $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('autotranslate');
+        } catch (\Exception) {
+            return false;
+        }
+
+        return (bool)($extensionConfiguration['translateChangedFieldsOnly'] ?? true);
+    }
+
+    /**
+     * @throws \RuntimeException If DeepL API key is invalid or has no characters left
+     */
+    private function assertApiKeyIsUsable(): void
+    {
+        $deeplApiKeyDetails = DeeplApiHelper::checkApiKey($this->apiKey);
+        if ($deeplApiKeyDetails['error']) {
+            LogUtility::log($this->logger, 'DeepL API Key is not valid: {error}', [
+                'error' => $deeplApiKeyDetails['error'],
+            ]);
+            throw new \RuntimeException('DeepL API Key is not valid: ' . $deeplApiKeyDetails['error']);
+        }
+        if (!$deeplApiKeyDetails['isValid']) {
+            LogUtility::log($this->logger, 'DeepL API Key is not valid: {error}', [
+                'error' => 'No API Key given.',
+            ]);
+            throw new \RuntimeException('DeepL API Key is not valid: No API Key given.');
+        }
+        if ($deeplApiKeyDetails['charactersLeft'] !== null && $deeplApiKeyDetails['charactersLeft'] <= 0) {
+            LogUtility::log($this->logger, 'DeepL API Key has no characters left: {charactersLeft}', [
+                'charactersLeft' => $deeplApiKeyDetails['charactersLeft'],
+            ]);
+            throw new \RuntimeException('DeepL API Key has no characters left: ' . $deeplApiKeyDetails['charactersLeft']);
+        }
     }
 
     /**
@@ -413,9 +844,8 @@ final class Translator implements LoggerAwareInterface
 
             LogUtility::log($this->logger, 'Successful translated to target language {deeplTargetLang}.', [
                 'deeplTargetLang' => $deeplTargetLang,
-                'toTranslate' => $toTranslate,
-                'result' => $result,
-                'translatedColumns' => $translatedColumns,
+                'fieldCount' => count($translatedColumns),
+                'fields' => array_keys($translatedColumns),
             ]);
         } catch (\Exception $e) {
             LogUtility::log($this->logger, 'Translation Error: {error}.', ['error' => $e->getMessage()], LogUtility::MESSAGE_ERROR);

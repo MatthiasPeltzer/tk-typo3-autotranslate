@@ -1,5 +1,30 @@
 # Changelog
 
+## [3.0.3] - 2026-06-11
+
+### Features
+- Respect `l10n_state` custom fields on existing translations: manually customized target fields are skipped unless the corresponding source field changed in the current save
+- Translate reference records on direct save (e.g. `sys_file_reference` alt/title edits) when the parent reference column is configured for autotranslate
+- Apply changed-fields-only and custom-field filtering to reference child translations
+
+## [3.0.2] - 2026-06-11
+
+### Features
+- Add extension setting `translateChangedFieldsOnly` (enabled by default): on record updates, only changed translatable fields are sent to DeepL; new records and batch/scheduler runs still translate all configured fields
+- Skip DeepL API validation when an update has no relevant field changes
+
+## [3.0.1] - 2026-06-11
+
+### Security
+- Enforce POST-only batch and log mutations in the backend module; reject legacy GET mutation URLs
+- Add per-item authorization checks for batch execute, delete, and reset actions (page and language access)
+- Redact translated field content from debug logs; log field names and counts only
+- Register `deepltranslate_core` XCLASS only when that extension is loaded
+
+### Fixes
+- Fix DeepL API quota check for keys without character limits (`charactersLeft === null`)
+- Remove erroneous multi-record selection event dispatch on module page load
+
 ## [3.0.0] - 2026-02-07
 
 ### Breaking Changes
