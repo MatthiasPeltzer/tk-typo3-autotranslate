@@ -15,6 +15,8 @@ The batch translation module provides a visual interface for managing translatio
 - **Duplicate Prevention**: Prevents creation of duplicate items when pending items already exist
 - **Error Reporting**: Shows existing errors on pages when creating new batch items
 - **Scheduler Status**: Displays last scheduler run statistics (succeeded/failed/remaining)
+- **Access Control**: Execute, delete, and reset require page and language access for each batch item
+- **Changed Fields Only**: When `translateChangedFieldsOnly` is enabled, batch runs skip unchanged translatable fields (see below)
 
 ![Backend Module](../Images/BatchTranslationBackend.png)
 
@@ -35,6 +37,17 @@ The batch translation module provides a visual interface for managing translatio
 | **Update only** | Only updates existing translations, does not create new ones |
 | **Create only** | Only creates missing translations, never overwrites existing ones |
 
+### Changed fields in batch runs
+
+When `translateChangedFieldsOnly` is enabled in extension configuration (default):
+
+- **Existing translations**: Only fields whose source content changed since the last successful translation are sent to DeepL. The extension tracks this via `autotranslate_source_hash` on source records.
+- **First localization** for a target language: All configured fields are translated.
+- **After upgrade to 3.0.4**: Records without stored hashes are fully translated once; later runs skip unchanged fields.
+- **Reset a job**: Re-queues the item. Unchanged fields are still skipped unless source content or hashes changed. To force a full re-translate, disable `translateChangedFieldsOnly` temporarily or change source content.
+
+Mutations in the module (execute, delete, reset, clear cache) use **POST** requests only.
+
 ## CLI Command
 
 Run translations from the command line:
@@ -46,6 +59,8 @@ vendor/bin/typo3 autotranslate:batch:run
 # Translate 10 items
 vendor/bin/typo3 autotranslate:batch:run 10
 ```
+
+The CLI command uses the same changed-fields logic as the scheduler when `translateChangedFieldsOnly` is enabled.
 
 ## Scheduler Integration
 
