@@ -40,10 +40,31 @@
                 <source>Characters</source>
             </trans-unit>
             <trans-unit id="site_configuration.deepl.glossary.label">
-                <source>Enable the use of the DeepL Translate glossary</source>
+                <source>Enable DeepL glossary for autotranslation</source>
             </trans-unit>
             <trans-unit id="site_configuration.deepl.glossary.description">
-                <source>Use DeepL Glossaries from https://extensions.typo3.org/extension/deepltranslate_glossary</source>
+                <source>Use glossary records from Autotranslate glossary folders in this site. Glossaries must be synchronized to DeepL before translations use them.</source>
+            </trans-unit>
+            <trans-unit id="glossary.sync.button">
+                <source>Synchronize glossaries</source>
+            </trans-unit>
+            <trans-unit id="glossary.sync.help">
+                <source>Manage glossary terms in this folder, then synchronize them to DeepL. Repeat synchronization after every change.</source>
+            </trans-unit>
+            <trans-unit id="glossary.sync.no_records">
+                <source>No glossary records found yet. Create a glossary record for each language pair.</source>
+            </trans-unit>
+            <trans-unit id="glossary.sync.status.ready">
+                <source>synced</source>
+            </trans-unit>
+            <trans-unit id="glossary.sync.status.pending">
+                <source>not synced</source>
+            </trans-unit>
+            <trans-unit id="glossary.sync.last_sync">
+                <source>last sync</source>
+            </trans-unit>
+            <trans-unit id="glossary.sync.never">
+                <source>never</source>
             </trans-unit>
             <trans-unit id="site_configuration.deepl.formality.label">
                 <source>DeepL formality</source>

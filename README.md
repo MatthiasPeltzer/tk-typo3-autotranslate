@@ -18,7 +18,7 @@ This extension automates the translation of content elements in the TYPO3 backen
 - **Error Reporting**: Displays existing errors on pages when creating new batch items
 - **CLI Command**: `autotranslate:batch:run` for scheduled/automated translations
 - **Scheduler Task**: Custom scheduler task with visual progress bar and status display
-- **Glossary Support**: Compatible with `deepltranslate_glossary` extension
+- **Glossary Support**: Built-in DeepL glossary management with backend sync
 - **Grid Elements**: Support for translating nested Grid Elements containers
 - **Translation Cache**: Optional caching to reduce API calls and costs
 - **Changed Fields Only**: Skip unchanged translatable fields on save, batch, and scheduler runs (extension setting `translateChangedFieldsOnly`, enabled by default)
@@ -49,6 +49,21 @@ composer require thieleundklose/autotranslate
 4. **Enable translation** for tables in the site configuration (e.g. Pages, Content)
 5. **Define text fields** to translate per table in the site configuration
 6. **Use the backend module** (Web > Autotranslate) to manage batch translations
+
+## Glossary (do-not-translate terms)
+
+1. Create a **sysfolder** in your site tree
+2. In page properties → **Behaviour**, set **Contains Plugin** to **Autotranslate Glossary**
+3. Create **DeepL Glossary** records (one per language pair, e.g. DE → EN)
+4. Add glossary entries inline. Use the **same source and target term** to prevent translation (e.g. `mpcore` → `mpcore`)
+5. Click **Synchronize glossaries** in the page or list module header
+6. Enable **DeepL glossary for autotranslation** in the site configuration
+
+CLI sync:
+
+```bash
+vendor/bin/typo3 autotranslate:glossary:sync --folder=123
+```
 
 ## CLI Usage
 

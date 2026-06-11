@@ -65,3 +65,29 @@ CREATE TABLE tx_autotranslate_log (
 
     KEY request (request_id)
 );
+
+#
+# Table structure for DeepL glossaries (one record per language pair)
+#
+CREATE TABLE tx_autotranslate_glossary (
+    source_lang varchar(10) DEFAULT '' NOT NULL,
+    target_lang varchar(10) DEFAULT '' NOT NULL,
+    glossary_id varchar(255) DEFAULT '' NOT NULL,
+    last_sync int(11) unsigned DEFAULT '0' NOT NULL,
+    sync_ready tinyint(4) unsigned DEFAULT '0' NOT NULL,
+    sync_error text,
+
+    KEY glossary_lookup (source_lang, target_lang),
+    KEY pid (pid)
+);
+
+#
+# Table structure for DeepL glossary entries
+#
+CREATE TABLE tx_autotranslate_glossary_entry (
+    glossary int(11) unsigned DEFAULT '0' NOT NULL,
+    source_term varchar(255) DEFAULT '' NOT NULL,
+    target_term varchar(255) DEFAULT '' NOT NULL,
+
+    KEY glossary (glossary)
+);

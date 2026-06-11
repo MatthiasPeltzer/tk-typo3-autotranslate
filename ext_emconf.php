@@ -17,7 +17,6 @@ $EM_CONF[$_EXTKEY] = [
         'conflicts' => [],
         'suggests' => [
             'news' => '10.0.0-12.99.99',
-            'deepltranslate_glossary' => '5.0.0-6.99.99',
         ],
     ],
     'autoload' => [

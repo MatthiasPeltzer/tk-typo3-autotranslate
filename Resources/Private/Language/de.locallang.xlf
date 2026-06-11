@@ -52,12 +52,40 @@
                 <target>Zeichen</target>
             </trans-unit>
             <trans-unit id="site_configuration.deepl.glossary.label">
-                <source>Enable the use of the DeepL Translate glossary</source>
-                <target>Verwendung des DeepL-Translate-Glossars aktivieren</target>
+                <source>Enable DeepL glossary for autotranslation</source>
+                <target>DeepL-Glossar für Autotranslate aktivieren</target>
             </trans-unit>
             <trans-unit id="site_configuration.deepl.glossary.description">
-                <source>Use DeepL Glossaries from https://extensions.typo3.org/extension/deepltranslate_glossary</source>
-                <target>DeepL-Glossare aus https://extensions.typo3.org/extension/deepltranslate_glossary verwenden</target>
+                <source>Use glossary records from Autotranslate glossary folders in this site. Glossaries must be synchronized to DeepL before translations use them.</source>
+                <target>Verwendet Glossar-Einträge aus Autotranslate-Glossar-Ordnern dieser Website. Glossare müssen vor der Nutzung mit DeepL synchronisiert werden.</target>
+            </trans-unit>
+            <trans-unit id="glossary.sync.button">
+                <source>Synchronize glossaries</source>
+                <target>Glossare synchronisieren</target>
+            </trans-unit>
+            <trans-unit id="glossary.sync.help">
+                <source>Manage glossary terms in this folder, then synchronize them to DeepL. Repeat synchronization after every change.</source>
+                <target>Verwalten Sie Glossar-Begriffe in diesem Ordner und synchronisieren Sie sie anschließend mit DeepL. Wiederholen Sie die Synchronisation nach jeder Änderung.</target>
+            </trans-unit>
+            <trans-unit id="glossary.sync.no_records">
+                <source>No glossary records found yet. Create a glossary record for each language pair.</source>
+                <target>Noch keine Glossar-Datensätze vorhanden. Legen Sie pro Sprachpaar einen Glossar-Datensatz an.</target>
+            </trans-unit>
+            <trans-unit id="glossary.sync.status.ready">
+                <source>synced</source>
+                <target>synchronisiert</target>
+            </trans-unit>
+            <trans-unit id="glossary.sync.status.pending">
+                <source>not synced</source>
+                <target>nicht synchronisiert</target>
+            </trans-unit>
+            <trans-unit id="glossary.sync.last_sync">
+                <source>last sync</source>
+                <target>letzte Synchronisation</target>
+            </trans-unit>
+            <trans-unit id="glossary.sync.never">
+                <source>never</source>
+                <target>nie</target>
             </trans-unit>
             <trans-unit id="site_configuration.deepl.formality.label">
                 <source>DeepL formality</source>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Psr\Log\LogLevel;
 use ThieleUndKlose\Autotranslate\Hooks\DataHandler;
+use ThieleUndKlose\Autotranslate\Hooks\GlossarySyncStateHandler;
 use ThieleUndKlose\Autotranslate\Task\BatchTranslationTask;
 use TYPO3\CMS\Core\Cache\Backend\FileBackend;
 use TYPO3\CMS\Core\Log\Writer\DatabaseWriter;
@@ -17,6 +18,8 @@ defined('TYPO3') or die();
 $dataHandlerHookIdentifier = 't3lib/class.t3lib_tcemain.php';
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processCmdmapClass']['autotranslate'] = DataHandler::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processDatamapClass']['autotranslate'] = DataHandler::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processCmdmapClass']['autotranslate_glossary'] = GlossarySyncStateHandler::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processDatamapClass']['autotranslate_glossary'] = GlossarySyncStateHandler::class;
 
 // Logging configuration — all extension loggers write to the custom log table
 $logWriterConfig = [

@@ -6,7 +6,6 @@ use ThieleUndKlose\Autotranslate\Utility\DeeplApiHelper;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use ThieleUndKlose\Autotranslate\Utility\TranslationHelper;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 $siteConfiguration = isset($_REQUEST['site'])
     ? GeneralUtility::makeInstance(SiteFinder::class)->getSiteByIdentifier($_REQUEST['site'])->getConfiguration()
@@ -60,7 +59,6 @@ $GLOBALS['SiteConfiguration']['site']['columns']['autotranslateUseDeeplGlossary'
         'type' => 'check',
         'renderType' => 'checkboxToggle',
         'default' => 0,
-        'readOnly' => !ExtensionManagementUtility::isLoaded('deepltranslate_glossary'),
         'items' => [
             [
                 'label' => '',

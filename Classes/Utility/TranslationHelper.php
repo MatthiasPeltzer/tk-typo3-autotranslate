@@ -257,10 +257,6 @@ final class TranslationHelper
 
     public static function glossaryEnabled(int $pageId): bool
     {
-        if (!ExtensionManagementUtility::isLoaded('deepltranslate_glossary')) {
-            return false;
-        }
-
         try {
             $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageId);
             return (bool)($site->getConfiguration()['autotranslateUseDeeplGlossary'] ?? false);
