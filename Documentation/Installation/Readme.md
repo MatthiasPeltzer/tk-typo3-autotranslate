@@ -32,7 +32,8 @@ composer require thieleundklose/autotranslate
 After installation:
 
 1. Clear all caches
-2. Configure your DeepL API key in the site configuration
-3. Set up the languages you want to translate
+2. Run the database analyzer if prompted (required after upgrades that add columns such as `autotranslate_source_hash`)
+3. Configure your DeepL API key in the site configuration
+4. Set up the languages you want to translate
 
-See [Configuration](../Configuration/Readme.md) for detailed setup instructions.
+See [Configuration](../Configuration/Readme.md) for detailed setup instructions. When upgrading from an older 3.x release, see [Upgrade Instructions](../Upgrade/Readme.md).

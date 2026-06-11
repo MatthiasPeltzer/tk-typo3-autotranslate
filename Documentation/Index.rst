@@ -57,10 +57,14 @@ Features
 * Duplicate batch item prevention
 * Error reporting for failed translation items
 * Translation caching to reduce API calls and costs
+* Changed-fields-only mode for saves, batch, and scheduler (extension setting)
+* Protection of manually customized translations via ``l10n_state``
+* Direct translation of reference records (e.g. FAL alt/title edits)
 * Glossary support (via deepltranslate_glossary)
 * Grid Elements support
 * Site-specific API keys
 * German backend translations
+* Batch module access control and POST-only mutations
 
 ===================
 Installation
@@ -112,6 +116,17 @@ You can add more tables for translation:
 
 1. Open the Extension Configuration
 2. Add the additional tables under the ``additionalTables`` key (comma-separated)
+3. Provide the required database fields in your site package (see Extension Configuration docs)
+
+Extension setting ``translateChangedFieldsOnly``
+---------------------------------------------------
+
+When enabled (default):
+
+* On **save**, only changed translatable fields are sent to DeepL.
+* On **batch / scheduler**, only fields with changed source content are translated (tracked via ``autotranslate_source_hash``).
+* **New records** and **first localizations** still translate all configured fields.
+* Fields marked ``custom`` in ``l10n_state`` are preserved unless the source field changed.
 
 ===================
 Usage
@@ -120,11 +135,13 @@ Usage
 Automatic translation
 ----------------------
 
-The extension automatically translates new and edited content when:
+The extension translates content on save when:
 
 1. The table is enabled in the Site Configuration
 2. The fields for translation are configured
 3. The target languages are correctly set up
+
+On **updates**, only changed configured fields are translated when ``translateChangedFieldsOnly`` is enabled. Saving a reference record directly (e.g. FAL alt/title) can update localized references without changing parent body text.
 
 Batch translation
 ---------------
@@ -159,6 +176,8 @@ In the backend module you can:
 * Reset failed translations
 * View translation logs
 * Clear the translation cache
+
+Batch execute, delete, and reset require POST requests and page/language access for each item.
 
 Notes on translation quality
 -------------------------------

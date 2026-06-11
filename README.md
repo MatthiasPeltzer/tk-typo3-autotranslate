@@ -21,6 +21,9 @@ This extension automates the translation of content elements in the TYPO3 backen
 - **Glossary Support**: Compatible with `deepltranslate_glossary` extension
 - **Grid Elements**: Support for translating nested Grid Elements containers
 - **Translation Cache**: Optional caching to reduce API calls and costs
+- **Changed Fields Only**: Skip unchanged translatable fields on save, batch, and scheduler runs (extension setting `translateChangedFieldsOnly`, enabled by default)
+- **Manual Translation Protection**: Respects TYPO3 `l10n_state` custom fields; only re-translates when the source field changes
+- **Reference Record Saves**: Translates FAL/inline child records on direct save (e.g. image alt/title) when configured
 
 ## Requirements
 
@@ -63,6 +66,8 @@ vendor/bin/typo3 autotranslate:batch:run 10
 
 - [Installation Guide](Documentation/Installation/Readme.md)
 - [Configuration Reference](Documentation/Configuration/Readme.md)
+- [Batch Translation](Documentation/BatchTranslation/Readme.md)
+- [Upgrade Instructions](Documentation/Upgrade/Readme.md)
 - [Product Website](https://www.thieleklose.de/referenzen/typo3-autotranslate)
 
 ## Upgrade from 2.x to 3.x
@@ -82,6 +87,17 @@ Version 3.0.0 drops support for TYPO3 11 and 12. Key changes:
 - Duplicate batch item prevention
 - Error reporting when creating batch items
 - German backend translations
+
+## Upgrade within 3.x (3.0.1 – 3.0.4)
+
+Recent 3.x releases add security hardening, smarter translation scope, and batch parity:
+
+- **3.0.1**: POST-only batch/log mutations, per-item authorization, safer logging
+- **3.0.2**: Changed-fields-only on record updates via DataHandler
+- **3.0.3**: `l10n_state` custom field respect, direct reference-table saves
+- **3.0.4**: Per-field source hashes for batch/scheduler; run the database analyzer for `autotranslate_source_hash`
+
+See [Upgrade Instructions](Documentation/Upgrade/Readme.md) and [CHANGELOG.md](CHANGELOG.md) for details.
 
 ## Changelog
 

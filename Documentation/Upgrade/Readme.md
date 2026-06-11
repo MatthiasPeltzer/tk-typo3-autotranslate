@@ -1,5 +1,53 @@
 # Upgrade Instructions
 
+## Upgrading to Version 3.0.4
+
+### Database
+
+Run the **database analyzer** (Install Tool or CLI) to add `autotranslate_source_hash` to:
+
+- `pages`
+- `tt_content`
+- `tx_news_domain_model_news`
+- `sys_file_reference`
+
+Custom tables from `additionalTables` / `additionalReferenceTables` need the same column in your site package schema if you manage them yourself.
+
+### Behavior
+
+- Batch and scheduler runs now respect `translateChangedFieldsOnly` using per-field source hashes.
+- Existing records have no hashes until the first translation after upgrade. Expect **one full pass** per record/language before unchanged fields are skipped.
+- Clear caches after the update.
+
+---
+
+## Upgrading to Version 3.0.3
+
+No configuration changes required.
+
+- Existing translations with `l10n_state` custom fields are preserved unless the source field changes.
+- Direct saves on reference records (e.g. FAL alt/title) can trigger translation when the parent reference column is configured.
+
+---
+
+## Upgrading to Version 3.0.2
+
+No configuration changes required.
+
+- New extension setting `translateChangedFieldsOnly` (enabled by default). On record **updates**, only changed translatable fields are sent to DeepL.
+- New records and first localizations still translate all configured fields.
+
+---
+
+## Upgrading to Version 3.0.1
+
+No configuration changes required.
+
+- Batch and log mutations (execute, delete, reset, clear cache) require **POST** requests.
+- Batch execute/delete/reset checks **page and language access** per item.
+
+---
+
 ## Upgrading to Version 3.0.0
 
 Version 3.0.0 introduces breaking changes. Please read carefully before upgrading.
@@ -60,4 +108,4 @@ No configuration changes are required. All existing site configurations remain c
 
 If you have already configured news content translation from `tx_news`, you need to manually add the table to the extension configuration.
 
-See [Additional Tables](../Configuration/AdditionalTables.md) for details.
+See [Extension Configuration](../Configuration/ExtensionConfiguration/Readme.md) for details.
