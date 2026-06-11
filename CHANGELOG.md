@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.0.4] - 2026-06-11
+
+### Features
+- Add per-field `autotranslate_source_hash` tracking on source records; batch and scheduler runs now skip unchanged translatable fields when `translateChangedFieldsOnly` is enabled
+- Continue reference translation when only child records (e.g. FAL alt/title) changed, without re-translating unchanged parent text fields
+
+### Database
+- Add `autotranslate_source_hash` column to `pages`, `tt_content`, `tx_news_domain_model_news`, and `sys_file_reference`
+
 ## [3.0.3] - 2026-06-11
 
 ### Features
@@ -10,7 +19,7 @@
 ## [3.0.2] - 2026-06-11
 
 ### Features
-- Add extension setting `translateChangedFieldsOnly` (enabled by default): on record updates, only changed translatable fields are sent to DeepL; new records and batch/scheduler runs still translate all configured fields
+- Add extension setting `translateChangedFieldsOnly` (enabled by default): on record updates, only changed translatable fields are sent to DeepL; new records and first localizations still translate all configured fields
 - Skip DeepL API validation when an update has no relevant field changes
 
 ## [3.0.1] - 2026-06-11

@@ -56,6 +56,7 @@ final class Translator implements LoggerAwareInterface
         self::AUTOTRANSLATE_LAST,
         self::AUTOTRANSLATE_EXCLUDE,
         self::AUTOTRANSLATE_LANGUAGES,
+        SourceHashUtility::FIELD_NAME,
     ];
 
     private readonly ?string $apiKey;
@@ -117,8 +118,21 @@ final class Translator implements LoggerAwareInterface
             return;
         }
 
-        $columnsToTranslate = $this->resolveColumnsToTranslate($columns, $datamapStatus, $changedFields);
-        if ($columnsToTranslate === []) {
+        $singleTargetLanguageId = $this->resolveSingleTargetLanguageId($languagesToTranslate);
+
+        $columnsToTranslate = $this->resolveColumnsToTranslate(
+            $columns,
+            $datamapStatus,
+            $changedFields,
+            $record,
+            $singleTargetLanguageId,
+            $table,
+            $recordUid
+        );
+        $needsReferenceTranslation = $columnsToTranslate === []
+            && $this->recordsNeedReferenceTranslation($table, $recordUid, $datamapStatus, $changedFields, $singleTargetLanguageId);
+
+        if ($columnsToTranslate === [] && !$needsReferenceTranslation) {
             LogUtility::log($this->logger, 'No changed translatable fields for {table}:{uid}, skipping translation.', [
                 'table' => $table,
                 'uid' => $recordUid,
@@ -154,6 +168,7 @@ final class Translator implements LoggerAwareInterface
         }
 
         $didTranslate = false;
+        $translatedFieldNames = [];
 
         foreach ($languageIds as $languageId) {
             $localizedContents[$languageId] = [];
@@ -197,23 +212,27 @@ final class Translator implements LoggerAwareInterface
                 continue;
             }
 
-            // First localization needs all configured fields, not just fields changed in this save
             $columnsForLanguage = $this->resolveColumnsForRecord(
                 $columns,
                 $existingTranslation,
                 $datamapStatus,
-                $changedFields
+                $changedFields,
+                $record,
+                $singleTargetLanguageId ?? (int)$languageId
             );
-            if ($columnsForLanguage === []) {
-                continue;
-            }
 
             $translateReferences = $this->shouldTranslateReferences(
                 $table,
+                $recordUid,
                 $datamapStatus,
                 $changedFields,
-                (bool)$existingTranslation
+                (bool)$existingTranslation,
+                $singleTargetLanguageId ?? (int)$languageId
             );
+
+            if ($columnsForLanguage === [] && !$translateReferences) {
+                continue;
+            }
 
             $localizedContents[$languageId][$recordUid] = $localizedUid;
             $referenceTables = TranslationHelper::additionalReferenceTables();
@@ -228,50 +247,19 @@ final class Translator implements LoggerAwareInterface
                     }
 
                     foreach ($autotranslateReferences as $referenceColumn) {
-                        $type = $GLOBALS['TCA'][$table]['columns'][$referenceColumn]['config']['type'] ?? null;
-                        $foreignField = $GLOBALS['TCA'][$table]['columns'][$referenceColumn]['config']['foreign_field'];
-
-                        $references = match ($type) {
-                            'file' => Records::getRecords($referenceTable, 'uid', static function (QueryBuilder $queryBuilder) use ($foreignField, $recordUid, $table, $referenceColumn): void {
-                                $queryBuilder->where(
-                                    $queryBuilder->expr()->eq($foreignField, $queryBuilder->createNamedParameter($recordUid, Connection::PARAM_INT)),
-                                    $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
-                                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
-                                    $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($table)),
-                                    $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($referenceColumn))
-                                );
-                            }),
-                            'inline' => Records::getRecords($referenceTable, 'uid', static function (QueryBuilder $queryBuilder) use ($foreignField, $recordUid, $referenceTable, $referenceColumn): void {
-                                $queryBuilder->where(
-                                    $queryBuilder->expr()->eq($foreignField, $queryBuilder->createNamedParameter($recordUid, Connection::PARAM_INT)),
-                                    $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
-                                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
-                                );
-                                if (isset($GLOBALS['TCA'][$referenceTable]['columns']['fieldname'])) {
-                                    $queryBuilder->andWhere(
-                                        $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($referenceColumn))
-                                    );
-                                }
-                            }),
-                            default => null,
-                        };
-
-                        if ($references === null) {
-                            LogUtility::log($this->logger, 'Unsupported reference type {type} for column {referenceColumn} in table {table}.', [
-                                'type' => $type,
-                                'referenceColumn' => $referenceColumn,
-                                'table' => $table,
-                            ], LogUtility::MESSAGE_WARNING);
+                        $foreignField = $this->getReferenceForeignField($table, $referenceColumn);
+                        if ($foreignField === null) {
                             continue;
                         }
 
-                        if (empty($references) || empty($columnsReference)) {
+                        $references = $this->findReferenceUids($table, $recordUid, $referenceTable, $referenceColumn, $foreignField);
+                        if ($references === null || empty($references) || empty($columnsReference)) {
                             continue;
                         }
 
                         foreach ($references as $referenceUid) {
                             $referenceUid = (int)$referenceUid;
-                            if ($this->translateReferenceChild(
+                            $referenceTranslatedFields = $this->translateReferenceChild(
                                 $table,
                                 $recordUid,
                                 (int)$localizedUid,
@@ -285,7 +273,8 @@ final class Translator implements LoggerAwareInterface
                                 $datamapStatus,
                                 $changedFields,
                                 $translateMode
-                            )) {
+                            );
+                            if ($referenceTranslatedFields !== []) {
                                 $didTranslate = true;
                             }
                         }
@@ -293,12 +282,17 @@ final class Translator implements LoggerAwareInterface
                 }
             }
 
-            // Translate properties with given service
-            $translatedColumns = $this->translateRecordProperties($record, (int)$languageId, $columnsForLanguage, $table, $localizedUid);
+            if ($columnsForLanguage !== []) {
+                $translatedColumns = $this->translateRecordProperties($record, (int)$languageId, $columnsForLanguage, $table, $localizedUid);
 
-            if (count($translatedColumns) > 0) {
-                Records::updateRecord($table, $localizedUid, $translatedColumns);
-                $didTranslate = true;
+                if (count($translatedColumns) > 0) {
+                    Records::updateRecord($table, $localizedUid, $translatedColumns);
+                    $didTranslate = true;
+                    $translatedFieldNames = array_merge(
+                        $translatedFieldNames,
+                        array_values(array_intersect(array_keys($translatedColumns), $columns))
+                    );
+                }
             }
 
             if (!$existingTranslation) {
@@ -307,6 +301,7 @@ final class Translator implements LoggerAwareInterface
         }
 
         if ($didTranslate) {
+            $this->persistSourceFieldHashes($table, $recordUid, $record, $columns, $translatedFieldNames);
             Records::updateRecord($table, $recordUid, [
                 self::AUTOTRANSLATE_LAST => time(),
             ]);
@@ -381,7 +376,12 @@ final class Translator implements LoggerAwareInterface
             return;
         }
 
-        $columnsToTranslate = $this->resolveColumnsToTranslate($columnsReference, $datamapStatus, $changedFields);
+        $columnsToTranslate = $this->resolveColumnsToTranslate(
+            $columnsReference,
+            $datamapStatus,
+            $changedFields,
+            $record
+        );
         if ($columnsToTranslate === []) {
             LogUtility::log($this->logger, 'No changed translatable fields for {referenceTable}:{uid}, skipping translation.', [
                 'referenceTable' => $referenceTable,
@@ -412,6 +412,7 @@ final class Translator implements LoggerAwareInterface
         }
 
         $didTranslate = false;
+        $translatedFieldNames = [];
 
         foreach ($languageIds as $languageId) {
             if ((int)$languageId === (int)($parentRecord['sys_language_uid'] ?? 0)) {
@@ -430,7 +431,7 @@ final class Translator implements LoggerAwareInterface
                 continue;
             }
 
-            if ($this->translateReferenceChild(
+            $translatedFields = $this->translateReferenceChild(
                 $parentTable,
                 $parentUid,
                 (int)$localizedParent['uid'],
@@ -444,12 +445,15 @@ final class Translator implements LoggerAwareInterface
                 $datamapStatus,
                 $changedFields,
                 $translateMode
-            )) {
+            );
+            if ($translatedFields !== []) {
                 $didTranslate = true;
+                $translatedFieldNames = array_merge($translatedFieldNames, $translatedFields);
             }
         }
 
         if ($didTranslate) {
+            $this->persistSourceFieldHashes($referenceTable, $referenceUid, $record, $columnsReference, $translatedFieldNames);
             Records::updateRecord($referenceTable, $referenceUid, [
                 self::AUTOTRANSLATE_LAST => time(),
             ]);
@@ -458,6 +462,10 @@ final class Translator implements LoggerAwareInterface
 
     /**
      * @param list<string> $columnsReference
+     */
+    /**
+     * @param list<string> $columnsReference
+     * @return list<string> Translated field names, empty when nothing was translated
      */
     private function translateReferenceChild(
         string $parentTable,
@@ -473,7 +481,7 @@ final class Translator implements LoggerAwareInterface
         ?string $datamapStatus,
         ?array $changedFields,
         string $translateMode
-    ): bool {
+    ): array {
         $referenceTranslation = Records::getRecordTranslation($referenceTable, $referenceUid, $languageId);
 
         if ($translateMode === self::TRANSLATE_MODE_UPDATE_ONLY && empty($referenceTranslation)) {
@@ -483,7 +491,7 @@ final class Translator implements LoggerAwareInterface
                 'uid' => $parentUid,
                 'referenceUid' => $referenceUid,
             ]);
-            return false;
+            return [];
         }
 
         if ($translateMode === self::TRANSLATE_MODE_CREATE_ONLY && !empty($referenceTranslation)) {
@@ -493,7 +501,7 @@ final class Translator implements LoggerAwareInterface
                 'uid' => $parentUid,
                 'referenceUid' => $referenceUid,
             ]);
-            return false;
+            return [];
         }
 
         if (empty($referenceTranslation)) {
@@ -513,7 +521,15 @@ final class Translator implements LoggerAwareInterface
         }
 
         if ($translatedReferenceUid <= 0) {
-            return false;
+            return [];
+        }
+
+        $recordReference = ($parentObject !== null && isset($parentObject->datamap[$referenceTable][$referenceUid]))
+            ? $parentObject->datamap[$referenceTable][$referenceUid]
+            : Records::getRecord($referenceTable, $referenceUid);
+
+        if ($recordReference === null) {
+            return [];
         }
 
         $referenceChangedFields = ($parentObject !== null && isset($parentObject->datamap[$referenceTable][$referenceUid]))
@@ -534,18 +550,12 @@ final class Translator implements LoggerAwareInterface
             $columnsReference,
             $referenceTranslation ?: null,
             $effectiveStatus,
-            $effectiveChangedFields
+            $effectiveChangedFields,
+            $recordReference,
+            $languageId
         );
         if ($columnsForReference === []) {
-            return false;
-        }
-
-        $recordReference = ($parentObject !== null && isset($parentObject->datamap[$referenceTable][$referenceUid]))
-            ? $parentObject->datamap[$referenceTable][$referenceUid]
-            : Records::getRecord($referenceTable, $referenceUid);
-
-        if ($recordReference === null) {
-            return false;
+            return [];
         }
 
         $translatedColumns = $this->translateRecordProperties(
@@ -556,12 +566,12 @@ final class Translator implements LoggerAwareInterface
             $translatedReferenceUid
         );
         if ($translatedColumns === []) {
-            return false;
+            return [];
         }
 
         Records::updateRecord($referenceTable, $translatedReferenceUid, $translatedColumns);
 
-        return true;
+        return array_values(array_intersect(array_keys($translatedColumns), $columnsReference));
     }
 
     private function getReferenceForeignField(string $parentTable, string $referenceColumn): ?string
@@ -584,11 +594,19 @@ final class Translator implements LoggerAwareInterface
         array $configuredColumns,
         ?array $existingTranslation,
         ?string $datamapStatus,
-        ?array $changedFields
+        ?array $changedFields,
+        ?array $sourceRecord = null,
+        ?int $singleTargetLanguageId = null,
     ): array {
         $columns = $existingTranslation === null
             ? $configuredColumns
-            : $this->resolveColumnsToTranslate($configuredColumns, $datamapStatus, $changedFields);
+            : $this->resolveColumnsToTranslate(
+                $configuredColumns,
+                $datamapStatus,
+                $changedFields,
+                $sourceRecord,
+                $singleTargetLanguageId
+            );
 
         return $this->filterColumnsRespectingCustomTranslation(
             $columns,
@@ -626,8 +644,12 @@ final class Translator implements LoggerAwareInterface
 
         return array_values(array_filter(
             $columns,
-            static function (string $column) use ($l10nState, $sourceChangedFields): bool {
+            static function (string $column) use ($l10nState, $sourceChangedFields, $datamapStatus, $changedFields): bool {
                 if (($l10nState[$column] ?? null) !== 'custom') {
+                    return true;
+                }
+
+                if ($datamapStatus === null && $changedFields === null) {
                     return true;
                 }
 
@@ -644,26 +666,52 @@ final class Translator implements LoggerAwareInterface
      * @param list<string> $configuredColumns
      * @return list<string>
      */
-    private function resolveColumnsToTranslate(array $configuredColumns, ?string $datamapStatus, ?array $changedFields): array
-    {
+    private function resolveColumnsToTranslate(
+        array $configuredColumns,
+        ?string $datamapStatus,
+        ?array $changedFields,
+        ?array $sourceRecord = null,
+        ?int $singleTargetLanguageId = null,
+        ?string $table = null,
+        int $recordUid = 0,
+    ): array {
         if (!$this->isTranslateChangedFieldsOnlyEnabled()) {
             return $configuredColumns;
         }
 
-        if ($datamapStatus !== 'update' || $changedFields === null) {
+        if ($datamapStatus === 'new') {
             return $configuredColumns;
         }
 
-        $changedFieldNames = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
+        if ($datamapStatus === 'update' && $changedFields !== null) {
+            $changedFieldNames = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
 
-        return array_values(array_intersect($configuredColumns, $changedFieldNames));
+            return array_values(array_intersect($configuredColumns, $changedFieldNames));
+        }
+
+        if ($datamapStatus === null && $changedFields === null && $sourceRecord !== null) {
+            if (
+                $singleTargetLanguageId !== null
+                && $table !== null
+                && $recordUid > 0
+                && Records::getRecordTranslation($table, $recordUid, $singleTargetLanguageId) === null
+            ) {
+                return $configuredColumns;
+            }
+
+            return SourceHashUtility::resolveChangedColumns($sourceRecord, $configuredColumns);
+        }
+
+        return $configuredColumns;
     }
 
     private function shouldTranslateReferences(
         string $table,
+        int $recordUid,
         ?string $datamapStatus,
         ?array $changedFields,
-        bool $existingTranslation
+        bool $existingTranslation,
+        ?int $singleTargetLanguageId = null
     ): bool {
         if (!$existingTranslation) {
             return true;
@@ -673,21 +721,186 @@ final class Translator implements LoggerAwareInterface
             return true;
         }
 
-        if ($datamapStatus !== 'update' || $changedFields === null) {
-            return true;
+        if ($datamapStatus === 'update' && $changedFields !== null) {
+            $changedFieldNames = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
+            $referenceColumns = [];
+
+            foreach (TranslationHelper::additionalReferenceTables() as $referenceTable) {
+                $columns = TranslationHelper::translationReferenceColumns($this->pageId, $table, $referenceTable);
+                if ($columns !== null) {
+                    $referenceColumns = array_merge($referenceColumns, $columns);
+                }
+            }
+
+            return array_intersect($referenceColumns, $changedFieldNames) !== [];
         }
 
-        $changedFieldNames = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
-        $referenceColumns = [];
+        if ($datamapStatus === null && $changedFields === null) {
+            return $this->referenceRecordsNeedTranslation($table, $recordUid, $singleTargetLanguageId);
+        }
 
+        return true;
+    }
+
+    private function resolveSingleTargetLanguageId(?string $languagesToTranslate): ?int
+    {
+        if ($languagesToTranslate === null || $languagesToTranslate === '') {
+            return null;
+        }
+
+        if (str_contains($languagesToTranslate, ',')) {
+            return null;
+        }
+
+        return (int)$languagesToTranslate;
+    }
+
+    private function recordsNeedReferenceTranslation(
+        string $table,
+        int $recordUid,
+        ?string $datamapStatus,
+        ?array $changedFields,
+        ?int $singleTargetLanguageId
+    ): bool {
+        if ($datamapStatus === 'update' && $changedFields !== null) {
+            return $this->shouldTranslateReferences($table, $recordUid, $datamapStatus, $changedFields, true, $singleTargetLanguageId);
+        }
+
+        if ($datamapStatus === null && $changedFields === null) {
+            return $this->referenceRecordsNeedTranslation($table, $recordUid, $singleTargetLanguageId);
+        }
+
+        return false;
+    }
+
+    private function referenceRecordsNeedTranslation(string $table, int $recordUid, ?int $singleTargetLanguageId): bool
+    {
         foreach (TranslationHelper::additionalReferenceTables() as $referenceTable) {
-            $columns = TranslationHelper::translationReferenceColumns($this->pageId, $table, $referenceTable);
-            if ($columns !== null) {
-                $referenceColumns = array_merge($referenceColumns, $columns);
+            $columnsReference = TranslationHelper::translationTextfields($this->pageId, $referenceTable);
+            if ($columnsReference === null || $columnsReference === []) {
+                continue;
+            }
+
+            $autotranslateReferences = TranslationHelper::translationReferenceColumns($this->pageId, $table, $referenceTable);
+            if (empty($autotranslateReferences)) {
+                continue;
+            }
+
+            foreach ($autotranslateReferences as $referenceColumn) {
+                $foreignField = $this->getReferenceForeignField($table, $referenceColumn);
+                if ($foreignField === null) {
+                    continue;
+                }
+
+                $references = $this->findReferenceUids($table, $recordUid, $referenceTable, $referenceColumn, $foreignField);
+                if ($references === null || $references === []) {
+                    continue;
+                }
+
+                foreach ($references as $referenceUid) {
+                    $refRecord = Records::getRecord($referenceTable, (int)$referenceUid);
+                    if ($refRecord === null) {
+                        continue;
+                    }
+
+                    if ($singleTargetLanguageId !== null) {
+                        $refTranslation = Records::getRecordTranslation($referenceTable, (int)$referenceUid, $singleTargetLanguageId);
+                        if ($refTranslation === null) {
+                            return true;
+                        }
+                    }
+
+                    if (SourceHashUtility::resolveChangedColumns($refRecord, $columnsReference) !== []) {
+                        return true;
+                    }
+                }
             }
         }
 
-        return array_intersect($referenceColumns, $changedFieldNames) !== [];
+        return false;
+    }
+
+    /**
+     * @return list<int>|null
+     */
+    private function findReferenceUids(
+        string $table,
+        int $recordUid,
+        string $referenceTable,
+        string $referenceColumn,
+        string $foreignField
+    ): ?array {
+        $type = $GLOBALS['TCA'][$table]['columns'][$referenceColumn]['config']['type'] ?? null;
+
+        $references = match ($type) {
+            'file' => Records::getRecords($referenceTable, 'uid', static function (QueryBuilder $queryBuilder) use ($foreignField, $recordUid, $table, $referenceColumn): void {
+                $queryBuilder->where(
+                    $queryBuilder->expr()->eq($foreignField, $queryBuilder->createNamedParameter($recordUid, Connection::PARAM_INT)),
+                    $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                    $queryBuilder->expr()->eq('tablenames', $queryBuilder->createNamedParameter($table)),
+                    $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($referenceColumn))
+                );
+            }),
+            'inline' => Records::getRecords($referenceTable, 'uid', static function (QueryBuilder $queryBuilder) use ($foreignField, $recordUid, $referenceTable, $referenceColumn): void {
+                $queryBuilder->where(
+                    $queryBuilder->expr()->eq($foreignField, $queryBuilder->createNamedParameter($recordUid, Connection::PARAM_INT)),
+                    $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+                );
+                if (isset($GLOBALS['TCA'][$referenceTable]['columns']['fieldname'])) {
+                    $queryBuilder->andWhere(
+                        $queryBuilder->expr()->eq('fieldname', $queryBuilder->createNamedParameter($referenceColumn))
+                    );
+                }
+            }),
+            default => null,
+        };
+
+        if ($references === null) {
+            LogUtility::log($this->logger, 'Unsupported reference type {type} for column {referenceColumn} in table {table}.', [
+                'type' => $type,
+                'referenceColumn' => $referenceColumn,
+                'table' => $table,
+            ], LogUtility::MESSAGE_WARNING);
+
+            return null;
+        }
+
+        return array_map(static fn($uid): int => (int)$uid, $references);
+    }
+
+    /**
+     * @param list<string> $configuredColumns
+     * @param list<string> $translatedFieldNames
+     */
+    private function persistSourceFieldHashes(
+        string $table,
+        int $recordUid,
+        array $record,
+        array $configuredColumns,
+        array $translatedFieldNames
+    ): void {
+        $translatedFieldNames = array_values(array_unique(array_intersect($translatedFieldNames, $configuredColumns)));
+        if ($translatedFieldNames === []) {
+            return;
+        }
+
+        try {
+            Records::updateRecord($table, $recordUid, [
+                SourceHashUtility::FIELD_NAME => SourceHashUtility::mergeHashesForTranslatedFields(
+                    $record,
+                    $configuredColumns,
+                    $translatedFieldNames
+                ),
+            ]);
+        } catch (\JsonException $exception) {
+            LogUtility::log($this->logger, 'Failed to persist source field hashes for {table}:{uid}: {error}', [
+                'table' => $table,
+                'uid' => $recordUid,
+                'error' => $exception->getMessage(),
+            ], LogUtility::MESSAGE_ERROR);
+        }
     }
 
     private function isTranslateChangedFieldsOnlyEnabled(): bool
