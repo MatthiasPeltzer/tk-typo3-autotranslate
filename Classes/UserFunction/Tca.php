@@ -51,4 +51,48 @@ final class Tca
             // Site not found, keep default title
         }
     }
+
+    /**
+     * Build a readable label for glossary records.
+     */
+    public function glossaryLabel(array &$parameters): void
+    {
+        $sourceLang = $this->extractFieldValue($parameters['row']['source_lang'] ?? null);
+        $targetLang = $this->extractFieldValue($parameters['row']['target_lang'] ?? null);
+        if ($sourceLang !== '' && $targetLang !== '') {
+            $parameters['title'] = $sourceLang . ' → ' . $targetLang;
+            return;
+        }
+
+        if ($sourceLang !== '') {
+            $parameters['title'] = $sourceLang;
+            return;
+        }
+
+        if ($targetLang !== '') {
+            $parameters['title'] = $targetLang;
+            return;
+        }
+
+        $uid = $this->extractFieldValue($parameters['row']['uid'] ?? null);
+        $parameters['title'] = $uid !== '' ? $uid : 'New glossary';
+    }
+
+    private function extractFieldValue(mixed $value): string
+    {
+        if (is_array($value)) {
+            $firstValue = reset($value);
+            if (is_scalar($firstValue)) {
+                return trim((string)$firstValue);
+            }
+
+            return '';
+        }
+
+        if (is_scalar($value)) {
+            return trim((string)$value);
+        }
+
+        return '';
+    }
 }

@@ -1,0 +1,4 @@
+[traverse(page, "module") == "autotranslate_glossary"]
+    mod.web_list.allowedNewTables := addToList(tx_autotranslate_glossary)
+    mod.web_list.table.tx_autotranslate_glossary.allowedNewFields := source_lang, target_lang, entries
+[end]

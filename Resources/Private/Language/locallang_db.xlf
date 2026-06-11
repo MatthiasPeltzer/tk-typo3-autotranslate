@@ -165,6 +165,48 @@
 			<trans-unit id="scheduler.field.itemsPerRun" xml:space="preserve">
 				<source>Items per run</source>
 			</trans-unit>
+			<trans-unit id="pages.module.autotranslate_glossary" xml:space="preserve">
+				<source>Autotranslate Glossary</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary" xml:space="preserve">
+				<source>DeepL Glossary</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary.tab.sync" xml:space="preserve">
+				<source>DeepL Sync</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary.source_lang" xml:space="preserve">
+				<source>Source language</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary.target_lang" xml:space="preserve">
+				<source>Target language</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary.entries" xml:space="preserve">
+				<source>Glossary entries</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary.glossary_id" xml:space="preserve">
+				<source>DeepL glossary ID</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary.last_sync" xml:space="preserve">
+				<source>Last synchronization</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary.sync_ready" xml:space="preserve">
+				<source>Synchronized with DeepL</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary.sync_error" xml:space="preserve">
+				<source>Last synchronization error</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary_entry" xml:space="preserve">
+				<source>Glossary entry</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary_entry.source_term" xml:space="preserve">
+				<source>Source term</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary_entry.target_term" xml:space="preserve">
+				<source>Target term</source>
+			</trans-unit>
+			<trans-unit id="autotranslate_glossary_entry.target_term.description" xml:space="preserve">
+				<source>Use the same term as in the source language to prevent translation (for example brand names).</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

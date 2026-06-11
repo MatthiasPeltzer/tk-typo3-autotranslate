@@ -219,6 +219,62 @@
                 <source>Items per run</source>
                 <target>Einträge pro Durchlauf</target>
             </trans-unit>
+            <trans-unit id="pages.module.autotranslate_glossary">
+                <source>Autotranslate Glossary</source>
+                <target>Autotranslate-Glossar</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary">
+                <source>DeepL Glossary</source>
+                <target>DeepL-Glossar</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary.tab.sync">
+                <source>DeepL Sync</source>
+                <target>DeepL-Synchronisation</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary.source_lang">
+                <source>Source language</source>
+                <target>Quellsprache</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary.target_lang">
+                <source>Target language</source>
+                <target>Zielsprache</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary.entries">
+                <source>Glossary entries</source>
+                <target>Glossar-Einträge</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary.glossary_id">
+                <source>DeepL glossary ID</source>
+                <target>DeepL-Glossar-ID</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary.last_sync">
+                <source>Last synchronization</source>
+                <target>Letzte Synchronisation</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary.sync_ready">
+                <source>Synchronized with DeepL</source>
+                <target>Mit DeepL synchronisiert</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary.sync_error">
+                <source>Last synchronization error</source>
+                <target>Letzter Synchronisationsfehler</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary_entry">
+                <source>Glossary entry</source>
+                <target>Glossar-Eintrag</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary_entry.source_term">
+                <source>Source term</source>
+                <target>Quellbegriff</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary_entry.target_term">
+                <source>Target term</source>
+                <target>Zielbegriff</target>
+            </trans-unit>
+            <trans-unit id="autotranslate_glossary_entry.target_term.description">
+                <source>Use the same term as in the source language to prevent translation (for example brand names).</source>
+                <target>Verwenden Sie denselben Begriff wie in der Quellsprache, um eine Übersetzung zu verhindern (z. B. Markennamen).</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

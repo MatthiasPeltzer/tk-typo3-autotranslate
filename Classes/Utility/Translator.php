@@ -14,7 +14,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use WebVision\Deepltranslate\Glossary\Domain\Dto\Glossary;
+use ThieleUndKlose\Autotranslate\Domain\Dto\Glossary;
 
 final class Translator implements LoggerAwareInterface
 {

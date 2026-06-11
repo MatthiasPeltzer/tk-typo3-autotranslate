@@ -7,8 +7,42 @@ services:
   ThieleUndKlose\Autotranslate\:
     resource: '../Classes/*'
 
+  ThieleUndKlose\Autotranslate\EventListener\GlossarySyncButtonBarListener:
+    tags:
+      - name: event.listener
+        identifier: 'autotranslate/glossary-sync-button-bar'
+        event: TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent
+
+  ThieleUndKlose\Autotranslate\EventListener\GlossaryRecordListListener:
+    tags:
+      - name: event.listener
+        identifier: 'autotranslate/glossary-sync-record-list'
+        event: TYPO3\CMS\Backend\Controller\Event\RenderAdditionalContentToRecordListEvent
+
+  ThieleUndKlose\Autotranslate\EventListener\GlossaryPageLayoutListener:
+    tags:
+      - name: event.listener
+        identifier: 'autotranslate/glossary-sync-page-info'
+        event: TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent
+
   ThieleUndKlose\Autotranslate\Controller\BatchTranslationController:
     public: true
+
+  ThieleUndKlose\Autotranslate\Service\GlossaryService:
+    public: true
+
+  ThieleUndKlose\Autotranslate\Service\GlossarySyncService:
+    public: true
+
+  ThieleUndKlose\Autotranslate\Controller\GlossarySyncController:
+    public: true
+
+  ThieleUndKlose\Autotranslate\Command\SyncGlossary:
+    tags:
+      - name: console.command
+        command: "autotranslate:glossary:sync"
+        description: "Synchronize Autotranslate glossary records with the DeepL API."
+        schedulable: true
 
   ThieleUndKlose\Autotranslate\Command\BatchTranslation:
     tags:
