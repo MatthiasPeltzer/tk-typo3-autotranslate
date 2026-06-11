@@ -45,6 +45,11 @@ $tempColumns = [
             'default' => 0
         ],
     ],
+    'autotranslate_source_hash' => [
+        'config' => [
+            'type' => 'passthrough',
+        ],
+    ],
 ];
 
 ExtensionManagementUtility::addTCAcolumns($table, $tempColumns);

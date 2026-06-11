@@ -10,7 +10,7 @@
             "role": "Developer"
         }
     ],
-    "version": "3.0.3",
+    "version": "3.0.4",
     "license": "GPL-2.0-or-later",
     "require": {
         "php": ">= 8.2 < 8.6",

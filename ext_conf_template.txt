@@ -16,5 +16,5 @@ debug = 0
 # cat=general; type=boolean; label=Enable caching for translations: Speed up repeated translations and save quota
 caching = 1
 
-# cat=general; type=boolean; label=Translate changed fields only on save: On record updates, send only changed translatable fields to DeepL (new records are fully translated; batch/scheduler always translate all configured fields)
+# cat=general; type=boolean; label=Translate changed fields only: On updates and batch/scheduler runs, send only changed translatable fields to DeepL (new records and first localizations are fully translated)
 translateChangedFieldsOnly = 1

@@ -4,7 +4,8 @@
 CREATE TABLE pages (
     autotranslate_exclude tinyint(4) DEFAULT '0' NOT NULL,
     autotranslate_languages varchar(255) DEFAULT NULL,
-    autotranslate_last int(11) DEFAULT '0' NOT NULL
+    autotranslate_last int(11) DEFAULT '0' NOT NULL,
+    autotranslate_source_hash mediumtext
 );
 
 #
@@ -13,7 +14,8 @@ CREATE TABLE pages (
 CREATE TABLE tt_content (
     autotranslate_exclude tinyint(4) DEFAULT '0' NOT NULL,
     autotranslate_languages varchar(255) DEFAULT NULL,
-    autotranslate_last int(11) DEFAULT '0' NOT NULL
+    autotranslate_last int(11) DEFAULT '0' NOT NULL,
+    autotranslate_source_hash mediumtext
 );
 
 #
@@ -22,7 +24,8 @@ CREATE TABLE tt_content (
 CREATE TABLE tx_news_domain_model_news (
     autotranslate_exclude tinyint(4) DEFAULT '0' NOT NULL,
     autotranslate_languages varchar(255) DEFAULT NULL,
-    autotranslate_last int(11) DEFAULT '0' NOT NULL
+    autotranslate_last int(11) DEFAULT '0' NOT NULL,
+    autotranslate_source_hash mediumtext
 );
 
 #
@@ -30,7 +33,8 @@ CREATE TABLE tx_news_domain_model_news (
 #
 CREATE TABLE sys_file_reference (
     autotranslate_last int(11) DEFAULT '0' NOT NULL,
-    autotranslate_exclude tinyint(4) DEFAULT '0' NOT NULL
+    autotranslate_exclude tinyint(4) DEFAULT '0' NOT NULL,
+    autotranslate_source_hash mediumtext
 );
 
 #
