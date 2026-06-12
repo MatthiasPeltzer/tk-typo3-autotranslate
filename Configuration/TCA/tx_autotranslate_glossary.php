@@ -9,7 +9,7 @@ return [
         'title' => 'LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_glossary',
         'label' => 'source_lang',
         'label_userFunc' => \ThieleUndKlose\Autotranslate\UserFunction\Tca::class . '->glossaryLabel',
-        'iconfile' => 'EXT:autotranslate/Resources/Public/Icons/Extension.png',
+        'iconfile' => 'EXT:autotranslate/Resources/Public/Icons/Glossary.svg',
         'hideTable' => false,
         'crdate' => 'crdate',
         'tstamp' => 'tstamp',
