@@ -8,7 +8,7 @@ return [
     'ctrl' => [
         'title' => 'LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_glossary_entry',
         'label' => 'source_term',
-        'iconfile' => 'EXT:autotranslate/Resources/Public/Icons/Extension.png',
+        'iconfile' => 'EXT:autotranslate/Resources/Public/Icons/Glossary.svg',
         'hideTable' => true,
         'delete' => 'deleted',
         'enablecolumns' => [
