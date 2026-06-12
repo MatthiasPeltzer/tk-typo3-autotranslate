@@ -25,12 +25,6 @@ services:
         identifier: 'autotranslate/glossary-sync-page-info'
         event: TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent
 
-  ThieleUndKlose\Autotranslate\EventListener\GlossaryPageTreeIconListener:
-    tags:
-      - name: event.listener
-        identifier: 'autotranslate/glossary-pagetree-icon'
-        event: TYPO3\CMS\Backend\Controller\Event\AfterPageTreeItemsPreparedEvent
-
   ThieleUndKlose\Autotranslate\Controller\BatchTranslationController:
     public: true
 
