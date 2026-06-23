@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.7] - 2026-06-23
+
+### Fixes
+- Persist per-field source hashes on file/inline reference records when they are translated through the parent record's save, so batch and scheduler runs no longer re-evaluate already-translated reference fields as changed on every run (matters when the translation cache is disabled)
+
+### Modernization
+- Consolidate the change-detection ignore-field list into a single `TranslationScopeResolver::CHANGE_DETECTION_IGNORE_FIELDS` constant (previously duplicated in `Translator`)
+- Remove dead code: an always-false null check in `Translator`, two inert `?? null` coalesces in the translation cache, and a superfluous second argument to `GeneralUtility::sanitizeLocalUrl()`
+
+### Tests
+- Add missing array/iterable PHPDoc value types throughout the codebase and trim the PHPStan baseline from ~170 entries to 7 (the rest cover Extbase generics and TYPO3 v13/v14 API differences); PHPStan level 6 runs clean
+
 ## [3.0.6] - 2026-06-23
 
 ### Security
