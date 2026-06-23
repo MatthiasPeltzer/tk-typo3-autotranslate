@@ -1,0 +1,691 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Command\\BatchTranslation\:\:outputResults\(\) has parameter \$result with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Command/BatchTranslation.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:buildCreateFormData\(\) has parameter \$languages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:buildCreateFormData\(\) has parameter \$pageRecord with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:buildCreateFormData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:decodeLogData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getAccessibleBatchItems\(\) has parameter \$languages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getAccessibleBatchItems\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getAccessibleLanguages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getBatchItemsFromArgument\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getBatchTranslationData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getCommonTemplateVariables\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getCommonTemplateVariables\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getLogData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:getSchedulerStatus\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:groupLogsByRequestId\(\) has parameter \$logs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:groupLogsByRequestId\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:isBatchItemAccessible\(\) has parameter \$languages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:processLogs\(\) has parameter \$logs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:processLogs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:translateFrequencyOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:translateMenuLevelItems\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:translateModeOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:translateOptions\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:translateOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:translatePriorityOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Property ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:\$deeplApiKeyDetails type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Property ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationBaseController\:\:\$queryParams type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationBaseController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationController\:\:createMultiRecordAction\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationController\:\:getBatchItemActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationController\:\:getLogActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationController.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Controller\\BatchTranslationController\:\:resolveFormData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Controller/BatchTranslationController.php
+
+		-
+			message: '#^Static method TYPO3\\CMS\\Core\\Utility\\GeneralUtility\:\:sanitizeLocalUrl\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: ../Classes/Controller/GlossarySyncController.php
+
+		-
+			message: '#^Class ThieleUndKlose\\Autotranslate\\Domain\\Repository\\BatchItemRepository extends generic class TYPO3\\CMS\\Extbase\\Persistence\\Repository but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../Classes/Domain/Repository/BatchItemRepository.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Domain\\Repository\\BatchItemRepository\:\:findAllByPids\(\) has parameter \$pids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Domain/Repository/BatchItemRepository.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Domain\\Repository\\BatchItemRepository\:\:findAllByPids\(\) return type with generic interface TYPO3\\CMS\\Extbase\\Persistence\\QueryResultInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../Classes/Domain/Repository/BatchItemRepository.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Domain\\Repository\\BatchItemRepository\:\:findAllRecursive\(\) return type with generic interface TYPO3\\CMS\\Extbase\\Persistence\\QueryResultInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../Classes/Domain/Repository/BatchItemRepository.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Domain\\Repository\\LogRepository\:\:findAll\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Domain/Repository/LogRepository.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Domain\\Repository\\LogRepository\:\:findByRequestId\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Domain/Repository/LogRepository.php
+
+		-
+			message: '#^Call to an undefined method TYPO3\\CMS\\Backend\\Template\\Components\\ModifyButtonBarEvent\:\:getRequest\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../Classes/EventListener/GlossarySyncButtonBarListener.php
+
+		-
+			message: '#^Call to method createGenericButton\(\) on an unknown class TYPO3\\CMS\\Backend\\Template\\Components\\ComponentFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../Classes/EventListener/GlossarySyncButtonBarListener.php
+
+		-
+			message: '#^Parameter \$componentFactory of method ThieleUndKlose\\Autotranslate\\EventListener\\GlossarySyncButtonBarListener\:\:__construct\(\) has invalid type TYPO3\\CMS\\Backend\\Template\\Components\\ComponentFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../Classes/EventListener/GlossarySyncButtonBarListener.php
+
+		-
+			message: '#^Property ThieleUndKlose\\Autotranslate\\EventListener\\GlossarySyncButtonBarListener\:\:\$componentFactory has unknown class TYPO3\\CMS\\Backend\\Template\\Components\\ComponentFactory as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../Classes/EventListener/GlossarySyncButtonBarListener.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Hooks\\DataHandler\:\:processDatamap_afterDatabaseOperations\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Hooks/DataHandler.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Hooks\\DataHandler\:\:processReferenceTableSave\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Hooks/DataHandler.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Hooks\\DataHandler\:\:updateRecord\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Hooks/DataHandler.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Hooks\\GlossarySyncStateHandler\:\:processDatamap_afterDatabaseOperations\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Hooks/GlossarySyncStateHandler.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\BatchTranslationRunner\:\:getLastRunStatistics\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/BatchTranslationRunner.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\BatchTranslationService\:\:isGridElement\(\) has parameter \$record with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/BatchTranslationService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\BatchTranslationService\:\:logError\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/BatchTranslationService.php
+
+		-
+			message: '#^Instanceof between mixed and TYPO3\\CMS\\Core\\Cache\\Backend\\FileBackend will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:cacheIndividualTranslations\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:cacheIndividualTranslations\(\) has parameter \$results with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:cacheIndividualTranslations\(\) has parameter \$texts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:generateCacheKey\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:generateCacheKey\(\) has parameter \$toTranslate with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:getCacheStatistics\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:getCachedTranslation\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:getPartialCacheHits\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:getPartialCacheHits\(\) has parameter \$toTranslate with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:getPartialCacheHits\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:normalizeOptions\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:normalizeOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:serializeTextResults\(\) has parameter \$textResults with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:serializeTextResults\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:setCachedTranslation\(\) has parameter \$textResults with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:unserializeTextResults\(\) has parameter \$cached with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:unserializeTextResults\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Property DeepL\\TextResult\:\:\$billedCharacters \(int\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Property DeepL\\TextResult\:\:\$detectedSourceLang \(string\) on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.property
+			count: 1
+			path: ../Classes/Service/TranslationCacheService.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\UserFunction\\FormEngine\\AutotranslateLanguagesItems\:\:itemsProcFunc\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/UserFunction/FormEngine/AutotranslateLanguagesItems.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\UserFunction\\FormEngine\\GlossaryDeepLLanguageItems\:\:populateItems\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/UserFunction/FormEngine/GlossaryDeepLLanguageItems.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\UserFunction\\FormEngine\\GlossaryDeepLLanguageItems\:\:sourceItems\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/UserFunction/FormEngine/GlossaryDeepLLanguageItems.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\UserFunction\\FormEngine\\GlossaryDeepLLanguageItems\:\:targetItems\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/UserFunction/FormEngine/GlossaryDeepLLanguageItems.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\UserFunction\\Tca\:\:batchLabel\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/UserFunction/Tca.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\UserFunction\\Tca\:\:glossaryLabel\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/UserFunction/Tca.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\BatchLanguages\:\:populateLanguagesFromSiteConfiguration\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/BatchLanguages.php
+
+		-
+			message: '#^Access to property \$pageId on an unknown class TYPO3\\CMS\\Backend\\Context\\PageContext\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../Classes/Utility/GlossaryBackendUtility.php
+
+		-
+			message: '#^Class TYPO3\\CMS\\Backend\\Context\\PageContext not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../Classes/Utility/GlossaryBackendUtility.php
+
+		-
+			message: '#^Default value of the parameter \#3 \$helpHtml \(''''\) of method ThieleUndKlose\\Autotranslate\\Utility\\GlossaryBackendUtility\:\:renderSyncPanel\(\) is incompatible with type non\-empty\-string\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: ../Classes/Utility/GlossaryBackendUtility.php
+
+		-
+			message: '#^Static method TYPO3\\CMS\\Core\\Utility\\GeneralUtility\:\:sanitizeLocalUrl\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: ../Classes/Utility/GlossaryBackendUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\LogUtility\:\:interpolate\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/LogUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\LogUtility\:\:log\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/LogUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\PageUtility\:\:getSubpageIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/PageUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Records\:\:getRecords\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Records.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Records\:\:updateRecord\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Records.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\SlugUtility\:\:generateSlug\(\) has parameter \$record with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/SlugUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\SlugUtility\:\:slugFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/SlugUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\SourceHashUtility\:\:computeFieldHashes\(\) has parameter \$record with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/SourceHashUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\SourceHashUtility\:\:mergeHashesForTranslatedFields\(\) has parameter \$record with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/SourceHashUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\SourceHashUtility\:\:resolveChangedColumns\(\) has parameter \$record with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/SourceHashUtility.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:additionalReferenceTables\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:additionalTables\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:defaultLanguage\(\) has parameter \$siteLanguages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:possibleTranslationLanguages\(\) has parameter \$siteLanguages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:possibleTranslationLanguages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:resolveReferenceParent\(\) has parameter \$record with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:siteConfigurationValue\(\) has parameter \$keyPath with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:translateableColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:translationFileReferences\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:translationReferenceColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:translationSettingsDefaults\(\) has parameter \$siteConfiguration with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:translationSettingsDefaults\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:translationTextfields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\TranslationHelper\:\:unusedTranslateableColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/TranslationHelper.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:persistSourceFieldHashes\(\) has parameter \$record with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:recordsNeedReferenceTranslation\(\) has parameter \$changedFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:shouldTranslateReferences\(\) has parameter \$changedFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:translate\(\) has parameter \$changedFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:translateRecordProperties\(\) has parameter \$columns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:translateRecordProperties\(\) has parameter \$record with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:translateRecordProperties\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:translateReferenceChild\(\) has parameter \$changedFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Method ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:translateReferenceRecord\(\) has parameter \$changedFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Property ThieleUndKlose\\Autotranslate\\Utility\\Translator\:\:\$siteLanguages type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../Classes/Utility/Translator.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between mixed and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: ../Classes/Utility/Translator.php

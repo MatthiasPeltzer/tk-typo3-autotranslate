@@ -31,6 +31,13 @@ services:
   ThieleUndKlose\Autotranslate\Service\GlossaryService:
     public: true
 
+  ThieleUndKlose\Autotranslate\Service\DeeplTranslationClient:
+    public: true
+
+  ThieleUndKlose\Autotranslate\Service\DeeplTranslationClientInterface:
+    alias: ThieleUndKlose\Autotranslate\Service\DeeplTranslationClient
+    public: true
+
   ThieleUndKlose\Autotranslate\Service\GlossarySyncService:
     public: true
 

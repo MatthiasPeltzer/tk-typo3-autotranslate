@@ -1,0 +1,20 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 6
+    phpVersion: 80200
+    paths:
+        - ../Classes
+    excludePaths:
+        analyseAndScan:
+            - ../Resources/Vendor/*
+            # Optional integrations whose base classes are not installed by default:
+            # - TYPO3 Scheduler (typo3/cms-scheduler)
+            # - deepltranslate_core (web-vision/deepl-translate) XCLASS shim
+            - ../Classes/Task/BatchTranslationTask.php
+            - ../Classes/Xclass/*
+    scanDirectories:
+        - ../.Build/vendor/typo3
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false

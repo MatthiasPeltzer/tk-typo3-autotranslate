@@ -649,9 +649,10 @@ class BatchTranslationBaseController extends ActionController
 
     protected function initializeAction(): void
     {
-        $this->queryParams = array_merge_recursive(
+        $parsedBody = $this->request->getParsedBody();
+        $this->queryParams = array_replace(
             $this->request->getQueryParams(),
-            $this->request->getParsedBody() ?? []
+            is_array($parsedBody) ? $parsedBody : []
         );
 
         $this->pageUid = (int)($this->queryParams['id'] ?? 0);
@@ -933,20 +934,13 @@ class BatchTranslationBaseController extends ActionController
             return '(not set)';
         }
 
-        $masked = '';
-        $hiddenCount = 0;
+        $length = strlen($apiKey);
+        $visible = 4;
 
-        foreach (str_split($apiKey) as $char) {
-            if ($char === '-') {
-                $masked .= '-';
-            } elseif ($hiddenCount < 20) {
-                $masked .= '*';
-                $hiddenCount++;
-            } else {
-                $masked .= $char;
-            }
+        if ($length <= $visible) {
+            return str_repeat('*', $length);
         }
 
-        return $masked;
+        return str_repeat('*', $length - $visible) . substr($apiKey, -$visible);
     }
 }

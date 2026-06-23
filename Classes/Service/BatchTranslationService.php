@@ -256,17 +256,16 @@ final class BatchTranslationService implements LoggerAwareInterface
     private function translateRegularContent(Translator $translator, callable $constraints, int $targetLanguageUid, string $mode): void
     {
         $records = Records::getRecords('tt_content', 'uid', $constraints);
+        $gridLoaded = ExtensionManagementUtility::isLoaded('gridelements');
 
         foreach ($records as $uid) {
-            $record = Records::getRecord('tt_content', (int)$uid);
-
-            if ($record === null) {
-                continue;
-            }
-
-            // Skip Grid Elements and their children
-            if ($this->isGridElement($record)) {
-                continue;
+            // Only an extra row fetch is needed to detect/skip Grid Elements; when
+            // gridelements is not installed, Translator::translate fetches the record itself.
+            if ($gridLoaded) {
+                $record = Records::getRecord('tt_content', (int)$uid);
+                if ($record === null || $this->isGridElement($record)) {
+                    continue;
+                }
             }
 
             $translator->translate('tt_content', (int)$uid, null, (string)$targetLanguageUid, $mode);
