@@ -283,12 +283,6 @@ parameters:
 			path: ../Classes/Service/BatchTranslationService.php
 
 		-
-			message: '#^Instanceof between mixed and TYPO3\\CMS\\Core\\Cache\\Backend\\FileBackend will always evaluate to false\.$#'
-			identifier: instanceof.alwaysFalse
-			count: 1
-			path: ../Classes/Service/TranslationCacheService.php
-
-		-
 			message: '#^Method ThieleUndKlose\\Autotranslate\\Service\\TranslationCacheService\:\:cacheIndividualTranslations\(\) has parameter \$options with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1

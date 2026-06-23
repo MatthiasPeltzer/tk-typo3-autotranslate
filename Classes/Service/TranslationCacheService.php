@@ -220,29 +220,11 @@ final class TranslationCacheService
             // Get cache backend to access raw cache data
             $backend = $this->cache->getBackend();
 
-            // Check if backend supports tagging (most modern backends do)
+            // Check if backend supports tagging (the configured FileBackend and
+            // all other modern backends do).
             if ($backend instanceof \TYPO3\CMS\Core\Cache\Backend\TaggableBackendInterface) {
                 $identifiers = $backend->findIdentifiersByTag('autotranslate');
                 return count($identifiers);
-            }
-
-            // Fallback for FileBackend: count cache files
-            if ($backend instanceof \TYPO3\CMS\Core\Cache\Backend\FileBackend) {
-                $cacheDirectory = $backend->getCacheDirectory();
-                if (is_dir($cacheDirectory)) {
-                    $iterator = new \RecursiveIteratorIterator(
-                        new \RecursiveDirectoryIterator($cacheDirectory, \RecursiveDirectoryIterator::SKIP_DOTS),
-                        \RecursiveIteratorIterator::LEAVES_ONLY
-                    );
-
-                    $count = 0;
-                    foreach ($iterator as $file) {
-                        if ($file->isFile() && $file->getExtension() === 'cache') {
-                            $count++;
-                        }
-                    }
-                    return $count;
-                }
             }
 
             return 0;
