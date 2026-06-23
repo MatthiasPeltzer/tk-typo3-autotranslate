@@ -5,9 +5,9 @@ declare(strict_types=1);
 use Psr\Log\LogLevel;
 use ThieleUndKlose\Autotranslate\Hooks\DataHandler;
 use ThieleUndKlose\Autotranslate\Hooks\GlossarySyncStateHandler;
+use ThieleUndKlose\Autotranslate\Log\Writer\DatabaseTableWriter;
 use ThieleUndKlose\Autotranslate\Task\BatchTranslationTask;
 use TYPO3\CMS\Core\Cache\Backend\FileBackend;
-use TYPO3\CMS\Core\Log\Writer\DatabaseWriter;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 defined('TYPO3') or die();
@@ -21,12 +21,13 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processDa
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processCmdmapClass']['autotranslate_glossary'] = GlossarySyncStateHandler::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$dataHandlerHookIdentifier]['processDatamapClass']['autotranslate_glossary'] = GlossarySyncStateHandler::class;
 
-// Logging configuration — all extension loggers write to the custom log table
+// Logging configuration — all extension loggers write to the custom log table.
+// A dedicated writer is used instead of the core DatabaseWriter's `logTable`
+// option, which depends on DatabaseWriter::setLogTable() (deprecated in v14.2,
+// removed in v15).
 $logWriterConfig = [
     LogLevel::INFO => [
-        DatabaseWriter::class => [
-            'logTable' => 'tx_autotranslate_log',
-        ],
+        DatabaseTableWriter::class => [],
     ],
 ];
 $GLOBALS['TYPO3_CONF_VARS']['LOG']['ThieleUndKlose']['Autotranslate']['Command']['BatchTranslation']['writerConfiguration'] = $logWriterConfig;
