@@ -1,5 +1,36 @@
 # Changelog
 
+## [3.0.5] - 2026-06-23
+
+### Security
+- Mask all but the last 4 characters of the DeepL API key in the backend module (the trailing portion of the key was previously shown in clear text)
+
+### Fixes
+- Fix backend module request handling so duplicate scalar parameters (e.g. `id`, `execute`) from query and body no longer merge into nested arrays (`array_merge_recursive` → `array_replace`)
+- Harden the new-page root-level check against a missing or string `pid` value
+
+### Performance
+- Perform the DeepL usage/quota check only once per request instead of once per record during batch and on-save runs
+- Resolve DeepL glossaries once per request (cached `listGlossaries` + lookup) instead of once per record and language
+- Reduce redundant record fetches during batch content translation
+
+### Database
+- Add composite index `(pid, sys_language_uid)` on `tx_autotranslate_batch_item` (run the database analyzer after updating)
+
+### Modernization
+- Decompose the `Translator` class into focused, dependency-injected services (`DeeplTranslationClient`, `HtmlAttributeProcessor`, `L10nStateBuilder`, `TranslationScopeResolver`); the DeepL boundary is now isolated behind `DeeplTranslationClientInterface`
+- Unify record write paths: `Records::updateRecord()` can now write `null` explicitly (opt-in), and the DataHandler hook routes through it instead of its own raw-connection writer
+- Remove the unused FlexForm raw-text translation branch (FlexForm is carried verbatim via the `fieldsToCopy` setting, never translated as text)
+- Remove dead code paths and tighten method visibility in `Translator` and `GlossaryBackendUtility`
+
+### Tests
+- Add a PHPUnit unit + functional test harness, PHPStan (level 6) configuration, and a GitHub Actions CI workflow
+- Add unit tests for source-hash change detection, translation scope resolution, cache-key generation, HTML attribute round-tripping, API-key masking, and the DeepL client
+- Add functional coverage of the on-save DataHandler translation flow using a faked DeepL client (no network calls)
+
+### Documentation
+- Document the `l10n_state = custom` tradeoff: manual target corrections are protected only while the source field is unchanged and are overwritten when the source changes
+
 ## [3.0.4] - 2026-06-11
 
 ### Features
