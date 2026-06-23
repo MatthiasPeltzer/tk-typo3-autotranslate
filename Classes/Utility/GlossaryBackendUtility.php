@@ -68,7 +68,7 @@ final class GlossaryBackendUtility
     }
 
     /**
-     * @param non-empty-string $helpHtml Pre-escaped HTML
+     * @param string $helpHtml Pre-escaped HTML (empty falls back to the default help text)
      */
     public static function renderSyncPanel(int $pageId, ServerRequestInterface $request, string $helpHtml = ''): string
     {
@@ -98,7 +98,7 @@ HTML;
         $formId = self::getSyncFormId($pageId);
         $actionUrl = htmlspecialchars(self::buildSyncActionUrl($pageId), ENT_QUOTES | ENT_HTML5);
         $returnUrl = htmlspecialchars(
-            GeneralUtility::sanitizeLocalUrl((string)$request->getUri(), $request),
+            GeneralUtility::sanitizeLocalUrl((string)$request->getUri()),
             ENT_QUOTES | ENT_HTML5
         );
         $label = htmlspecialchars(self::translate('glossary.sync.button'), ENT_QUOTES | ENT_HTML5);

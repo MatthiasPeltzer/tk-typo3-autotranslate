@@ -16,6 +16,8 @@ final class LogUtility
 
     /**
      * Write a log message if debug mode is enabled.
+     *
+     * @param array<string, mixed> $data
      */
     public static function log(?LoggerInterface $logger, string $message, array $data = [], int $type = self::MESSAGE_INFO): void
     {
@@ -38,6 +40,7 @@ final class LogUtility
     /**
      * Interpolates context values into the message placeholders.
      *
+     * @param array<string, mixed> $context
      * @see https://www.php-fig.org/psr/psr-3/
      */
     public static function interpolate(string $message, array $context = []): string

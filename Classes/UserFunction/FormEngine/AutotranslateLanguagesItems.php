@@ -27,6 +27,8 @@ final class AutotranslateLanguagesItems
 {
     /**
      * Add possible languages from site configuration respecting current tree position to backend tca form.
+     *
+     * @param array<string, mixed> $config
      */
     public function itemsProcFunc(array &$config): void
     {

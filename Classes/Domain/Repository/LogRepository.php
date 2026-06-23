@@ -28,6 +28,9 @@ final class LogRepository
         return count($requestIds);
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function findAll(int $limit = 100): array
     {
         $connection = GeneralUtility::makeInstance(ConnectionPool::class)
@@ -74,6 +77,9 @@ final class LogRepository
             ->executeStatement();
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function findByRequestId(string $requestId): array
     {
         $connection = GeneralUtility::makeInstance(ConnectionPool::class)

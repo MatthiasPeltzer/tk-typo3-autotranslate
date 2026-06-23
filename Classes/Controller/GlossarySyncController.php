@@ -31,8 +31,7 @@ final class GlossarySyncController
 
         $pageId = (int)($parsedBody['id'] ?? $queryParams['id'] ?? 0);
         $returnUrl = GeneralUtility::sanitizeLocalUrl(
-            (string)($parsedBody['returnUrl'] ?? $queryParams['returnUrl'] ?? ''),
-            $request
+            (string)($parsedBody['returnUrl'] ?? $queryParams['returnUrl'] ?? '')
         );
 
         if ($pageId <= 0 || !GlossaryBackendUtility::canUserSyncFolder($pageId)) {

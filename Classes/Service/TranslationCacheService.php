@@ -31,6 +31,9 @@ final class TranslationCacheService
 
     /**
      * Generates cache key for translation request
+     *
+     * @param list<string> $toTranslate
+     * @param array<string, mixed> $options
      */
     public function generateCacheKey(array $toTranslate, ?string $sourceLang, string $targetLang, array $options): string
     {
@@ -46,6 +49,8 @@ final class TranslationCacheService
 
     /**
      * Get cached translation results
+     *
+     * @return array<int, object|null>|null
      */
     public function getCachedTranslation(string $cacheKey): ?array
     {
@@ -59,6 +64,8 @@ final class TranslationCacheService
 
     /**
      * Cache translation results
+     *
+     * @param array<int, object|null> $textResults
      */
     public function setCachedTranslation(string $cacheKey, array $textResults, int $lifetime = 86400): void
     {
@@ -72,6 +79,10 @@ final class TranslationCacheService
 
     /**
      * Get partial cache hits and uncached texts
+     *
+     * @param list<string> $toTranslate
+     * @param array<string, mixed> $options
+     * @return array{cached: array<int, object|null>, uncached: list<string>, mapping: array<int, int>}
      */
     public function getPartialCacheHits(array $toTranslate, ?string $sourceLang, string $targetLang, array $options): array
     {
@@ -114,6 +125,10 @@ final class TranslationCacheService
 
     /**
      * Cache individual text translations
+     *
+     * @param list<string> $texts
+     * @param array<int, object|null> $results
+     * @param array<string, mixed> $options
      */
     public function cacheIndividualTranslations(array $texts, array $results, ?string $sourceLang, string $targetLang, array $options): void
     {
@@ -131,6 +146,9 @@ final class TranslationCacheService
 
     /**
      * Normalize options for consistent caching
+     *
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
     private function normalizeOptions(array $options): array
     {
@@ -145,6 +163,9 @@ final class TranslationCacheService
 
     /**
      * Serialize TextResult objects for caching
+     *
+     * @param array<int, object|null> $textResults
+     * @return array<int, array{text: string, detected_source_lang: ?string, billed_characters: ?int}|null>
      */
     private function serializeTextResults(array $textResults): array
     {
@@ -153,8 +174,8 @@ final class TranslationCacheService
             if ($result instanceof TextResult) {
                 $serialized[$index] = [
                     'text' => $result->text,
-                    'detected_source_lang' => $result->detectedSourceLang ?? null,
-                    'billed_characters' => $result->billedCharacters ?? null
+                    'detected_source_lang' => $result->detectedSourceLang,
+                    'billed_characters' => $result->billedCharacters,
                 ];
             } else {
                 // Preserve array structure - store null or invalid entries
@@ -166,6 +187,9 @@ final class TranslationCacheService
 
     /**
      * Unserialize cached data back to TextResult objects
+     *
+     * @param array<int, mixed> $cached
+     * @return array<int, object|null>
      */
     private function unserializeTextResults(array $cached): array
     {
@@ -235,6 +259,8 @@ final class TranslationCacheService
 
     /**
      * Get cache statistics
+     *
+     * @return array<string, mixed>
      */
     public function getCacheStatistics(): array
     {

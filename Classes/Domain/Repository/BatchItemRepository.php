@@ -52,6 +52,8 @@ final class BatchItemRepository extends Repository
 
     /**
      * Find all items by given page ids
+     *
+     * @param list<int> $pids
      */
     public function findAllByPids(array $pids): ?QueryResultInterface
     {

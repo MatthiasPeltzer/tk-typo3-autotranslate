@@ -17,6 +17,9 @@ final class GlossarySyncStateHandler
     private const TABLE_GLOSSARY = 'tx_autotranslate_glossary';
     private const TABLE_ENTRY = 'tx_autotranslate_glossary_entry';
 
+    /**
+     * @param array<string, mixed> $fields
+     */
     public function processDatamap_afterDatabaseOperations(
         string $status,
         string $table,

@@ -125,6 +125,9 @@ class BatchTranslationController extends BatchTranslationBaseController
         }
     }
 
+    /**
+     * @return list<Action>
+     */
     private function getBatchItemActions(): array
     {
         $returnUrl = $this->request->getAttribute('normalizedParams')->getRequestUri();
@@ -143,6 +146,9 @@ class BatchTranslationController extends BatchTranslationBaseController
         ];
     }
 
+    /**
+     * @param array{icon: string, label: string} $options
+     */
     private function createMultiRecordAction(string $name, string $table, string $returnUrl, array $options): Action
     {
         return new Action(
@@ -188,6 +194,9 @@ class BatchTranslationController extends BatchTranslationBaseController
         return $view->renderResponse('ShowLogs');
     }
 
+    /**
+     * @return list<Action>
+     */
     private function getLogActions(): array
     {
         $returnUrl = $this->request->getAttribute('normalizedParams')->getRequestUri();
@@ -235,6 +244,8 @@ class BatchTranslationController extends BatchTranslationBaseController
      * Resolve form data array from Extbase arguments, namespaced POST data, or raw query params.
      * The <f:form> ViewHelper wraps fields under the Extbase namespace, but
      * $this->queryParams reads from the raw PSR-7 request (top-level keys only).
+     *
+     * @return array<array-key, mixed>
      */
     private function resolveFormData(string $argumentName): array
     {

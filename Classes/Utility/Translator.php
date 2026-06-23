@@ -29,38 +29,8 @@ final class Translator implements LoggerAwareInterface
     public const TRANSLATE_MODE_UPDATE_ONLY = 'update_only';
     public const TRANSLATE_MODE_CREATE_ONLY = 'create_only';
 
-    /** @var list<string> Fields ignored when detecting changes on record update */
-    private const CHANGE_DETECTION_IGNORE_FIELDS = [
-        'pid',
-        'sorting',
-        'crdate',
-        'tstamp',
-        'cruser_id',
-        'deleted',
-        'hidden',
-        'starttime',
-        'endtime',
-        'fe_group',
-        'sys_language_uid',
-        'l10n_parent',
-        'l10n_diffsource',
-        'l10n_state',
-        't3ver_oid',
-        't3ver_id',
-        't3ver_wsid',
-        't3ver_label',
-        't3ver_state',
-        't3ver_stage',
-        't3ver_count',
-        't3ver_tstamp',
-        't3ver_move_id',
-        self::AUTOTRANSLATE_LAST,
-        self::AUTOTRANSLATE_EXCLUDE,
-        self::AUTOTRANSLATE_LANGUAGES,
-        SourceHashUtility::FIELD_NAME,
-    ];
-
     private readonly ?string $apiKey;
+    /** @var array<int, array<string, mixed>> */
     private readonly array $siteLanguages;
     private readonly string $deeplFormality;
     private readonly DeeplTranslationClientInterface $deeplClient;
@@ -83,6 +53,7 @@ final class Translator implements LoggerAwareInterface
     /**
      * Translate the loaded record to target languages
      *
+     * @param array<string, mixed>|null $changedFields
      * @throws \RuntimeException If DeepL API key is invalid or has no characters left
      */
     public function translate(
@@ -155,7 +126,8 @@ final class Translator implements LoggerAwareInterface
         }
         
         // Fall back to site configuration default if record has no languages set
-        if ($languagesToTranslate === '' || $languagesToTranslate === null) {
+        // (the null case is already handled above, so only the empty string remains).
+        if ($languagesToTranslate === '') {
             $siteConfig = TranslationHelper::siteConfigurationValue($this->pageId);
             if (is_array($siteConfig)) {
                 $settings = TranslationHelper::translationSettingsDefaults($siteConfig, $table);
@@ -176,6 +148,10 @@ final class Translator implements LoggerAwareInterface
 
         $didTranslate = false;
         $translatedFieldNames = [];
+        // Collect translated reference fields per record so their source hashes
+        // can be persisted after the language loop, just like the parent record.
+        $referenceTranslatedFieldsByRecord = [];
+        $referenceColumnsByTable = [];
 
         foreach ($languageIds as $languageId) {
             $localizedContents[$languageId] = [];
@@ -283,6 +259,11 @@ final class Translator implements LoggerAwareInterface
                             );
                             if ($referenceTranslatedFields !== []) {
                                 $didTranslate = true;
+                                $referenceTranslatedFieldsByRecord[$referenceTable][$referenceUid] = array_merge(
+                                    $referenceTranslatedFieldsByRecord[$referenceTable][$referenceUid] ?? [],
+                                    $referenceTranslatedFields
+                                );
+                                $referenceColumnsByTable[$referenceTable] = $columnsReference;
                             }
                         }
                     }
@@ -307,6 +288,8 @@ final class Translator implements LoggerAwareInterface
             }
         }
 
+        $this->persistReferenceSourceFieldHashes($referenceTranslatedFieldsByRecord, $referenceColumnsByTable);
+
         if ($didTranslate) {
             $this->persistSourceFieldHashes($table, $recordUid, $record, $columns, $translatedFieldNames);
             Records::updateRecord($table, $recordUid, [
@@ -316,8 +299,45 @@ final class Translator implements LoggerAwareInterface
     }
 
     /**
+     * Persist source-field hashes for reference records translated through the
+     * parent record's save flow, so changed-fields detection (used on CLI and
+     * scheduler runs) recognises them as up to date afterwards.
+     *
+     * @param array<string, array<int, list<string>>> $translatedFieldsByRecord
+     * @param array<string, list<string>> $columnsByTable
+     */
+    private function persistReferenceSourceFieldHashes(array $translatedFieldsByRecord, array $columnsByTable): void
+    {
+        foreach ($translatedFieldsByRecord as $referenceTable => $recordsByUid) {
+            $configuredColumns = $columnsByTable[$referenceTable] ?? [];
+            if ($configuredColumns === []) {
+                continue;
+            }
+
+            foreach ($recordsByUid as $referenceUid => $translatedFieldNames) {
+                $referenceRecord = Records::getRecord($referenceTable, (int)$referenceUid);
+                if ($referenceRecord === null) {
+                    continue;
+                }
+
+                $this->persistSourceFieldHashes(
+                    $referenceTable,
+                    (int)$referenceUid,
+                    $referenceRecord,
+                    $configuredColumns,
+                    $translatedFieldNames
+                );
+                Records::updateRecord($referenceTable, (int)$referenceUid, [
+                    self::AUTOTRANSLATE_LAST => time(),
+                ]);
+            }
+        }
+    }
+
+    /**
      * Translate a reference record saved directly (e.g. sys_file_reference alt/title edit).
      *
+     * @param array<string, mixed>|null $changedFields
      * @throws \RuntimeException If DeepL API key is invalid or has no characters left
      */
     public function translateReferenceRecord(
@@ -469,6 +489,7 @@ final class Translator implements LoggerAwareInterface
 
     /**
      * @param list<string> $columnsReference
+     * @param array<string, mixed>|null $changedFields
      * @return list<string> Translated field names, empty when nothing was translated
      */
     private function translateReferenceChild(
@@ -590,6 +611,9 @@ final class Translator implements LoggerAwareInterface
         return $foreignField !== '' ? $foreignField : null;
     }
 
+    /**
+     * @param array<string, mixed>|null $changedFields
+     */
     private function shouldTranslateReferences(
         string $table,
         int $recordUid,
@@ -607,7 +631,7 @@ final class Translator implements LoggerAwareInterface
         }
 
         if ($datamapStatus === 'update' && $changedFields !== null) {
-            $changedFieldNames = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
+            $changedFieldNames = array_diff(array_keys($changedFields), TranslationScopeResolver::CHANGE_DETECTION_IGNORE_FIELDS);
             $referenceColumns = [];
 
             foreach (TranslationHelper::additionalReferenceTables() as $referenceTable) {
@@ -627,6 +651,9 @@ final class Translator implements LoggerAwareInterface
         return true;
     }
 
+    /**
+     * @param array<string, mixed>|null $changedFields
+     */
     private function recordsNeedReferenceTranslation(
         string $table,
         int $recordUid,
@@ -743,6 +770,7 @@ final class Translator implements LoggerAwareInterface
     }
 
     /**
+     * @param array<string, mixed> $record
      * @param list<string> $configuredColumns
      * @param list<string> $translatedFieldNames
      */
@@ -777,6 +805,10 @@ final class Translator implements LoggerAwareInterface
 
     /**
      * Translate the given record properties
+     *
+     * @param array<string, mixed> $record
+     * @param list<string> $columns
+     * @return array<string, mixed>
      */
     public function translateRecordProperties(array $record, int $targetLanguageUid, array $columns, string $table, int $localizedUid): array
     {

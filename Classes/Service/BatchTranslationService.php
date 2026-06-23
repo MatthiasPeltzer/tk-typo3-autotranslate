@@ -70,6 +70,8 @@ final class BatchTranslationService implements LoggerAwareInterface
 
     /**
      * Log error and set error message on batch item
+     *
+     * @param array<string, mixed> $context
      */
     private function logError(BatchItem $item, string $message, array $context): void
     {
@@ -284,6 +286,8 @@ final class BatchTranslationService implements LoggerAwareInterface
 
     /**
      * Check if record is a Grid Element or child of one
+     *
+     * @param array<string, mixed> $record
      */
     private function isGridElement(array $record): bool
     {

@@ -32,6 +32,9 @@ final class TranslationHelper
         );
     }
 
+    /**
+     * @return array<int, string>
+     */
     public static function additionalTables(): array
     {
         $additionalTables = GeneralUtility::makeInstance(ExtensionConfiguration::class)
@@ -46,6 +49,9 @@ final class TranslationHelper
         return $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'] ?? null;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public static function unusedTranslateableColumns(string $table, string $value, int $type): array
     {
         $translateableColumns = self::translateableColumns($table);
@@ -54,6 +60,9 @@ final class TranslationHelper
         return array_diff($translateableColumns[$type], $valueList);
     }
 
+    /**
+     * @return array<int, list<string>>
+     */
     public static function translateableColumns(string $table): array
     {
         $textColumns = array_filter($GLOBALS['TCA'][$table]['columns'], static function (array $v, string $k) use ($table): bool {
@@ -89,6 +98,10 @@ final class TranslationHelper
         ];
     }
 
+    /**
+     * @param array<int, SiteLanguage>|null $siteLanguages
+     * @return array<int, SiteLanguage>
+     */
     public static function possibleTranslationLanguages(?array $siteLanguages): array
     {
         if (empty($siteLanguages)) {
@@ -104,6 +117,7 @@ final class TranslationHelper
     }
 
     /**
+     * @param array<int, SiteLanguage>|null $siteLanguages
      * @throws SiteNotFoundException
      */
     public static function defaultLanguage(?array $siteLanguages): SiteLanguage
@@ -115,6 +129,9 @@ final class TranslationHelper
         return $siteLanguages[0];
     }
 
+    /**
+     * @return list<string>|null
+     */
     public static function translationTextfields(int $pageId, string $table): ?array
     {
         if ($pageId === 0) {
@@ -134,6 +151,9 @@ final class TranslationHelper
         return GeneralUtility::trimExplode(',', $translationSettings['autotranslateTextfields'] ?? '', true);
     }
 
+    /**
+     * @param list<string>|null $keyPath
+     */
     public static function siteConfigurationValue(int $pageId, ?array $keyPath = null): mixed
     {
         if ($pageId === 0) {
@@ -159,6 +179,10 @@ final class TranslationHelper
         }
     }
 
+    /**
+     * @param array<string, mixed> $siteConfiguration
+     * @return array<string, mixed>|null
+     */
     public static function translationSettingsDefaults(array $siteConfiguration, string $table): ?array
     {
         $fieldnameAutotranslateEnabled = self::configurationFieldname($table, 'enabled');
@@ -187,6 +211,8 @@ final class TranslationHelper
 
     /**
      * Get reference columns from $table pointing to $referenceTable.
+     *
+     * @return list<string>|null
      */
     public static function translationReferenceColumns(int $pageId, string $table, string $referenceTable): ?array
     {
@@ -236,6 +262,9 @@ final class TranslationHelper
         return $referenceColumns === [] ? null : $referenceColumns;
     }
 
+    /**
+     * @return list<string>|null
+     */
     public static function translationFileReferences(int $pageId, string $table): ?array
     {
         if ($pageId === 0) {
@@ -316,6 +345,9 @@ final class TranslationHelper
         return ['key' => null, 'source' => null];
     }
 
+    /**
+     * @return array<int, string>
+     */
     public static function additionalReferenceTables(): array
     {
         $additionalReferenceTables = GeneralUtility::makeInstance(ExtensionConfiguration::class)
@@ -328,6 +360,7 @@ final class TranslationHelper
     /**
      * Resolve the parent record for a reference/localized child record.
      *
+     * @param array<string, mixed> $record
      * @return array{table: string, uid: int, column: string}|null
      */
     public static function resolveReferenceParent(string $referenceTable, array $record): ?array
