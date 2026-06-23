@@ -43,4 +43,27 @@ When `translateChangedFieldsOnly` is enabled (default):
 - **First localization**: All configured fields are still translated for a new target language.
 - **Manual edits**: Fields marked `custom` in `l10n_state` on an existing translation are skipped unless the corresponding source field changed.
 
+### `l10n_state = custom` tradeoff (manual corrections)
+
+Auto-translated target fields are tagged in the translation's `l10n_state` so the
+extension knows which fields it owns. When an editor manually corrects a target
+field in the backend, TYPO3 flips that field's `l10n_state` to `custom`, and
+Autotranslate then leaves it alone on subsequent runs — **as long as the source
+field does not change**.
+
+Be aware of the inherent limitation:
+
+- A `custom` field is only protected while its source stays the same. **If the
+  corresponding source field changes, the field is re-translated and the manual
+  correction is overwritten** (this is required so genuine source edits propagate).
+- An auto-translated value and a manually-edited value are indistinguishable at
+  the data level once both exist; the `custom` flag is the only signal. If that
+  flag is lost (e.g. a field is reset, or `l10n_state` is cleared by another
+  tool), the next translation run will overwrite the value.
+
+Practical guidance: make lasting wording corrections in the **source** record (or
+via a DeepL glossary) rather than only in the target, so the change survives the
+next translation. Reserve target-only edits for cases where the source must stay
+untouched, and re-apply them if you later edit that source field.
+
 See [Extension Configuration](ExtensionConfiguration/Readme.md) for SQL schema requirements when adding custom tables.

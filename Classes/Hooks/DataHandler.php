@@ -7,7 +7,6 @@ namespace ThieleUndKlose\Autotranslate\Hooks;
 use ThieleUndKlose\Autotranslate\Utility\Records;
 use ThieleUndKlose\Autotranslate\Utility\TranslationHelper;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler as CoreDataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -43,7 +42,7 @@ final class DataHandler implements SingletonInterface
             : null;
 
         // Skip auto translation if page created on root level
-        if ($table === 'pages' && $status === 'new' && $fields['pid'] === 0) {
+        if ($table === 'pages' && $status === 'new' && (int)($fields['pid'] ?? -1) === 0) {
             return;
         }
 
@@ -62,7 +61,7 @@ final class DataHandler implements SingletonInterface
         }
 
         if ($languageUid && $languageUid > 0) {
-            $this->updateRecord($table, (int)$recordUid, ['autotranslate_languages' => null]);
+            Records::updateRecord($table, (int)$recordUid, ['autotranslate_languages' => null], true);
             return;
         }
 
@@ -167,16 +166,6 @@ final class DataHandler implements SingletonInterface
                 ->getMessageQueueByIdentifier()
                 ->addMessage($flashMessage);
         }
-    }
-
-    /**
-     * Update a record in the database
-     */
-    private function updateRecord(string $table, int $uid, array $data): void
-    {
-        $connection = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getConnectionForTable($table);
-        $connection->update($table, $data, ['uid' => $uid]);
     }
 
     /**

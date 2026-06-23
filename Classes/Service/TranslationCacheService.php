@@ -18,7 +18,7 @@ final class TranslationCacheService
     {
         try {
             $caching = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('autotranslate', 'caching');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $caching = false;
         }
 

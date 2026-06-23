@@ -79,7 +79,7 @@ final class GlossaryBackendUtility
         $help = $helpHtml !== ''
             ? $helpHtml
             : '<p class="mb-0">' . htmlspecialchars(self::translate('glossary.sync.help'), ENT_QUOTES | ENT_HTML5) . '</p>';
-        $formMarkup = self::renderSyncFormMarkup($pageId, $request, true);
+        $formMarkup = self::renderSyncFormMarkup($pageId, $request);
 
         return <<<HTML
 <div class="callout callout-info mb-3">
@@ -93,7 +93,7 @@ final class GlossaryBackendUtility
 HTML;
     }
 
-    public static function renderSyncFormMarkup(int $pageId, ServerRequestInterface $request, bool $includeSubmitButton): string
+    public static function renderSyncFormMarkup(int $pageId, ServerRequestInterface $request): string
     {
         $formId = self::getSyncFormId($pageId);
         $actionUrl = htmlspecialchars(self::buildSyncActionUrl($pageId), ENT_QUOTES | ENT_HTML5);
@@ -101,10 +101,8 @@ HTML;
             GeneralUtility::sanitizeLocalUrl((string)$request->getUri(), $request),
             ENT_QUOTES | ENT_HTML5
         );
-        $submitButton = '';
-        if ($includeSubmitButton) {
-            $label = htmlspecialchars(self::translate('glossary.sync.button'), ENT_QUOTES | ENT_HTML5);
-            $submitButton = <<<HTML
+        $label = htmlspecialchars(self::translate('glossary.sync.button'), ENT_QUOTES | ENT_HTML5);
+        $submitButton = <<<HTML
 <button type="submit" class="btn btn-default">
     <span class="icon icon-size-small icon-state-default">
         <span class="icon-markup"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g fill="currentColor"><path d="M13.5 2.5A7 7 0 1 0 14 8h-1.5a5.5 5.5 0 1 1 1-4.9V6H14l-3 3-3-3h1.5V2.5z"/></g></svg></span>
@@ -112,7 +110,6 @@ HTML;
     {$label}
 </button>
 HTML;
-        }
 
         return <<<HTML
 <form id="{$formId}" method="post" action="{$actionUrl}">

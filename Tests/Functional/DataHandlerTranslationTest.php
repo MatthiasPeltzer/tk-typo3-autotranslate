@@ -1,0 +1,147 @@
+<?php
+
+declare(strict_types=1);
+
+namespace ThieleUndKlose\Autotranslate\Tests\Functional;
+
+use PHPUnit\Framework\Attributes\Test;
+use ThieleUndKlose\Autotranslate\Service\DeeplTranslationClient;
+use ThieleUndKlose\Autotranslate\Service\GlossaryService;
+use ThieleUndKlose\Autotranslate\Service\TranslationCacheService;
+use ThieleUndKlose\Autotranslate\Tests\Functional\Fixtures\FakeDeeplTranslationClient;
+use TYPO3\CMS\Core\Configuration\SiteWriter;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+
+/**
+ * Integration coverage of the on-save auto-translation flow (DataHandler hook
+ * -> Translator -> DeepL boundary), with the DeepL boundary replaced by a fake
+ * so no network call is made.
+ *
+ * Requires a database and therefore runs in CI (functional job).
+ */
+final class DataHandlerTranslationTest extends FunctionalTestCase
+{
+    protected array $testExtensionsToLoad = ['thieleundklose/autotranslate'];
+
+    private FakeDeeplTranslationClient $fakeClient;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/pages.csv');
+        $this->setUpBackendUser(1);
+
+        $this->writeAutotranslateSite();
+
+        $this->fakeClient = new FakeDeeplTranslationClient(
+            $this->get(TranslationCacheService::class),
+            $this->get(GlossaryService::class),
+        );
+        GeneralUtility::setSingletonInstance(DeeplTranslationClient::class, $this->fakeClient);
+    }
+
+    #[Test]
+    public function savingDefaultLanguageRecordCreatesTranslation(): void
+    {
+        $sourceUid = $this->createDefaultContent('Hello', 'World');
+
+        $translation = $this->fetchTranslation($sourceUid);
+
+        self::assertIsArray($translation, 'a German translation row was created');
+        self::assertSame('DE:Hello', $translation['header']);
+        self::assertSame('DE:World', $translation['bodytext']);
+        self::assertSame(1, $this->fakeClient->translateCallCount);
+    }
+
+    #[Test]
+    public function recordWithoutTargetLanguagesIsNotTranslated(): void
+    {
+        $sourceUid = $this->createDefaultContent('Hello', 'World', '');
+
+        self::assertNull($this->fetchTranslation($sourceUid), 'no translation without target languages');
+        self::assertSame(0, $this->fakeClient->translateCallCount);
+    }
+
+    #[Test]
+    public function recordMarkedExcludedIsNotTranslated(): void
+    {
+        $sourceUid = $this->createDefaultContent('Hello', 'World', '1', ['autotranslate_exclude' => 1]);
+
+        self::assertNull($this->fetchTranslation($sourceUid), 'excluded record is skipped');
+        self::assertSame(0, $this->fakeClient->translateCallCount);
+    }
+
+    private function writeAutotranslateSite(): void
+    {
+        $this->get(SiteWriter::class)->write('autotranslate-test', [
+            'rootPageId' => 1,
+            'base' => 'https://example.com/',
+            'deeplAuthKey' => '00000000-0000-0000-0000-000000000000:fx',
+            'autotranslateTtContentEnabled' => true,
+            'autotranslateTtContentTextfields' => 'header,bodytext',
+            'autotranslateTtContentLanguages' => '1',
+            'languages' => [
+                [
+                    'languageId' => 0,
+                    'title' => 'English',
+                    'locale' => 'en_US.UTF-8',
+                    'base' => '/',
+                    'flag' => 'us',
+                    'navigationTitle' => 'English',
+                    'deeplSourceLang' => 'EN',
+                ],
+                [
+                    'languageId' => 1,
+                    'title' => 'German',
+                    'locale' => 'de_DE.UTF-8',
+                    'base' => '/de/',
+                    'flag' => 'de',
+                    'navigationTitle' => 'Deutsch',
+                    'fallbackType' => 'strict',
+                    'fallbacks' => '',
+                    'deeplTargetLang' => 'DE',
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * @param array<string, mixed> $extraFields
+     */
+    private function createDefaultContent(string $header, string $bodytext, string $languages = '1', array $extraFields = []): int
+    {
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start([
+            'tt_content' => [
+                'NEW1' => array_merge([
+                    'pid' => 1,
+                    'CType' => 'text',
+                    'header' => $header,
+                    'bodytext' => $bodytext,
+                    'sys_language_uid' => 0,
+                    'autotranslate_languages' => $languages,
+                ], $extraFields),
+            ],
+        ], []);
+        $dataHandler->process_datamap();
+
+        return (int)$dataHandler->substNEWwithIDs['NEW1'];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function fetchTranslation(int $sourceUid): ?array
+    {
+        $row = $this->getConnectionPool()
+            ->getConnectionForTable('tt_content')
+            ->select(['*'], 'tt_content', ['sys_language_uid' => 1, 'l18n_parent' => $sourceUid])
+            ->fetchAssociative();
+
+        return $row === false ? null : $row;
+    }
+}

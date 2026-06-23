@@ -18,10 +18,32 @@ final class GlossaryService
     private const MODULE = 'autotranslate_glossary';
     private const TABLE = 'tx_autotranslate_glossary';
 
+    /** @var array<string, ?Glossary> Per-request memoization keyed by source|target|pageId */
+    private array $resolvedGlossaries = [];
+
     /**
      * Get matching glossary for the given source/target language pair.
      */
     public function getGlossary(
+        string $sourceLanguage,
+        string $targetLanguage,
+        int $pageId,
+        Translator $translator
+    ): ?Glossary {
+        $cacheKey = $sourceLanguage . '|' . $targetLanguage . '|' . $pageId;
+        if (array_key_exists($cacheKey, $this->resolvedGlossaries)) {
+            return $this->resolvedGlossaries[$cacheKey];
+        }
+
+        return $this->resolvedGlossaries[$cacheKey] = $this->resolveGlossary(
+            $sourceLanguage,
+            $targetLanguage,
+            $pageId,
+            $translator
+        );
+    }
+
+    private function resolveGlossary(
         string $sourceLanguage,
         string $targetLanguage,
         int $pageId,

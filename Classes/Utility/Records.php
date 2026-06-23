@@ -94,9 +94,15 @@ final class Records
     }
 
     /**
-     * Update record fields
+     * Update record fields.
+     *
+     * By default `null` values are skipped (a sparse property map never clears a
+     * column). Pass $writeNullValues = true to write `null` explicitly
+     * (SET column = NULL), e.g. to reset a field such as autotranslate_languages.
+     *
+     * @param array<string, mixed>|null $properties
      */
-    public static function updateRecord(string $table, int $uid, ?array $properties = null): void
+    public static function updateRecord(string $table, int $uid, ?array $properties = null, bool $writeNullValues = false): void
     {
         if ($properties === null || empty($properties)) {
             return;
@@ -109,10 +115,17 @@ final class Records
                 $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT))
             );
 
+        $hasSet = false;
         foreach ($properties as $property => $value) {
-            if ($value !== null) {
-                $update->set($property, $value);
+            if ($value === null && !$writeNullValues) {
+                continue;
             }
+            $update->set($property, $value);
+            $hasSet = true;
+        }
+
+        if (!$hasSet) {
+            return;
         }
 
         $update->executeStatement();

@@ -49,7 +49,8 @@ CREATE TABLE tx_autotranslate_batch_item (
     frequency varchar(255) DEFAULT '' NOT NULL,
     error text DEFAULT '' NOT NULL,
 
-    KEY pid (pid)
+    KEY pid (pid),
+    KEY pid_language (pid, sys_language_uid)
 );
 
 #
