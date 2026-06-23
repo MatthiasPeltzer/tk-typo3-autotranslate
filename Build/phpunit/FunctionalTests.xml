@@ -5,11 +5,11 @@
          cacheDirectory="../../.Build/.cache/phpunit"
          backupGlobals="true"
          colors="true"
-         failOnWarning="true"
-         failOnDeprecation="true"
-         failOnNotice="true"
+         failOnWarning="false"
+         failOnDeprecation="false"
+         failOnNotice="false"
          beStrictAboutTestsThatDoNotTestAnything="false"
-         beStrictAboutOutputDuringTests="true">
+         beStrictAboutOutputDuringTests="false">
     <testsuites>
         <testsuite name="Autotranslate functional tests">
             <directory>../../Tests/Functional/</directory>

@@ -11,6 +11,7 @@ use ThieleUndKlose\Autotranslate\Service\TranslationCacheService;
 use ThieleUndKlose\Autotranslate\Tests\Functional\Fixtures\FakeDeeplTranslationClient;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
@@ -33,7 +34,11 @@ final class DataHandlerTranslationTest extends FunctionalTestCase
 
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/pages.csv');
-        $this->setUpBackendUser(1);
+        $backendUser = $this->setUpBackendUser(1);
+        // DataHandler::localize() resolves $GLOBALS['LANG']; it is not set up by
+        // setUpBackendUser(), so create it explicitly (as core's own DataHandler
+        // functional tests do) to avoid a TypeError from getLanguageService().
+        $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($backendUser);
 
         $this->writeAutotranslateSite();
 
@@ -83,7 +88,9 @@ final class DataHandlerTranslationTest extends FunctionalTestCase
             'deeplAuthKey' => '00000000-0000-0000-0000-000000000000:fx',
             'autotranslateTtContentEnabled' => true,
             'autotranslateTtContentTextfields' => 'header,bodytext',
-            'autotranslateTtContentLanguages' => '1',
+            // No site-wide default target language: records drive their own
+            // targets via autotranslate_languages, so a record with none is
+            // genuinely "without target languages".
             'languages' => [
                 [
                     'languageId' => 0,
