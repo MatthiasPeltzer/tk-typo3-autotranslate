@@ -1,5 +1,32 @@
 # Changelog
 
+## [3.0.6] - 2026-06-23
+
+### Security
+- Enforce per-page and per-language backend authorization when queueing batch translations, so crafted requests can no longer enqueue (and have the scheduler translate) pages or languages the editor cannot access
+- Require POST for the batch translation create action
+
+### Fixes
+- Populate the batch module's recursive item list from the resolved page id instead of an unreliable request argument
+- Reset the DataHandler auto-translate suspension flag unconditionally so a failed copy no longer disables translation for the rest of the request
+- Treat an empty configured DeepL target language as unset, raising a clear configuration error instead of an opaque API failure
+- Avoid emitting duplicate translation placeholders for identical HTML attribute values
+- Guard grid element container translation against cyclic `tx_gridelements_container` references
+- Restore TYPO3 v13.4 compatibility for the glossary sync button: resolve the generic button at call time (v14 `ComponentFactory`, else v13.4 `GenericButton`) instead of constructor-injecting the v14-only `ComponentFactory`, which fatally broke the button bar listener (and the functional test container) on v13.4
+- Remove a dead `FileBackend` fallback branch in cache-entry counting (the taggable-backend path already covers `FileBackend`); PHPStan is now clean on both TYPO3 13.4 and 14.x
+
+### Compatibility
+- Write extension logs through a dedicated `DatabaseTableWriter` instead of configuring the core `DatabaseWriter` with a `logTable` option, avoiding `DatabaseWriter::setLogTable()` (deprecated in TYPO3 v14.2, removed in v15); behaviour and the `tx_autotranslate_log` schema are unchanged
+- Declare `extra.typo3/cms.Package.providesPackages` in `composer.json` to satisfy the TYPO3 v14.3 `ext_emconf.php` deprecation and prepare for v15 classic-mode metadata
+
+### Performance
+- Cache the DeepL usage/quota info shown in the backend module for a short period instead of calling the DeepL API on every module render
+
+### Tests
+- Add unit tests for HTML attribute deduplication and entity round-tripping, and for `L10nStateBuilder`
+- Add functional tests for the create-authorization guard, changed-fields-only re-translation, custom `l10n_state` preservation, and `Records::updateRecord` null-write semantics
+- Add a functional test for the reference-record translation flow (`Translator::translateReferenceRecord`) covering a directly saved `sys_file_reference` (localized alt/title and re-pointing to the localized parent)
+
 ## [3.0.5] - 2026-06-23
 
 ### Security
