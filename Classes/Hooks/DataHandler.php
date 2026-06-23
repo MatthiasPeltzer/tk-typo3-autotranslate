@@ -206,8 +206,10 @@ final class DataHandler implements SingletonInterface
         mixed $pasteUpdate,
         mixed $pasteDatamap
     ): void {
-        if ($command === 'copy') {
-            $this->suspended = false;
-        }
+        // Reset unconditionally: this hook is a singleton, so if a previous
+        // "copy" aborted before its post-process ran, the suspended flag would
+        // otherwise stay set and silently skip auto-translation for the rest of
+        // the request.
+        $this->suspended = false;
     }
 }

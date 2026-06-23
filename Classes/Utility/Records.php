@@ -20,6 +20,9 @@ final class Records
     /**
      * Get a record or a single column value from a record
      *
+     * Uses getQueryBuilder(), so hidden/start/end restrictions are removed but the
+     * DeletedRestriction stays active: soft-deleted rows are never returned.
+     *
      * @return mixed|array|null Record array, single column value, or null if not found
      */
     public static function getRecord(string $table, int $uid, ?string $column = null): mixed
@@ -46,7 +49,12 @@ final class Records
     }
 
     /**
-     * Get QueryBuilder for given table with relaxed restrictions
+     * Get QueryBuilder for given table with relaxed restrictions.
+     *
+     * Hidden, start-time and end-time restrictions are removed so disabled or
+     * time-restricted source records can still be translated. The
+     * DeletedRestriction is intentionally kept, so soft-deleted rows remain
+     * excluded from every query built through this helper.
      */
     public static function getQueryBuilder(string $table): QueryBuilder
     {

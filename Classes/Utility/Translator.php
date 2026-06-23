@@ -889,7 +889,8 @@ final class Translator implements LoggerAwareInterface
     {
         foreach ($this->siteLanguages as $language) {
             if ($language['languageId'] === $languageId) {
-                return $language['deeplTargetLang'] ?? null;
+                $targetLang = (string)($language['deeplTargetLang'] ?? '');
+                return $targetLang !== '' ? $targetLang : null;
             }
         }
 

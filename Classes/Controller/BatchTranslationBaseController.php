@@ -472,8 +472,7 @@ class BatchTranslationBaseController extends ActionController
 
     private function getAccessibleBatchItems(array $languages): array
     {
-        $pageId = (int)($this->request->hasArgument('id') ? $this->request->getArgument('id') : 0);
-        $items = $this->batchItemRepository->findAllRecursive($this->levels, $pageId);
+        $items = $this->batchItemRepository->findAllRecursive($this->levels, $this->pageUid);
 
         if ($items === null) {
             return [];
@@ -513,7 +512,29 @@ class BatchTranslationBaseController extends ActionController
         return isset($languages[$item->getSysLanguageUid()]);
     }
 
-    private function isPostRequest(): bool
+    /**
+     * Verify the current backend user may queue a translation for the given
+     * page and target language. Mirrors isBatchItemAccessible() and guards the
+     * creation path against crafted requests bypassing the form's offered values.
+     */
+    protected function userCanCreateForPage(int $pid, int $sysLanguageUid): bool
+    {
+        if ($pid <= 0) {
+            return false;
+        }
+
+        $pageRecord = BackendUtility::getRecordWSOL('pages', $pid);
+        if (!is_array($pageRecord)) {
+            return false;
+        }
+
+        $backendUser = $this->getBackendUser();
+
+        return $backendUser->doesUserHaveAccess($pageRecord, Permission::CONTENT_EDIT)
+            && $backendUser->checkLanguageAccess($sysLanguageUid);
+    }
+
+    protected function isPostRequest(): bool
     {
         return strtoupper($this->request->getMethod()) === 'POST';
     }
@@ -720,6 +741,17 @@ class BatchTranslationBaseController extends ActionController
 
     protected function createActionAbstract(BatchItem $batchItem, int $levels): void
     {
+        if (!$this->userCanCreateForPage($batchItem->getPid(), $batchItem->getSysLanguageUid())) {
+            $this->showWarning(
+                'Access denied',
+                sprintf(
+                    'You do not have permission to queue translations for page %d in the selected language.',
+                    $batchItem->getPid()
+                )
+            );
+            return;
+        }
+
         $this->adjustTimezoneOffset($batchItem);
 
         $createdCount = 0;
@@ -792,13 +824,11 @@ class BatchTranslationBaseController extends ActionController
         $created = 0;
         $skipped = 0;
         $subPages = PageUtility::getSubpageIds($this->pageUid, $levels - 1);
-        $backendUser = $this->getBackendUser();
 
         foreach ($subPages as $subPageUid) {
             $subPageUid = (int)$subPageUid;
-            $pageRecord = BackendUtility::getRecordWSOL('pages', $subPageUid);
 
-            if (!$pageRecord || !$backendUser->doesUserHaveAccess($pageRecord, Permission::CONTENT_EDIT)) {
+            if (!$this->userCanCreateForPage($subPageUid, $batchItem->getSysLanguageUid())) {
                 continue;
             }
 
@@ -906,14 +936,14 @@ class BatchTranslationBaseController extends ActionController
     {
         $apiKeyDetails = TranslationHelper::apiKey($this->pageUid);
         $apiKey = $apiKeyDetails['key'] ?? null;
-        $this->deeplApiKeyDetails = DeeplApiHelper::checkApiKey($apiKey);
+        $this->deeplApiKeyDetails = DeeplApiHelper::checkApiKeyForDisplay($apiKey);
 
         $maskedKey = $this->maskApiKey($apiKey);
         $messages = [];
         $severity = ContextualFeedbackSeverity::INFO;
 
-        if ($this->deeplApiKeyDetails['usage']) {
-            $usage = (string)$this->deeplApiKeyDetails['usage'];
+        if ($this->deeplApiKeyDetails['usageText']) {
+            $usage = (string)$this->deeplApiKeyDetails['usageText'];
             $usage = str_replace([PHP_EOL, 'Characters: '], [' ', ''], $usage);
             $messages[] = trim($usage) . ' Characters';
         }
