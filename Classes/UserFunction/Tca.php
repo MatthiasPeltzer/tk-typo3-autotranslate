@@ -13,6 +13,8 @@ final class Tca
 {
     /**
      * Get label for batches from language and translation date
+     *
+     * @param array<string, mixed> $parameters
      */
     public function batchLabel(array &$parameters): void
     {
@@ -54,6 +56,8 @@ final class Tca
 
     /**
      * Build a readable label for glossary records.
+     *
+     * @param array<string, mixed> $parameters
      */
     public function glossaryLabel(array &$parameters): void
     {

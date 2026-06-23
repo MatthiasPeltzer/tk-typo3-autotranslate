@@ -82,6 +82,9 @@ final class BatchTranslation extends Command implements LoggerAwareInterface
         ]);
     }
 
+    /**
+     * @param array{processed: int, succeeded: int, failed: int, remaining: int} $result
+     */
     private function outputResults(OutputInterface $output, array $result): void
     {
         $output->writeln('');

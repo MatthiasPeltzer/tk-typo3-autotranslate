@@ -21,6 +21,7 @@ final class SourceHashUtility
     }
 
     /**
+     * @param array<string, mixed> $record
      * @param list<string> $columns
      * @return array<string, string>
      */
@@ -45,6 +46,7 @@ final class SourceHashUtility
     }
 
     /**
+     * @param array<string, mixed> $record
      * @param list<string> $columns
      * @return list<string>
      */
@@ -99,6 +101,7 @@ final class SourceHashUtility
     }
 
     /**
+     * @param array<string, mixed> $record
      * @param list<string> $configuredColumns
      * @param list<string> $translatedFieldNames
      */

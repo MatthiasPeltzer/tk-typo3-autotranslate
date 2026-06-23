@@ -22,11 +22,11 @@ class TranslationScopeResolver implements SingletonInterface
     /**
      * Fields ignored when detecting changes on a record update.
      *
-     * Mirrors Translator::CHANGE_DETECTION_IGNORE_FIELDS.
+     * Canonical list, also consumed by {@see \ThieleUndKlose\Autotranslate\Utility\Translator}.
      *
      * @var list<string>
      */
-    private const CHANGE_DETECTION_IGNORE_FIELDS = [
+    public const CHANGE_DETECTION_IGNORE_FIELDS = [
         'pid',
         'sorting',
         'crdate',

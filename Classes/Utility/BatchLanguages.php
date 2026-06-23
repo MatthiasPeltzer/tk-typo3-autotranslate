@@ -12,6 +12,8 @@ final class BatchLanguages
 {
     /**
      * Populates the languages of the current page for the tca select field items
+     *
+     * @param array<string, mixed> $parameters
      */
     public function populateLanguagesFromSiteConfiguration(array &$parameters): void
     {

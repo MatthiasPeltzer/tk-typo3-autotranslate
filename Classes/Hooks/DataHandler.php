@@ -24,6 +24,8 @@ final class DataHandler implements SingletonInterface
 
     /**
      * Handle after database operations for automatic translation
+     *
+     * @param array<string, mixed> $fields
      */
     public function processDatamap_afterDatabaseOperations(
         string $status,
@@ -104,6 +106,8 @@ final class DataHandler implements SingletonInterface
 
     /**
      * Handle direct saves on configured reference tables (e.g. sys_file_reference).
+     *
+     * @param array<string, mixed> $fields
      */
     private function processReferenceTableSave(
         string $referenceTable,

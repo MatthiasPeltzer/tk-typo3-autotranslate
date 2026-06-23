@@ -9,16 +9,25 @@ use ThieleUndKlose\Autotranslate\Utility\TranslationHelper;
 
 final class GlossaryDeepLLanguageItems
 {
+    /**
+     * @param array<string, mixed> $parameters
+     */
     public function sourceItems(array &$parameters): void
     {
         $this->populateItems($parameters, 'source');
     }
 
+    /**
+     * @param array<string, mixed> $parameters
+     */
     public function targetItems(array &$parameters): void
     {
         $this->populateItems($parameters, 'target');
     }
 
+    /**
+     * @param array<string, mixed> $parameters
+     */
     private function populateItems(array &$parameters, string $type): void
     {
         $parameters['items'] = [

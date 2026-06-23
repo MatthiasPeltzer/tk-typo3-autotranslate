@@ -172,6 +172,8 @@ final class BatchTranslationRunner
 
     /**
      * Get the last run statistics from the registry.
+     *
+     * @return array{timestamp: int, processed: int, succeeded: int, failed: int, remainingPending: int}|null
      */
     public function getLastRunStatistics(): ?array
     {

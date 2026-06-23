@@ -12,6 +12,8 @@ final class PageUtility
 {
     /**
      * Get all subpage ids of a given page id recursively
+     *
+     * @return list<int>
      */
     public static function getSubpageIds(int $pageId, int $levels = 0): array
     {

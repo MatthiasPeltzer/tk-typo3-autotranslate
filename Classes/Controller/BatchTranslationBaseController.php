@@ -49,10 +49,12 @@ class BatchTranslationBaseController extends ActionController
     protected ?BatchItemRepository $batchItemRepository = null;
     protected ?LogRepository $logRepository = null;
 
+    /** @var array<string, mixed> */
     protected array $queryParams = [];
     protected int $pageUid = 0;
     protected int $levels = 0;
     protected string $moduleName = self::MODULE_NAME;
+    /** @var array<string, mixed> */
     protected array $deeplApiKeyDetails = [];
 
     // =========================================================================
@@ -88,6 +90,9 @@ class BatchTranslationBaseController extends ActionController
     // Initialization
     // =========================================================================
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getLogData(): array
     {
         $this->handleLogActions();
@@ -178,20 +183,31 @@ class BatchTranslationBaseController extends ActionController
     // Action Handlers
     // =========================================================================
 
+    /**
+     * @param list<array<string, mixed>> $logs
+     * @return list<array<string, mixed>>
+     */
     private function processLogs(array $logs): array
     {
-        return array_map(function (array $log): array {
-            $log['time_seconds'] = (int)($log['time_micro'] ?? 0);
-            $log['dataDecoded'] = $this->decodeLogData($log['data'] ?? '');
-            $log['dataDecodedJson'] = !empty($log['dataDecoded'])
-                ? json_encode($log['dataDecoded'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-                : '';
-            $log['parsed_message'] = LogUtility::interpolate($log['message'] ?? '', $log['dataDecoded']);
-            $log['formattedDate'] = $this->formatLogDate($log['time_micro'] ?? null);
-            return $log;
-        }, $logs);
+        return array_map(
+            /** @param array<string, mixed> $log */
+            function (array $log): array {
+                $log['time_seconds'] = (int)($log['time_micro'] ?? 0);
+                $log['dataDecoded'] = $this->decodeLogData($log['data'] ?? '');
+                $log['dataDecodedJson'] = !empty($log['dataDecoded'])
+                    ? json_encode($log['dataDecoded'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                    : '';
+                $log['parsed_message'] = LogUtility::interpolate($log['message'] ?? '', $log['dataDecoded']);
+                $log['formattedDate'] = $this->formatLogDate($log['time_micro'] ?? null);
+                return $log;
+            },
+            $logs
+        );
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     private function decodeLogData(string $data): array
     {
         if (empty($data)) {
@@ -212,6 +228,10 @@ class BatchTranslationBaseController extends ActionController
         return $dateTime ? $dateTime->format('Y-m-d H:i:s.u') : '';
     }
 
+    /**
+     * @param list<array<string, mixed>> $logs
+     * @return array<array-key, list<array<string, mixed>>>
+     */
     private function groupLogsByRequestId(array $logs): array
     {
         $grouped = [];
@@ -224,6 +244,9 @@ class BatchTranslationBaseController extends ActionController
         return $grouped;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getBatchTranslationData(): array
     {
         $this->handleBatchActions();
@@ -331,6 +354,9 @@ class BatchTranslationBaseController extends ActionController
     // Flash Messages
     // =========================================================================
 
+    /**
+     * @return list<BatchItem>
+     */
     private function getBatchItemsFromArgument(string $argument): array
     {
         if (!$this->hasMutationParam($argument)) {
@@ -453,6 +479,9 @@ class BatchTranslationBaseController extends ActionController
     // Navigation
     // =========================================================================
 
+    /**
+     * @return array<int, \TYPO3\CMS\Core\Site\Entity\SiteLanguage>
+     */
     private function getAccessibleLanguages(\TYPO3\CMS\Core\Site\Entity\Site $site): array
     {
         $languages = TranslationHelper::possibleTranslationLanguages($site->getLanguages());
@@ -470,6 +499,10 @@ class BatchTranslationBaseController extends ActionController
         return $filtered;
     }
 
+    /**
+     * @param array<int, \TYPO3\CMS\Core\Site\Entity\SiteLanguage> $languages
+     * @return array<int, BatchItem>
+     */
     private function getAccessibleBatchItems(array $languages): array
     {
         $items = $this->batchItemRepository->findAllRecursive($this->levels, $this->pageUid);
@@ -484,6 +517,9 @@ class BatchTranslationBaseController extends ActionController
         );
     }
 
+    /**
+     * @param array<int, \TYPO3\CMS\Core\Site\Entity\SiteLanguage>|null $languages
+     */
     private function isBatchItemAccessible(BatchItem $item, ?array $languages = null): bool
     {
         $pageRecord = BackendUtility::getRecordWSOL('pages', $item->getPid());
@@ -582,6 +618,11 @@ class BatchTranslationBaseController extends ActionController
         return true;
     }
 
+    /**
+     * @param array<int, \TYPO3\CMS\Core\Site\Entity\SiteLanguage> $languages
+     * @param array<string, mixed>|null $pageRecord
+     * @return array<string, mixed>
+     */
     private function buildCreateFormData(array $languages, ?array $pageRecord): array
     {
         $backendUser = $this->getBackendUser();
@@ -611,6 +652,9 @@ class BatchTranslationBaseController extends ActionController
     // Helper Methods
     // =========================================================================
 
+    /**
+     * @return array<int, string>
+     */
     private function translateMenuLevelItems(): array
     {
         $lang = $this->getLanguageService();
@@ -628,6 +672,9 @@ class BatchTranslationBaseController extends ActionController
         return $GLOBALS['LANG'];
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function translatePriorityOptions(): array
     {
         return $this->translateOptions([
@@ -637,6 +684,10 @@ class BatchTranslationBaseController extends ActionController
         ], 'autotranslate_batch.priority.');
     }
 
+    /**
+     * @param list<string> $keys
+     * @return array<string, string>
+     */
     private function translateOptions(array $keys, string $prefix): array
     {
         $lang = $this->getLanguageService();
@@ -649,6 +700,9 @@ class BatchTranslationBaseController extends ActionController
         return $result;
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function translateModeOptions(): array
     {
         return $this->translateOptions([
@@ -658,6 +712,9 @@ class BatchTranslationBaseController extends ActionController
         ], 'autotranslate_batch.mode.');
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function translateFrequencyOptions(): array
     {
         return $this->translateOptions([
@@ -702,6 +759,10 @@ class BatchTranslationBaseController extends ActionController
         $this->getBackendUser()->setAndSaveSessionData('autotranslate.levels', $levels);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     protected function getCommonTemplateVariables(array $data = []): array
     {
         $cacheStats = $this->translationCacheService->getCacheStatistics();
@@ -715,6 +776,9 @@ class BatchTranslationBaseController extends ActionController
         ]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getSchedulerStatus(): array
     {
         $runner = GeneralUtility::makeInstance(BatchTranslationRunner::class);

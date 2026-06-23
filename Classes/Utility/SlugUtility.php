@@ -16,7 +16,7 @@ final class SlugUtility
     /**
      * Get slug fields that should be generated for new items
      *
-     * @return array<string, array> Array of slug field configurations keyed by field name
+     * @return array<string, array<string, mixed>> Array of slug field configurations keyed by field name
      */
     public static function slugFields(string $table): array
     {
@@ -35,7 +35,7 @@ final class SlugUtility
     /**
      * Generate slug value for a specific field
      *
-     * @param array $record The record data
+     * @param array<string, mixed> $record The record data
      * @param string $table The table name
      * @param string $field The slug field name
      * @return string|null The generated slug or null on failure
