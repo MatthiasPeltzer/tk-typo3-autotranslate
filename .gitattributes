@@ -1,0 +1,6 @@
+# Enforce LF line endings for all text files, in the index and working tree.
+# Git auto-detects text vs binary; explicit rules below are belt-and-suspenders.
+* text=auto eol=lf
+
+# Binary assets — never alter their bytes / line endings
+*.png binary
