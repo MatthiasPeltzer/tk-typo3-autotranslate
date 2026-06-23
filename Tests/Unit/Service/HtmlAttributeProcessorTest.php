@@ -67,6 +67,48 @@ final class HtmlAttributeProcessorTest extends UnitTestCase
     }
 
     #[Test]
+    public function reusesSinglePlaceholderForIdenticalAttributeValuesInOneField(): void
+    {
+        $result = $this->subject->extractAttributes([
+            'bodytext' => '<a href="#a" title="Home">A</a><a href="#b" title="Home">B</a>',
+        ]);
+
+        self::assertArrayHasKey('__ATTR__1__', $result);
+        self::assertArrayNotHasKey('__ATTR__2__', $result, 'identical values must share one placeholder');
+        self::assertSame('Home', $result['__ATTR__1__']);
+        self::assertSame(2, substr_count($result['bodytext'], 'title="__ATTR__1__"'));
+    }
+
+    #[Test]
+    public function reusesSinglePlaceholderForIdenticalAttributeValuesAcrossFields(): void
+    {
+        $result = $this->subject->extractAttributes([
+            'header' => '<a href="#" title="Home">A</a>',
+            'bodytext' => '<a href="#" title="Home">B</a>',
+        ]);
+
+        self::assertArrayHasKey('__ATTR__1__', $result);
+        self::assertArrayNotHasKey('__ATTR__2__', $result, 'identical values across fields must share one placeholder');
+        self::assertStringContainsString('title="__ATTR__1__"', $result['header']);
+        self::assertStringContainsString('title="__ATTR__1__"', $result['bodytext']);
+    }
+
+    #[Test]
+    public function preservesAmpersandEntityWhileExtractingAndRestoring(): void
+    {
+        $extracted = $this->subject->extractAttributes([
+            'bodytext' => '<p>Tom &amp; Jerry <a href="#" title="Read more">x</a></p>',
+        ]);
+
+        self::assertStringContainsString('Tom &amp; Jerry', $extracted['bodytext'], 'encoded ampersand survives extraction');
+
+        $restored = $this->subject->restoreAttributes($extracted['bodytext'], ['__ATTR__1__' => 'Mehr lesen']);
+
+        self::assertStringContainsString('Tom &amp; Jerry', $restored, 'encoded ampersand survives restore');
+        self::assertStringContainsString('title="Mehr lesen"', $restored);
+    }
+
+    #[Test]
     public function restoreDoesNotConfusePlaceholderOneWithPlaceholderEleven(): void
     {
         // Restoring __ATTR__1__ must not corrupt __ATTR__11__ (the trailing "__"

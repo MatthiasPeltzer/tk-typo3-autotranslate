@@ -241,18 +241,6 @@ parameters:
 			path: ../Classes/EventListener/GlossarySyncButtonBarListener.php
 
 		-
-			message: '#^Parameter \$componentFactory of method ThieleUndKlose\\Autotranslate\\EventListener\\GlossarySyncButtonBarListener\:\:__construct\(\) has invalid type TYPO3\\CMS\\Backend\\Template\\Components\\ComponentFactory\.$#'
-			identifier: class.notFound
-			count: 1
-			path: ../Classes/EventListener/GlossarySyncButtonBarListener.php
-
-		-
-			message: '#^Property ThieleUndKlose\\Autotranslate\\EventListener\\GlossarySyncButtonBarListener\:\:\$componentFactory has unknown class TYPO3\\CMS\\Backend\\Template\\Components\\ComponentFactory as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: ../Classes/EventListener/GlossarySyncButtonBarListener.php
-
-		-
 			message: '#^Method ThieleUndKlose\\Autotranslate\\Hooks\\DataHandler\:\:processDatamap_afterDatabaseOperations\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1

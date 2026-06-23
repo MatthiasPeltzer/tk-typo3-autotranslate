@@ -200,6 +200,16 @@ class BatchTranslationController extends BatchTranslationBaseController
 
     public function createAction(): ResponseInterface
     {
+        if (!$this->isPostRequest()) {
+            $this->addFlashMessage(
+                'This action must be submitted via POST. Please use the module form.',
+                'Action not permitted',
+                ContextualFeedbackSeverity::WARNING
+            );
+
+            return $this->redirect('default');
+        }
+
         $data = $this->resolveFormData('batchItem');
 
         $batchItem = new BatchItem();

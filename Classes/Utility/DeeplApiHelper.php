@@ -42,6 +42,50 @@ final class DeeplApiHelper
     }
 
     /**
+     * Validate the DeepL API key and return display-ready usage info, cached for
+     * a short period. Used by the backend module so it does not perform a live
+     * DeepL usage request on every render. Only the derived display strings are
+     * stored (never the DeepL usage object), so the cache stays serializable.
+     *
+     * @return array{isValid: bool, usageText: ?string, charactersLeft: ?int, error: ?string}
+     */
+    public static function checkApiKeyForDisplay(?string $apiKey, int $ttl = 300): array
+    {
+        if (!$apiKey) {
+            return ['isValid' => false, 'usageText' => null, 'charactersLeft' => 0, 'error' => null];
+        }
+
+        $cacheIdentifier = 'deepl_usage_display_' . md5($apiKey);
+
+        try {
+            $cache = GeneralUtility::makeInstance(CacheManager::class)->getCache('autotranslate');
+        } catch (NoSuchCacheException) {
+            $cache = null;
+        }
+
+        if ($cache?->has($cacheIdentifier)) {
+            $data = $cache->get($cacheIdentifier);
+            if (is_array($data)) {
+                return $data;
+            }
+        }
+
+        $details = self::checkApiKey($apiKey);
+        $result = [
+            'isValid' => $details['isValid'],
+            'usageText' => $details['usage'] !== null ? (string)$details['usage'] : null,
+            'charactersLeft' => $details['charactersLeft'],
+            'error' => $details['error'],
+        ];
+
+        // Cache valid lookups for the full TTL; cache failures only briefly so a
+        // transient DeepL outage is not pinned to the module for long.
+        $cache?->set($cacheIdentifier, $result, [], $result['isValid'] ? $ttl : min($ttl, 60));
+
+        return $result;
+    }
+
+    /**
      * Get DeepL languages (source or target) with caching.
      *
      * @param string $type 'source' or 'target'

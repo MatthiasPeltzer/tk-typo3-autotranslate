@@ -203,21 +203,31 @@ final class BatchTranslationService implements LoggerAwareInterface
 
         $containers = Records::getRecords('tt_content', 'uid', $containerConstraints);
 
+        $visited = [];
         foreach ($containers as $containerUid) {
-            $this->translateContainerRecursively($translator, $constraints, (int)$containerUid, $targetLanguageUid, $mode);
+            $this->translateContainerRecursively($translator, $constraints, (int)$containerUid, $targetLanguageUid, $mode, $visited);
         }
     }
 
     /**
      * Recursively translate a container and its children
+     *
+     * @param array<int, true> $visited Container uids already processed (cycle guard, passed by reference)
      */
     private function translateContainerRecursively(
         Translator $translator,
         callable $constraints,
         int $containerUid,
         int $targetLanguageUid,
-        string $mode
+        string $mode,
+        array &$visited = []
     ): void {
+        // Guard against cyclic tx_gridelements_container references
+        if (isset($visited[$containerUid])) {
+            return;
+        }
+        $visited[$containerUid] = true;
+
         // Translate the container itself
         $translator->translate('tt_content', $containerUid, null, (string)$targetLanguageUid, $mode);
 
@@ -242,7 +252,7 @@ final class BatchTranslationService implements LoggerAwareInterface
 
             if ($record['CType'] === 'gridelements_pi1') {
                 // Nested container - recurse
-                $this->translateContainerRecursively($translator, $constraints, (int)$childUid, $targetLanguageUid, $mode);
+                $this->translateContainerRecursively($translator, $constraints, (int)$childUid, $targetLanguageUid, $mode, $visited);
             } else {
                 // Regular content element
                 $translator->translate('tt_content', (int)$childUid, null, (string)$targetLanguageUid, $mode);

@@ -33,7 +33,8 @@ class HtmlAttributeProcessor implements SingletonInterface
      */
     public function extractAttributes(array $toTranslate): array
     {
-        $attrMap = [];
+        $placeholders = [];
+        $originals = [];
         $attrCounter = 1;
 
         foreach ($toTranslate as $field => &$value) {
@@ -44,17 +45,24 @@ class HtmlAttributeProcessor implements SingletonInterface
             foreach (self::ATTRIBUTE_MAP as $map) {
                 $found = $this->extractHtmlAttributes($value, $map['tag'], $map['attr']);
                 foreach ($found as $attrValue) {
-                    $placeholder = '__ATTR__' . $attrCounter . '__';
-                    $attrMap[$placeholder] = $attrValue;
+                    // Reuse one placeholder per distinct value: replaceHtmlAttributeWithPlaceholder
+                    // already swaps every matching node, so identical values must not
+                    // spawn additional (unused) translation entries.
+                    if (!isset($placeholders[$attrValue])) {
+                        $placeholder = '__ATTR__' . $attrCounter . '__';
+                        $placeholders[$attrValue] = $placeholder;
+                        $originals[$placeholder] = $attrValue;
+                        $attrCounter++;
+                    }
+                    $placeholder = $placeholders[$attrValue];
                     $value = $this->replaceHtmlAttributeWithPlaceholder($value, $map['tag'], $map['attr'], $attrValue, $placeholder);
-                    $attrCounter++;
                 }
             }
         }
         unset($value);
 
         // Add the attributes as separate entries to translate
-        foreach ($attrMap as $placeholder => $original) {
+        foreach ($originals as $placeholder => $original) {
             $toTranslate[$placeholder] = $original;
         }
 

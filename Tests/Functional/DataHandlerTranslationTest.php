@@ -60,6 +60,53 @@ final class DataHandlerTranslationTest extends FunctionalTestCase
         self::assertSame('DE:Hello', $translation['header']);
         self::assertSame('DE:World', $translation['bodytext']);
         self::assertSame(1, $this->fakeClient->translateCallCount);
+
+        // Auto-translated fields are flagged "custom" so TYPO3 keeps them.
+        self::assertNotEmpty($translation['l10n_state']);
+        $state = json_decode((string)$translation['l10n_state'], true);
+        self::assertIsArray($state);
+        self::assertSame('custom', $state['header'] ?? null);
+        self::assertSame('custom', $state['bodytext'] ?? null);
+    }
+
+    #[Test]
+    public function updatingOnlyOneSourceFieldRetranslatesThatFieldOnly(): void
+    {
+        $sourceUid = $this->createDefaultContent('Hello', 'World');
+        $created = $this->fetchTranslation($sourceUid);
+        self::assertSame('DE:Hello', $created['header']);
+        self::assertSame('DE:World', $created['bodytext']);
+
+        $callsAfterCreate = $this->fakeClient->translateCallCount;
+
+        $this->updateContent($sourceUid, ['bodytext' => 'World changed']);
+
+        $updated = $this->fetchTranslation($sourceUid);
+        self::assertSame('DE:Hello', $updated['header'], 'unchanged field must not be retranslated');
+        self::assertSame('DE:World changed', $updated['bodytext']);
+        self::assertGreaterThan($callsAfterCreate, $this->fakeClient->translateCallCount);
+    }
+
+    #[Test]
+    public function manualCorrectionIsPreservedUntilSourceFieldChanges(): void
+    {
+        $sourceUid = $this->createDefaultContent('Hello', 'World');
+        $translation = $this->fetchTranslation($sourceUid);
+        $translationUid = (int)$translation['uid'];
+
+        // An editor manually corrects the German header; l10n_state keeps it "custom".
+        $this->setRawFields('tt_content', $translationUid, ['header' => 'Manuelle Korrektur']);
+
+        // Changing only the source bodytext must not overwrite the manual header.
+        $this->updateContent($sourceUid, ['bodytext' => 'World changed']);
+        $afterBodyChange = $this->fetchTranslation($sourceUid);
+        self::assertSame('Manuelle Korrektur', $afterBodyChange['header'], 'custom field preserved while source header unchanged');
+        self::assertSame('DE:World changed', $afterBodyChange['bodytext']);
+
+        // Changing the source header overwrites the manual correction.
+        $this->updateContent($sourceUid, ['header' => 'Hello again']);
+        $afterHeaderChange = $this->fetchTranslation($sourceUid);
+        self::assertSame('DE:Hello again', $afterHeaderChange['header'], 'custom field overwritten when source field changes');
     }
 
     #[Test]
@@ -137,6 +184,32 @@ final class DataHandlerTranslationTest extends FunctionalTestCase
         $dataHandler->process_datamap();
 
         return (int)$dataHandler->substNEWwithIDs['NEW1'];
+    }
+
+    /**
+     * Update a default-language record through the DataHandler so the
+     * autotranslate hook runs with status "update" and the changed fields.
+     *
+     * @param array<string, mixed> $fields
+     */
+    private function updateContent(int $uid, array $fields): void
+    {
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start(['tt_content' => [$uid => $fields]], []);
+        $dataHandler->process_datamap();
+    }
+
+    /**
+     * Write raw column values directly (bypassing the DataHandler/hook), used to
+     * simulate a manual editor correction on a translation.
+     *
+     * @param array<string, mixed> $fields
+     */
+    private function setRawFields(string $table, int $uid, array $fields): void
+    {
+        $this->getConnectionPool()
+            ->getConnectionForTable($table)
+            ->update($table, $fields, ['uid' => $uid]);
     }
 
     /**
