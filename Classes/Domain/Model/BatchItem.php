@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ThieleUndKlose\Autotranslate\Domain\Model;
 
 use DateInterval;
-use DateTime;
 use ThieleUndKlose\Autotranslate\Utility\Translator;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
@@ -151,12 +150,12 @@ class BatchItem extends AbstractEntity
     /**
      * Get the value of frequency and return it as DateInterval
      */
-    public function getFrequencyDateInterval(): ?DateInterval
+    public function getFrequencyDateInterval(): ?\DateInterval
     {
         return match ($this->getFrequency()) {
-            self::FREQUENCY_RECURRING => DateInterval::createFromDateString('1 second'),
-            self::FREQUENCY_DAILY => DateInterval::createFromDateString('1 day'),
-            self::FREQUENCY_WEEKLY => DateInterval::createFromDateString('1 week'),
+            self::FREQUENCY_RECURRING => \DateInterval::createFromDateString('1 second'),
+            self::FREQUENCY_DAILY => \DateInterval::createFromDateString('1 day'),
+            self::FREQUENCY_WEEKLY => \DateInterval::createFromDateString('1 week'),
             default => null,
         };
     }

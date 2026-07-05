@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\Service;
 
-use DateTime;
 use ThieleUndKlose\Autotranslate\Domain\Model\BatchItem;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -78,7 +77,7 @@ final class BatchTranslationRunner
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_NAME);
         $queryBuilder->getRestrictions()->removeAll();
 
-        $now = new DateTime();
+        $now = new \DateTime();
 
         $result = $queryBuilder
             ->select('*')
@@ -129,7 +128,7 @@ final class BatchTranslationRunner
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_NAME);
         $queryBuilder->getRestrictions()->removeAll();
 
-        $now = new DateTime();
+        $now = new \DateTime();
 
         return (int)$queryBuilder
             ->count('uid')

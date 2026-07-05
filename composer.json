@@ -22,7 +22,8 @@
     },
     "require-dev": {
         "typo3/testing-framework": "^8.0 || ^9.0",
-        "phpstan/phpstan": "^2.0"
+        "phpstan/phpstan": "^2.0",
+        "typo3/coding-standards": "^0.8.0"
     },
     "autoload": {
         "psr-4": {
@@ -52,7 +53,15 @@
         ],
         "test:unit": "phpunit -c Build/phpunit/UnitTests.xml",
         "test:functional": "phpunit -c Build/phpunit/FunctionalTests.xml",
-        "analyse": "phpstan analyse -c Build/phpstan.neon --memory-limit=1G"
+        "analyse": "phpstan analyse -c Build/phpstan.neon --memory-limit=1G",
+        "cs": [
+            "@putenv PHP_CS_FIXER_IGNORE_ENV=1",
+            "php .Build/bin/php-cs-fixer fix --dry-run -v --config .php-cs-fixer.dist.php"
+        ],
+        "cs:fix": [
+            "@putenv PHP_CS_FIXER_IGNORE_ENV=1",
+            "php .Build/bin/php-cs-fixer fix -v --config .php-cs-fixer.dist.php"
+        ]
     },
     "extra": {
         "typo3/cms": {

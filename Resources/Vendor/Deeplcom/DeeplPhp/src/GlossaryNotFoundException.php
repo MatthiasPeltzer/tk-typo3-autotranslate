@@ -9,6 +9,4 @@ namespace DeepL;
 /**
  * Exception thrown when the specified glossary could not be found.
  */
-class GlossaryNotFoundException extends NotFoundException
-{
-}
+class GlossaryNotFoundException extends NotFoundException {}

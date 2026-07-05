@@ -23,11 +23,11 @@ final class SyncGlossary extends Command
         $this
             ->setDescription('Synchronize Autotranslate glossary records with the DeepL API.')
             ->addOption(
-            'folder',
-            'f',
-            InputOption::VALUE_REQUIRED,
-            'UID of the glossary sysfolder page to synchronize.'
-        );
+                'folder',
+                'f',
+                InputOption::VALUE_REQUIRED,
+                'UID of the glossary sysfolder page to synchronize.'
+            );
         $this->addOption(
             'glossary',
             'g',

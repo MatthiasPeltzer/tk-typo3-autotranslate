@@ -9,6 +9,4 @@ namespace DeepL;
 /**
  * Exception thrown when the specified resource could not be found.
  */
-class NotFoundException extends DeepLException
-{
-}
+class NotFoundException extends DeepLException {}

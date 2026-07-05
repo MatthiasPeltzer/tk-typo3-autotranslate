@@ -124,7 +124,7 @@ final class Translator implements LoggerAwareInterface
         if ($languagesToTranslate === null) {
             $languagesToTranslate = $record[self::AUTOTRANSLATE_LANGUAGES] ?? '';
         }
-        
+
         // Fall back to site configuration default if record has no languages set
         // (the null case is already handled above, so only the empty string remains).
         if ($languagesToTranslate === '') {

@@ -111,7 +111,7 @@ final class CommonClassesStrategy implements DiscoveryStrategy
 
     public static function getCandidates($type)
     {
-        if (Psr18Client::class === $type) {
+        if ($type === Psr18Client::class) {
             return self::getPsr18Candidates();
         }
 

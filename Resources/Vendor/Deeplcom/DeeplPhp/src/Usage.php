@@ -6,8 +6,6 @@
 
 namespace DeepL;
 
-use JsonException;
-
 /**
  * Information about the API usage: how much has been translated in this billing period, and the
  * maximum allowable amount.
@@ -66,7 +64,7 @@ class Usage
     {
         try {
             $json = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
+        } catch (\JsonException $exception) {
             throw new InvalidContentException($exception);
         }
 

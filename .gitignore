@@ -12,6 +12,7 @@
 /.phpunit.cache/
 /.phpunit.result.cache
 /.phpstan/
+/.php-cs-fixer.cache
 
 # Local secrets / credentials — must never be committed.
 # (DeepL keys, Composer auth tokens, local env overrides.)

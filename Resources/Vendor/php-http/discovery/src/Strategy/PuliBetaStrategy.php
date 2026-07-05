@@ -36,7 +36,7 @@ class PuliBetaStrategy implements DiscoveryStrategy
      */
     private static function getPuliFactory()
     {
-        if (null === self::$puliFactory) {
+        if (self::$puliFactory === null) {
             if (!defined('PULI_FACTORY_CLASS')) {
                 throw new PuliUnavailableException('Puli Factory is not available');
             }

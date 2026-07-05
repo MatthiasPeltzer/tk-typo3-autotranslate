@@ -11,7 +11,6 @@ namespace DeepL;
  */
 class DocumentHandle
 {
-
     /**
      * @var string ID of associated document request.
      */

@@ -24,7 +24,7 @@ class Language
     public $code;
 
     /**
-     * @var boolean|null For target languages only, specifies whether the formality option is available for the target
+     * @var bool|null For target languages only, specifies whether the formality option is available for the target
      * language. This parameter is null for source languages.
      */
     public $supportsFormality;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\Service;
 
-use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use ThieleUndKlose\Autotranslate\Domain\Model\BatchItem;
@@ -62,7 +61,7 @@ final class BatchTranslationService implements LoggerAwareInterface
         try {
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             return $siteFinder->getSiteByPageId($item->getPid());
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logError($item, 'No site configuration found for pid {pid}.', ['pid' => $item->getPid()]);
             return null;
         }

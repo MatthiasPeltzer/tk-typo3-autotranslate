@@ -6,11 +6,8 @@
 
 namespace DeepL;
 
-use JsonException;
-
 class DeepLClient extends Translator
 {
-
     public function __construct(string $authKey, array $options = [])
     {
         parent::__construct($authKey, $options);
@@ -41,11 +38,11 @@ class DeepLClient extends Translator
             [HttpClientWrapper::OPTION_PARAMS => $params]
         );
         $this->checkStatusCode($response);
-        list(, $content) = $response;
+        [, $content] = $response;
 
         try {
             $json = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
+        } catch (\JsonException $exception) {
             throw new InvalidContentException($exception);
         }
 
@@ -79,7 +76,8 @@ class DeepLClient extends Translator
             $targetLang = LanguageCode::standardizeLanguageCode($targetLang);
             if ($targetLang === 'en') {
                 throw new DeepLException('targetLang="en" is deprecated, please use "en-GB" or "en-US" instead.');
-            } elseif ($targetLang === 'pt') {
+            }
+            if ($targetLang === 'pt') {
                 throw new DeepLException('targetLang="pt" is deprecated, please use "pt-PT" or "pt-BR" instead.');
             }
             $params['target_lang'] = $targetLang;

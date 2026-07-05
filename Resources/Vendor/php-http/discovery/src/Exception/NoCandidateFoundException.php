@@ -38,7 +38,7 @@ final class NoCandidateFoundException extends \Exception implements Exception
             return $mixed;
         }
 
-        if (is_array($mixed) && 2 === count($mixed)) {
+        if (is_array($mixed) && count($mixed) === 2) {
             return sprintf('%s::%s', $this->stringify($mixed[0]), $mixed[1]);
         }
 

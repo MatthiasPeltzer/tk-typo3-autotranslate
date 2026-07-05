@@ -10,6 +10,4 @@ namespace DeepL;
  * Exception thrown when the DeepL translation quota has been reached.
  * @see Translator::getUsage()
  */
-class QuotaExceededException extends DeepLException
-{
-}
+class QuotaExceededException extends DeepLException {}

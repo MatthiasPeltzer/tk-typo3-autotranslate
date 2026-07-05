@@ -133,9 +133,9 @@ class LanguageCode
 
         if (isset($exploded[1])) {
             return strtolower($exploded[0]) . '-' . strtoupper($exploded[1]);
-        } else {
-            return strtolower($exploded[0]);
         }
+        return strtolower($exploded[0]);
+
     }
 
     /**

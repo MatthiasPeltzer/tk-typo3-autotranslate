@@ -9,6 +9,4 @@ namespace DeepL;
 /**
  * Base exception for all exceptions thrown by this library.
  */
-class DeepLException extends \Exception
-{
-}
+class DeepLException extends \Exception {}

@@ -61,11 +61,11 @@ class DocumentMinifier
     /**
      * Which input document types are supported for minification.
      */
-    const SUPPORTED_DOCUMENT_TYPES = ['pptx' => true, 'docx' => true];
+    public const SUPPORTED_DOCUMENT_TYPES = ['pptx' => true, 'docx' => true];
     /**
      * Which media formats in the documents are supported for minification.
      */
-    const SUPPORTED_MEDIA_FORMATS = [
+    public const SUPPORTED_MEDIA_FORMATS = [
         // Image formats
         'png' => true,
         'jpg' => true,
@@ -94,12 +94,12 @@ class DocumentMinifier
         'mp3' => true,
         'm4a' => true,
         'wav' => true,
-        'wma' => true
+        'wma' => true,
     ];
-    const EXTRACTED_DOC_DIR_NAME = 'extracted_doc';
-    const ORIGINAL_MEDIA_DIR_NAME = 'original_media';
-    const MINIFIED_DOC_FILE_BASE_NAME = 'minifiedDoc';
-    const MINIFIED_DOC_SIZE_LIMIT_WARNING = 5000000;
+    public const EXTRACTED_DOC_DIR_NAME = 'extracted_doc';
+    public const ORIGINAL_MEDIA_DIR_NAME = 'original_media';
+    public const MINIFIED_DOC_FILE_BASE_NAME = 'minifiedDoc';
+    public const MINIFIED_DOC_SIZE_LIMIT_WARNING = 5000000;
 
     private $tempDir;
 
@@ -170,7 +170,7 @@ class DocumentMinifier
             if ($filesizeResponse > DocumentMinifier::MINIFIED_DOC_SIZE_LIMIT_WARNING) {
                 trigger_error(
                     'The input file could not be minified below 5 MB, likely a media type is unsupported. This might '
-                    .'cause translation to fail.',
+                    . 'cause translation to fail.',
                     E_USER_WARNING
                 );
             }
@@ -264,7 +264,7 @@ class DocumentMinifier
 
     private function exportMediaToMediaDirAndReplace(string $inputDirectory, string $mediaDirectory)
     {
-        $imageData = array();
+        $imageData = [];
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($inputDirectory));
         foreach ($iterator as $file) {
             if ($file->isFile() && array_key_exists($file->getExtension(), DocumentMinifier::SUPPORTED_MEDIA_FORMATS)) {

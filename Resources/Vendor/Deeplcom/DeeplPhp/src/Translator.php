@@ -6,8 +6,6 @@
 
 namespace DeepL;
 
-use JsonException;
-
 /**
  * Wrapper for the DeepL API for language translation.
  * Create an instance of Translator to use the DeepL API.
@@ -46,7 +44,8 @@ class Translator
         if (!is_string($serverUrl) || strlen($serverUrl) == 0) {
             throw new DeepLException('If specified, ' .
                 TranslatorOptions::SERVER_URL . ' option must be a non-empty string.');
-        } elseif (substr($serverUrl, -1) === "/") { // Remove trailing slash if present
+        }
+        if (substr($serverUrl, -1) === '/') { // Remove trailing slash if present
             $serverUrl = substr($serverUrl, 0, strlen($serverUrl) - 1);
         }
 
@@ -91,7 +90,7 @@ class Translator
     {
         $response = $this->client->sendRequestWithBackoff('GET', '/v2/usage');
         $this->checkStatusCode($response);
-        list(, $content) = $response;
+        [, $content] = $response;
         return new Usage($content);
     }
 
@@ -126,11 +125,11 @@ class Translator
     {
         $response = $this->client->sendRequestWithBackoff('GET', '/v2/glossary-language-pairs');
         $this->checkStatusCode($response);
-        list(, $content) = $response;
+        [, $content] = $response;
 
         try {
             $decoded = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
+        } catch (\JsonException $exception) {
             throw new InvalidContentException($exception);
         }
 
@@ -163,7 +162,7 @@ class Translator
             $options[TranslateTextOptions::GLOSSARY] ?? null
         );
         // Always send show_billed_characters=1, remove when the API default is changed to true
-        $params["show_billed_characters"] = "1";
+        $params['show_billed_characters'] = '1';
         $this->validateAndAppendTexts($params, $texts);
         $this->validateAndAppendTextOptions($params, $options);
 
@@ -174,7 +173,7 @@ class Translator
         );
         $this->checkStatusCode($response);
 
-        list(, $content) = $response;
+        [, $content] = $response;
 
         // DeepL API responses might have invalid UTF8 sequence
         // @see https://github.com/DeepLcom/deepl-php/pull/43
@@ -183,7 +182,7 @@ class Translator
 
         try {
             $decoded = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
+        } catch (\JsonException $exception) {
             throw new InvalidContentException($exception);
         }
 
@@ -284,10 +283,10 @@ class Translator
         );
         $this->checkStatusCode($response);
 
-        list(, $content) = $response;
+        [, $content] = $response;
         try {
             $json = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
+        } catch (\JsonException $exception) {
             throw new InvalidContentException($exception);
         }
 
@@ -310,7 +309,7 @@ class Translator
             [HttpClientWrapper::OPTION_PARAMS => ['document_key' => $handle->documentKey]]
         );
         $this->checkStatusCode($response);
-        list(, $content) = $response;
+        [, $content] = $response;
         return new DocumentStatus($content);
     }
 
@@ -404,7 +403,7 @@ class Translator
             [HttpClientWrapper::OPTION_PARAMS => $params]
         );
         $this->checkStatusCode($response, false, true);
-        list(, $content) = $response;
+        [, $content] = $response;
         return GlossaryInfo::parse($content);
     }
 
@@ -445,7 +444,7 @@ class Translator
             [HttpClientWrapper::OPTION_PARAMS => $params]
         );
         $this->checkStatusCode($response, false, true);
-        list(, $content) = $response;
+        [, $content] = $response;
         return GlossaryInfo::parse($content);
     }
 
@@ -459,7 +458,7 @@ class Translator
     {
         $response = $this->client->sendRequestWithBackoff('GET', "/v2/glossaries/$glossaryId");
         $this->checkStatusCode($response, false, true);
-        list(, $content) = $response;
+        [, $content] = $response;
         return GlossaryInfo::parse($content);
     }
 
@@ -472,7 +471,7 @@ class Translator
     {
         $response = $this->client->sendRequestWithBackoff('GET', '/v2/glossaries');
         $this->checkStatusCode($response, false, true);
-        list(, $content) = $response;
+        [, $content] = $response;
         return GlossaryInfo::parseList($content);
     }
 
@@ -487,7 +486,7 @@ class Translator
         $glossaryId = is_string($glossary) ? $glossary : $glossary->glossaryId;
         $response = $this->client->sendRequestWithBackoff('GET', "/v2/glossaries/$glossaryId/entries");
         $this->checkStatusCode($response, false, true);
-        list(, $content) = $response;
+        [, $content] = $response;
         return GlossaryEntries::fromTsv($content);
     }
 
@@ -517,11 +516,11 @@ class Translator
             [HttpClientWrapper::OPTION_PARAMS => ['type' => $target ? 'target' : 'source']]
         );
         $this->checkStatusCode($response);
-        list(, $content) = $response;
+        [, $content] = $response;
 
         try {
             $decoded = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
+        } catch (\JsonException $exception) {
             throw new InvalidContentException($exception);
         }
 
@@ -545,9 +544,9 @@ class Translator
     {
         if (is_string($tagList)) {
             return $tagList;
-        } else {
-            return implode(',', $tagList);
         }
+        return implode(',', $tagList);
+
     }
 
     /**
@@ -582,7 +581,8 @@ class Translator
 
         if ($targetLang === 'en') {
             throw new DeepLException('targetLang="en" is deprecated, please use "en-GB" or "en-US" instead.');
-        } elseif ($targetLang === 'pt') {
+        }
+        if ($targetLang === 'pt') {
             throw new DeepLException('targetLang="pt" is deprecated, please use "pt-PT" or "pt-BR" instead.');
         }
 
@@ -697,9 +697,9 @@ class Translator
      */
     protected function checkStatusCode(array $response, bool $inDocumentDownload = false, bool $usingGlossary = false)
     {
-        list($statusCode, $content) = $response;
+        [$statusCode, $content] = $response;
 
-        if (200 <= $statusCode && $statusCode < 400) {
+        if ($statusCode >= 200 && $statusCode < 400) {
             return;
         }
 
@@ -736,9 +736,9 @@ class Translator
             case 503:
                 if ($inDocumentDownload) {
                     throw new DocumentNotReadyException("Document not ready$message");
-                } else {
-                    throw new DeepLException("Service unavailable$message");
                 }
+                throw new DeepLException("Service unavailable$message");
+
                 break; // break required by phpcs although it is unnecessary
             default:
                 throw new DeepLException(
@@ -765,7 +765,7 @@ class Translator
         try {
             if ($sendPlatformInfo) {
                 $platformStr = php_uname('s') . ' ' . php_uname('r') . ' ' . php_uname('v') . php_uname('m');
-                $phpVersion = phpversion();
+                $phpVersion = PHP_VERSION;
                 $libraryInfoStr .= " ($platformStr) php/$phpVersion";
                 $curlVer = curl_version()['version'];
                 $libraryInfoStr .= " curl/$curlVer";

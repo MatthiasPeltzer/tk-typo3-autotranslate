@@ -7,6 +7,4 @@ namespace Http\Discovery;
  *
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-interface Exception extends \Throwable
-{
-}
+interface Exception extends \Throwable {}

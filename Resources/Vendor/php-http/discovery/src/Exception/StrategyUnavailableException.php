@@ -10,6 +10,4 @@ use Http\Discovery\Exception;
  *
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class StrategyUnavailableException extends \RuntimeException implements Exception
-{
-}
+class StrategyUnavailableException extends \RuntimeException implements Exception {}

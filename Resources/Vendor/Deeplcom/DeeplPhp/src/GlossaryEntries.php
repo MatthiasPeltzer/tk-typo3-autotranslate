@@ -35,7 +35,8 @@ class GlossaryEntries
             $terms = explode("\t", $lineTrimmed, 3);
             if (count($terms) < 2) {
                 throw new DeepLException("Entry on line $lineNumber does not contain separator: $line");
-            } elseif (count($terms) > 2) {
+            }
+            if (count($terms) > 2) {
                 throw new DeepLException("Entry on line $lineNumber contains more than one term separator: $line");
             }
             $source = $terms[0];
@@ -96,8 +97,8 @@ class GlossaryEntries
         foreach (mb_str_split($termTrimmed, 1, 'utf-8') as $ch) {
             $ord = mb_ord($ch);
             if ($ord === false || // Conversion failed
-                (0 <= $ord && $ord <= 31) || // C0 control characters
-                (128 <= $ord && $ord <= 159) || // C1 control characters
+                ($ord >= 0 && $ord <= 31) || // C0 control characters
+                ($ord >= 128 && $ord <= 159) || // C1 control characters
                 $ord == 0x2028 || $ord == 0x2029 // Unicode newlines
             ) {
                 $hex = dechex($ord);

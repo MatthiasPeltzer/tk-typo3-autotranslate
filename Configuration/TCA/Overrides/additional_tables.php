@@ -21,7 +21,7 @@ foreach (TranslationHelper::additionalTables() as $table) {
                 'items' => [
                     [
                         'label' => '',
-                    ]
+                    ],
                 ],
             ],
         ],
@@ -43,7 +43,7 @@ foreach (TranslationHelper::additionalTables() as $table) {
                 'type' => 'datetime',
                 'size' => 13,
                 'readOnly' => true,
-                'default' => 0
+                'default' => 0,
             ],
         ],
         'autotranslate_source_hash' => [

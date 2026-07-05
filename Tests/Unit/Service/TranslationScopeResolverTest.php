@@ -24,7 +24,7 @@ final class TranslationScopeResolverTest extends UnitTestCase
 
     private function enableChangedFieldsOnly(bool $enabled): void
     {
-        $extensionConfiguration = $this->createStub(ExtensionConfiguration::class);
+        $extensionConfiguration = self::createStub(ExtensionConfiguration::class);
         $extensionConfiguration->method('get')->willReturn(['translateChangedFieldsOnly' => $enabled]);
         GeneralUtility::addInstance(ExtensionConfiguration::class, $extensionConfiguration);
     }

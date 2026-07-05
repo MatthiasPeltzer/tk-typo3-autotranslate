@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use ThieleUndKlose\Autotranslate\Utility\DeeplApiHelper;
+use ThieleUndKlose\Autotranslate\Utility\TranslationHelper;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use ThieleUndKlose\Autotranslate\Utility\TranslationHelper;
 
 $siteConfiguration = isset($_REQUEST['site'])
     ? GeneralUtility::makeInstance(SiteFinder::class)->getSiteByIdentifier($_REQUEST['site'])->getConfiguration()
@@ -62,7 +62,7 @@ $GLOBALS['SiteConfiguration']['site']['columns']['autotranslateUseDeeplGlossary'
         'items' => [
             [
                 'label' => '',
-            ]
+            ],
         ],
     ],
 ];
@@ -121,7 +121,7 @@ foreach ($tablesToTranslate as $table) {
             'items' => [
                 [
                     'label' => '',
-                ]
+                ],
             ],
         ],
     ];

@@ -53,9 +53,9 @@ return [
                 'type' => 'check',
                 'items' => [
                     [
-                        'label' => ''
-                    ]
-                ]
+                        'label' => '',
+                    ],
+                ],
             ],
         ],
         'translate' => [
@@ -85,7 +85,7 @@ return [
                     ['label' => 'LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.mode.' . \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_CREATE_ONLY, 'value' => \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_CREATE_ONLY],
                 ],
                 'default' => \ThieleUndKlose\Autotranslate\Utility\Translator::TRANSLATE_MODE_BOTH,
-                'required' => true
+                'required' => true,
             ],
         ],
         'frequency' => [
@@ -101,7 +101,7 @@ return [
                     ['label' => 'LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:autotranslate_batch.frequency.daily', 'value' => \ThieleUndKlose\Autotranslate\Domain\Model\BatchItem::FREQUENCY_DAILY],
                 ],
                 'default' => \ThieleUndKlose\Autotranslate\Domain\Model\BatchItem::FREQUENCY_ONCE,
-                'required' => true
+                'required' => true,
             ],
         ],
         'error' => [

@@ -144,7 +144,7 @@ final class Records
      *
      * @param string $table Table name
      * @param string $fields Comma-separated field names
-     * @param null|callable $constraintsBuilder Optional callback receiving the QueryBuilder
+     * @param callable|null $constraintsBuilder Optional callback receiving the QueryBuilder
      * @return list<mixed> First column values of matching records
      */
     public static function getRecords(string $table, string $fields, ?callable $constraintsBuilder = null): array

@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\Service;
 
+use DeepL\TextResult;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use DeepL\TextResult;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class TranslationCacheService
 {
@@ -41,7 +42,7 @@ final class TranslationCacheService
             'texts' => $toTranslate,
             'source' => $sourceLang,
             'target' => $targetLang,
-            'options' => $this->normalizeOptions($options)
+            'options' => $this->normalizeOptions($options),
         ];
 
         return 'translation_' . md5(serialize($cacheData));
@@ -91,7 +92,7 @@ final class TranslationCacheService
             return [
                 'cached' => [],
                 'uncached' => $toTranslate,
-                'mapping' => array_keys($toTranslate)
+                'mapping' => array_keys($toTranslate),
             ];
         }
 
@@ -119,7 +120,7 @@ final class TranslationCacheService
         return [
             'cached' => $cachedResults,
             'uncached' => $uncachedTexts,
-            'mapping' => $indexMapping
+            'mapping' => $indexMapping,
         ];
     }
 
@@ -200,9 +201,9 @@ final class TranslationCacheService
                 $results[$index] = null;
                 continue;
             }
-            
+
             // Create TextResult-like object (since TextResult constructor is protected)
-            $result = new class($data['text'], $data['detected_source_lang'], $data['billed_characters']) {
+            $result = new class ($data['text'], $data['detected_source_lang'], $data['billed_characters']) {
                 public function __construct(
                     public string $text,
                     public ?string $detectedSourceLang,
@@ -231,9 +232,9 @@ final class TranslationCacheService
         }
     }
 
-   /**
-     * Get number of cached translation entries
-     */
+    /**
+      * Get number of cached translation entries
+      */
     public function getCacheEntryCount(): int
     {
         if ($this->cache === null) {
@@ -270,7 +271,7 @@ final class TranslationCacheService
                 'entries' => 0,
                 'backend' => null,
                 'size' => 0,
-                'size_formatted' => '0 B'
+                'size_formatted' => '0 B',
             ];
         }
 
@@ -283,7 +284,7 @@ final class TranslationCacheService
             'entries' => $entryCount,
             'backend' => get_class($backend),
             'size' => $cacheSize,
-            'size_formatted' => $this->formatBytes($cacheSize)
+            'size_formatted' => $this->formatBytes($cacheSize),
         ];
     }
 

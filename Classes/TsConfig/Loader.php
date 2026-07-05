@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\TsConfig;
 
-use TYPO3\CMS\Core\TypoScript\IncludeTree\Event\ModifyLoadedPageTsConfigEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use ThieleUndKlose\Autotranslate\Utility\TranslationHelper;
 use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Core\TypoScript\IncludeTree\Event\ModifyLoadedPageTsConfigEvent;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 final class Loader
 {

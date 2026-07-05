@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\Controller;
 
-use DateTime;
-use DateTimeZone;
-use Exception;
 use ThieleUndKlose\Autotranslate\Domain\Model\BatchItem;
 use ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository;
 use ThieleUndKlose\Autotranslate\Domain\Repository\LogRepository;
@@ -224,7 +221,7 @@ class BatchTranslationBaseController extends ActionController
             return '';
         }
 
-        $dateTime = DateTime::createFromFormat('U.u', sprintf('%.6f', $timeMicro));
+        $dateTime = \DateTime::createFromFormat('U.u', sprintf('%.6f', $timeMicro));
         return $dateTime ? $dateTime->format('Y-m-d H:i:s.u') : '';
     }
 
@@ -421,7 +418,7 @@ class BatchTranslationBaseController extends ActionController
 
                 $this->batchItemRepository->update($item);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->showError('Error during translation', 'An error occurred: ' . $e->getMessage());
         }
     }
@@ -461,7 +458,7 @@ class BatchTranslationBaseController extends ActionController
         try {
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             return $siteFinder->getSiteByPageId($this->pageUid);
-        } catch (Exception) {
+        } catch (\Exception) {
             $this->showWarning(
                 'No site configuration found',
                 'Please select a configured page or create a new site configuration.'
@@ -540,7 +537,7 @@ class BatchTranslationBaseController extends ActionController
             try {
                 $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($item->getPid());
                 $languages = TranslationHelper::possibleTranslationLanguages($site->getLanguages());
-            } catch (Exception) {
+            } catch (\Exception) {
                 return false;
             }
         }
@@ -631,7 +628,7 @@ class BatchTranslationBaseController extends ActionController
         if ($pageRecord && $backendUser->doesUserHaveAccess($pageRecord, Permission::CONTENT_EDIT)) {
             $batchItem = new BatchItem();
             $batchItem->setPid($this->pageUid);
-            $batchItem->setTranslate(new DateTime());
+            $batchItem->setTranslate(new \DateTime());
         } else {
             $this->showWarning('No translations available', 'Please choose another page or contact the administrator.');
         }
@@ -865,8 +862,8 @@ class BatchTranslationBaseController extends ActionController
     private function adjustTimezoneOffset(BatchItem $batchItem): void
     {
         $context = GeneralUtility::makeInstance(Context::class);
-        $timezone = new DateTimeZone($context->getPropertyFromAspect('date', 'timezone'));
-        $offset = $timezone->getOffset(new DateTime('now'));
+        $timezone = new \DateTimeZone($context->getPropertyFromAspect('date', 'timezone'));
+        $offset = $timezone->getOffset(new \DateTime('now'));
 
         if ($offset !== 0) {
             $translateTime = $batchItem->getTranslate();

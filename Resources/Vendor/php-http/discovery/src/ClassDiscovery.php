@@ -188,14 +188,14 @@ abstract class ClassDiscovery
             return self::safeClassExists($condition);
         }
         if (is_callable($condition)) {
-            return (bool) $condition();
+            return (bool)$condition();
         }
         if (is_bool($condition)) {
             return $condition;
         }
         if (is_array($condition)) {
             foreach ($condition as $c) {
-                if (false === static::evaluateCondition($c)) {
+                if (static::evaluateCondition($c) === false) {
                     // Immediately stop execution if the condition is false
                     return false;
                 }

@@ -9,6 +9,4 @@ namespace DeepL;
 /**
  * Exception thrown when too many requests are made to the DeepL API too quickly.
  */
-class TooManyRequestsException extends DeepLException
-{
-}
+class TooManyRequestsException extends DeepLException {}

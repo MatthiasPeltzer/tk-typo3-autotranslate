@@ -16,8 +16,8 @@ return [
         'iconIdentifier' => 'autotranslate-backend',
         'controllerActions' => [
             BatchTranslationController::class => [
-                'default', 'showLogs', 'create'
-            ]
+                'default', 'showLogs', 'create',
+            ],
         ],
     ],
 ];

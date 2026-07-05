@@ -10,11 +10,11 @@ use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18Client;
 use Http\Message\MultipartStream\MultipartStreamBuilder;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
-use Psr\Http\Client\ClientInterface;
 
 /**
  * Internal class implementing HTTP requests.
@@ -48,12 +48,12 @@ class HttpClientWrapper
     public const OPTION_OUTFILE = 'outfile';
 
     public function __construct(
-        string           $serverUrl,
-        array            $headers,
-        float            $timeout,
-        int              $maxRetries,
+        string $serverUrl,
+        array $headers,
+        float $timeout,
+        int $maxRetries,
         ?LoggerInterface $logger,
-        ?string          $proxy,
+        ?string $proxy,
         ?ClientInterface $customHttpClient = null
     ) {
         $this->serverUrl = $serverUrl;
@@ -128,12 +128,12 @@ class HttpClientWrapper
 
         if ($exception !== null) {
             throw $exception;
-        } else {
-            list($statusCode, $content) = $response;
-            $this->logInfo("DeepL API response $method $url $statusCode");
-            $this->logDebug("Response details: $content");
-            return $response;
         }
+        [$statusCode, $content] = $response;
+        $this->logInfo("DeepL API response $method $url $statusCode");
+        $this->logDebug("Response details: $content");
+        return $response;
+
     }
 
     /**
@@ -161,9 +161,9 @@ class HttpClientWrapper
     ): array {
         if ($this->customHttpClient !== null) {
             return $this->sendCustomHttpRequest($method, $url, $headers, $params, $filePath, $outFile);
-        } else {
-            return $this->sendCurlRequest($method, $url, $timeout, $headers, $params, $filePath, $outFile);
         }
+        return $this->sendCurlRequest($method, $url, $timeout, $headers, $params, $filePath, $outFile);
+
     }
 
     /**
@@ -224,7 +224,7 @@ class HttpClientWrapper
         $request = $this->createHttpRequest($method, $url, $headers, $body);
         try {
             $response = $this->customHttpClient->sendRequest($request);
-            $response_data = (string) $response->getBody();
+            $response_data = (string)$response->getBody();
             if ($outFile) {
                 fwrite($outFile, $response_data);
             }
@@ -261,10 +261,10 @@ class HttpClientWrapper
         $curlOptions[\CURLOPT_HEADER] = false;
 
         switch ($method) {
-            case "POST":
+            case 'POST':
                 $curlOptions[\CURLOPT_POST] = true;
                 break;
-            case "GET":
+            case 'GET':
                 $curlOptions[\CURLOPT_HTTPGET] = true;
                 break;
             default:
@@ -314,27 +314,27 @@ class HttpClientWrapper
         if ($result !== false) {
             $statusCode = curl_getinfo($this->curlHandle, CURLINFO_HTTP_CODE);
             return [$statusCode, $result];
-        } else {
-            $errorMessage = \curl_error($this->curlHandle);
-            $errorCode = \curl_errno($this->curlHandle);
-            switch ($errorCode) {
-                case \CURLE_UNSUPPORTED_PROTOCOL:
-                case \CURLE_URL_MALFORMAT:
-                case \CURLE_URL_MALFORMAT_USER:
-                    $shouldRetry = false;
-                    $errorMessage = "Invalid server URL. $errorMessage";
-                    break;
-                case \CURLE_OPERATION_TIMEOUTED:
-                case \CURLE_COULDNT_CONNECT:
-                case \CURLE_GOT_NOTHING:
-                    $shouldRetry = true;
-                    break;
-                default:
-                    $shouldRetry = false;
-                    break;
-            }
-            throw new ConnectionException($errorMessage, $errorCode, null, $shouldRetry);
         }
+        $errorMessage = \curl_error($this->curlHandle);
+        $errorCode = \curl_errno($this->curlHandle);
+        switch ($errorCode) {
+            case \CURLE_UNSUPPORTED_PROTOCOL:
+            case \CURLE_URL_MALFORMAT:
+            case \CURLE_URL_MALFORMAT_USER:
+                $shouldRetry = false;
+                $errorMessage = "Invalid server URL. $errorMessage";
+                break;
+            case \CURLE_OPERATION_TIMEOUTED:
+            case \CURLE_COULDNT_CONNECT:
+            case \CURLE_GOT_NOTHING:
+                $shouldRetry = true;
+                break;
+            default:
+                $shouldRetry = false;
+                break;
+        }
+        throw new ConnectionException($errorMessage, $errorCode, null, $shouldRetry);
+
     }
 
     private function shouldRetry(?array $response, ?ConnectionException $exception): bool
@@ -342,7 +342,7 @@ class HttpClientWrapper
         if ($exception !== null) {
             return $exception->shouldRetry;
         }
-        list($statusCode, ) = $response;
+        [$statusCode] = $response;
 
         // Retry on Too-Many-Requests error and internal errors
         return $statusCode === 429 || $statusCode >= 500;
@@ -385,6 +385,6 @@ class HttpClientWrapper
             }
         }
 
-        return implode("&", $fields);
+        return implode('&', $fields);
     }
 }

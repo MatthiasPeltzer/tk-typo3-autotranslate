@@ -13,7 +13,7 @@ namespace DeepL;
  */
 class DocumentMinificationException extends DocumentTranslationException
 {
-    public function __construct($message = "", $code = 0, $previous = null, ?DocumentHandle $handle = null)
+    public function __construct($message = '', $code = 0, $previous = null, ?DocumentHandle $handle = null)
     {
         parent::__construct($message, $code, $previous, $handle);
     }

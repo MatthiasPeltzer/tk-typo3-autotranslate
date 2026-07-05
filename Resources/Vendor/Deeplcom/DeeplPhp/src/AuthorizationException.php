@@ -9,6 +9,4 @@ namespace DeepL;
 /**
  * Exception thrown when the specified authentication key was invalid.
  */
-class AuthorizationException extends DeepLException
-{
-}
+class AuthorizationException extends DeepLException {}

@@ -6,8 +6,6 @@
 
 namespace DeepL;
 
-use JsonException;
-
 /**
  * Status of a document translation request.
  */
@@ -23,12 +21,12 @@ class DocumentStatus
     public $status;
 
     /**
-     * @var integer|null Estimated time until document translation completes in seconds, otherwise null if unknown.
+     * @var int|null Estimated time until document translation completes in seconds, otherwise null if unknown.
      */
     public $secondsRemaining;
 
     /**
-     * @var integer|null Number of characters billed for this document, or null if unknown or before translation is
+     * @var int|null Number of characters billed for this document, or null if unknown or before translation is
      * complete.
      */
     public $billedCharacters;
@@ -45,7 +43,7 @@ class DocumentStatus
     {
         try {
             $json = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
+        } catch (\JsonException $exception) {
             throw new InvalidContentException($exception);
         }
 

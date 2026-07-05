@@ -185,7 +185,7 @@ class Psr17Factory implements RequestFactoryInterface, ResponseFactoryInterface,
 
         $headers = [];
         foreach ($server as $k => $v) {
-            if (0 === strpos($k, 'HTTP_')) {
+            if (str_starts_with($k, 'HTTP_')) {
                 $k = substr($k, 5);
             } elseif (!\in_array($k, ['CONTENT_TYPE', 'CONTENT_LENGTH', 'CONTENT_MD5'], true)) {
                 continue;
@@ -199,7 +199,7 @@ class Psr17Factory implements RequestFactoryInterface, ResponseFactoryInterface,
             if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
                 $headers['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
             } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
-                $headers['Authorization'] = 'Basic '.base64_encode($_SERVER['PHP_AUTH_USER'].':'.($_SERVER['PHP_AUTH_PW'] ?? ''));
+                $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . ($_SERVER['PHP_AUTH_PW'] ?? ''));
             } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
                 $headers['Authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
             }
@@ -218,11 +218,11 @@ class Psr17Factory implements RequestFactoryInterface, ResponseFactoryInterface,
 
     private function buildUriFromGlobals(UriInterface $uri, array $server): UriInterface
     {
-        $uri = $uri->withScheme(!empty($server['HTTPS']) && 'off' !== strtolower($server['HTTPS']) ? 'https' : 'http');
+        $uri = $uri->withScheme(!empty($server['HTTPS']) && strtolower($server['HTTPS']) !== 'off' ? 'https' : 'http');
 
         $hasPort = false;
         if (isset($server['HTTP_HOST'])) {
-            $parts = parse_url('http://'.$server['HTTP_HOST']);
+            $parts = parse_url('http://' . $server['HTTP_HOST']);
 
             $uri = $uri->withHost($parts['host'] ?? 'localhost');
 
