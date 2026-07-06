@@ -51,7 +51,7 @@ final class DeeplTranslationClientTest extends UnitTestCase
             $this->calls[] = ['texts' => array_values($texts), 'options' => $options];
 
             return array_map(
-                static fn(string $text): TextResult => new TextResult('T:' . $text, 'en', strlen($text)),
+                static fn (string $text): TextResult => new TextResult('T:' . $text, 'en', strlen($text)),
                 array_values($texts)
             );
         };
@@ -113,7 +113,7 @@ final class DeeplTranslationClientTest extends UnitTestCase
 
         $htmlCall = array_values(array_filter(
             $this->calls,
-            static fn(array $call): bool => ($call['options'][TranslateTextOptions::TAG_HANDLING] ?? null) === 'html'
+            static fn (array $call): bool => ($call['options'][TranslateTextOptions::TAG_HANDLING] ?? null) === 'html'
         ));
         self::assertCount(1, $htmlCall);
         self::assertSame(['<p>Rich</p>'], $htmlCall[0]['texts']);

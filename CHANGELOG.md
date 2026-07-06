@@ -5,6 +5,7 @@
 ### Changed
 - Adopt TYPO3 coding standards (`typo3/coding-standards`): `.php-cs-fixer.dist.php`, `.editorconfig`, and `composer cs` / `composer cs:fix` scripts.
 - Raise PHPStan to level 8 and remove the baseline; tighten typing across controllers, services, and utilities for TYPO3 13/14 compatibility.
+- Enable SQLite for functional tests; switch PHP-CS-Fixer to `@PER-CS1x0` and drop deprecated `PHP_CS_FIXER_IGNORE_ENV`.
 
 ### Tests
 - Remove obsolete `ReflectionMethod::setAccessible()` call in `MaskApiKeyTest` (deprecated in PHP 8.5).

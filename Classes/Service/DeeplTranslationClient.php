@@ -278,7 +278,7 @@ class DeeplTranslationClient implements DeeplTranslationClientInterface, Singlet
         }
 
         // Cache complete result (only if all results are valid)
-        $validResults = array_filter($finalResults, static fn($result) => $result !== null);
+        $validResults = array_filter($finalResults, static fn ($result) => $result !== null);
         if (count($validResults) === count($finalResults)) {
             $this->cacheService->setCachedTranslation($completeCacheKey, $finalResults);
         } else {

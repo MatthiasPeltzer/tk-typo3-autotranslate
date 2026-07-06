@@ -100,7 +100,7 @@ $palettes['deeplFormality'] = ['showitem' => 'autotranslateDeeplFormality'];
 $tablesToTranslate = TranslationHelper::tablesToTranslate();
 
 $possibleTranslationLanguages = array_map(
-    fn($v) => $v['languageId'] . ' => ' . ($v['title'] ?? 'no title defined'),
+    fn ($v) => $v['languageId'] . ' => ' . ($v['title'] ?? 'no title defined'),
     TranslationHelper::possibleTranslationLanguages($siteConfiguration['languages'] ?? [])
 );
 $possibleTranslationLanguagesDescription = !empty($possibleTranslationLanguages)

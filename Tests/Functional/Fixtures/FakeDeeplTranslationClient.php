@@ -48,7 +48,7 @@ final class FakeDeeplTranslationClient extends DeeplTranslationClient
         $prefix = strtoupper($targetLang) . ':';
 
         return array_map(
-            static fn(string $text): object => new class ($prefix . $text) {
+            static fn (string $text): object => new class ($prefix . $text) {
                 public function __construct(public readonly string $text) {}
             },
             array_values($toTranslate)

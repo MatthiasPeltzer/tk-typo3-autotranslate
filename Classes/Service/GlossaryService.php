@@ -50,7 +50,7 @@ final class GlossaryService
         Translator $translator
     ): ?Glossary {
         $glossaryIds = array_map(
-            static fn($glossary) => $glossary->glossaryId,
+            static fn ($glossary) => $glossary->glossaryId,
             $translator->listGlossaries()
         );
         if ($glossaryIds === []) {

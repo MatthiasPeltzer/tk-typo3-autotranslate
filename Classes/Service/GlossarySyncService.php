@@ -182,7 +182,7 @@ final class GlossarySyncService
             ->executeQuery()
             ->fetchAllAssociative();
 
-        return array_map(static fn(array $row): int => (int)$row['uid'], $rows);
+        return array_map(static fn (array $row): int => (int)$row['uid'], $rows);
     }
 
     /**

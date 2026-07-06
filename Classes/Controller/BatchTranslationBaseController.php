@@ -367,10 +367,10 @@ class BatchTranslationBaseController extends ActionController
 
         $items = array_filter(
             array_map(
-                fn($uid) => $this->batchItemRepository->findByUid((int)$uid),
+                fn ($uid) => $this->batchItemRepository->findByUid((int)$uid),
                 $uids
             ),
-            fn($item) => $item instanceof BatchItem
+            fn ($item) => $item instanceof BatchItem
         );
 
         $accessibleItems = [];
@@ -486,7 +486,7 @@ class BatchTranslationBaseController extends ActionController
 
         $filtered = array_filter(
             $languages,
-            fn($lang) => $backendUser->checkLanguageAccess($lang->getLanguageId())
+            fn ($lang) => $backendUser->checkLanguageAccess($lang->getLanguageId())
         );
 
         if (empty($filtered)) {
@@ -510,7 +510,7 @@ class BatchTranslationBaseController extends ActionController
 
         return array_filter(
             $items->toArray(),
-            fn(BatchItem $item) => $this->isBatchItemAccessible($item, $languages)
+            fn (BatchItem $item) => $this->isBatchItemAccessible($item, $languages)
         );
     }
 
@@ -654,7 +654,7 @@ class BatchTranslationBaseController extends ActionController
             'pages' => $batchItem ? [$batchItem->getPid() => $batchItem->getPageTitle()] : null,
             'recursive' => $this->translateMenuLevelItems(),
             'priority' => $this->translatePriorityOptions(),
-            'targetLanguage' => array_map(fn($lang) => $lang->getTitle(), $languages),
+            'targetLanguage' => array_map(fn ($lang) => $lang->getTitle(), $languages),
             'mode' => $this->translateModeOptions(),
             'frequency' => $this->translateFrequencyOptions(),
             'redirectAction' => $this->request->getControllerActionName(),

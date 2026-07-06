@@ -768,7 +768,7 @@ final class Translator implements LoggerAwareInterface
             return null;
         }
 
-        return array_map(static fn($uid): int => (int)$uid, $references);
+        return array_map(static fn ($uid): int => (int)$uid, $references);
     }
 
     /**
@@ -818,7 +818,7 @@ final class Translator implements LoggerAwareInterface
 
         try {
             $toTranslateObject = array_intersect_key($record, array_flip($columns));
-            $toTranslate = array_filter($toTranslateObject, static fn($value) => is_string($value) && $value !== '');
+            $toTranslate = array_filter($toTranslateObject, static fn ($value) => is_string($value) && $value !== '');
             $deeplSourceLang = $this->deeplSourceLanguage();
             $deeplTargetLang = $this->deeplTargetLanguage($targetLanguageUid);
             $result = null;

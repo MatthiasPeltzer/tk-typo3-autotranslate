@@ -41,7 +41,7 @@ final class TranslationHelper
             ->get('autotranslate', 'additionalTables');
         $tables = $additionalTables ? GeneralUtility::trimExplode(',', $additionalTables, true) : [];
 
-        return array_filter($tables, static fn(string $table): bool => isset($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']));
+        return array_filter($tables, static fn (string $table): bool => isset($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']));
     }
 
     public static function translationOrigPointerField(string $table): ?string
@@ -108,7 +108,7 @@ final class TranslationHelper
             return [];
         }
 
-        return array_filter($siteLanguages, static fn(int $k): bool => $k !== 0, ARRAY_FILTER_USE_KEY);
+        return array_filter($siteLanguages, static fn (int $k): bool => $k !== 0, ARRAY_FILTER_USE_KEY);
     }
 
     public static function defaultLanguageFromSiteConfiguration(Site $site): SiteLanguage
@@ -354,7 +354,7 @@ final class TranslationHelper
             ->get('autotranslate', 'additionalReferenceTables');
         $tables = $additionalReferenceTables ? GeneralUtility::trimExplode(',', $additionalReferenceTables, true) : [];
 
-        return array_filter($tables, static fn(string $table): bool => isset($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']));
+        return array_filter($tables, static fn (string $table): bool => isset($GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField']));
     }
 
     /**
