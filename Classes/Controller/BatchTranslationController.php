@@ -23,7 +23,7 @@ class BatchTranslationController extends BatchTranslationBaseController
     private const TABLE_BATCH_ITEM = 'tx_autotranslate_batch_item';
     private const TABLE_LOG = 'tx_autotranslate_log';
 
-    protected ?ModuleTemplateFactory $moduleTemplateFactory = null;
+    protected ModuleTemplateFactory $moduleTemplateFactory;
 
     public function injectModuleTemplateFactory(ModuleTemplateFactory $factory): void
     {
@@ -130,7 +130,7 @@ class BatchTranslationController extends BatchTranslationBaseController
      */
     private function getBatchItemActions(): array
     {
-        $returnUrl = $this->request->getAttribute('normalizedParams')->getRequestUri();
+        $returnUrl = $this->getRequestUri();
         $lang = $this->getLanguageService();
 
         return [
@@ -199,7 +199,7 @@ class BatchTranslationController extends BatchTranslationBaseController
      */
     private function getLogActions(): array
     {
-        $returnUrl = $this->request->getAttribute('normalizedParams')->getRequestUri();
+        $returnUrl = $this->getRequestUri();
         $lang = $this->getLanguageService();
 
         return [
@@ -222,7 +222,7 @@ class BatchTranslationController extends BatchTranslationBaseController
         $data = $this->resolveFormData('batchItem');
 
         $batchItem = new BatchItem();
-        $batchItem->setPid((int)($data['pid'] ?? $this->pageUid));
+        $batchItem->setPid(max(0, (int)($data['pid'] ?? $this->pageUid)));
         $batchItem->setPriority((string)($data['priority'] ?? BatchItem::PRIORITY_MEDIUM));
         $batchItem->setSysLanguageUid((int)($data['sysLanguageUid'] ?? 0));
         $batchItem->setMode((string)($data['mode'] ?? ''));
@@ -281,6 +281,18 @@ class BatchTranslationController extends BatchTranslationBaseController
     {
         parent::initializeAction();
 
-        $this->moduleTemplateFactory ??= GeneralUtility::makeInstance(ModuleTemplateFactory::class);
+        if (!isset($this->moduleTemplateFactory)) {
+            $this->moduleTemplateFactory = GeneralUtility::makeInstance(ModuleTemplateFactory::class);
+        }
+    }
+
+    private function getRequestUri(): string
+    {
+        $normalizedParams = $this->request->getAttribute('normalizedParams');
+        if ($normalizedParams instanceof \TYPO3\CMS\Core\Http\NormalizedParams) {
+            return $normalizedParams->getRequestUri();
+        }
+
+        return (string)$this->request->getUri();
     }
 }

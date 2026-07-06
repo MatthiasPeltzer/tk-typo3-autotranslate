@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\Domain\Repository;
 
+use ThieleUndKlose\Autotranslate\Domain\Model\BatchItem;
 use ThieleUndKlose\Autotranslate\Utility\PageUtility;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -13,6 +14,9 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
+/**
+ * @extends Repository<BatchItem>
+ */
 final class BatchItemRepository extends Repository
 {
     private const TABLE_NAME = 'tx_autotranslate_batch_item';
@@ -32,6 +36,8 @@ final class BatchItemRepository extends Repository
 
     /**
      * Find all pages recursively for the selected page tree item
+     *
+     * @return QueryResultInterface<int, BatchItem>|null
      */
     public function findAllRecursive(int $levels = 0, ?int $pageId = null): ?QueryResultInterface
     {
@@ -54,6 +60,7 @@ final class BatchItemRepository extends Repository
      * Find all items by given page ids
      *
      * @param list<int> $pids
+     * @return QueryResultInterface<int, BatchItem>|null
      */
     public function findAllByPids(array $pids): ?QueryResultInterface
     {
@@ -118,7 +125,7 @@ final class BatchItemRepository extends Repository
 
         $queryBuilder->getRestrictions()->removeAll();
 
-        return $queryBuilder
+        $rows = $queryBuilder
             ->select('uid', 'pid', 'error')
             ->from(self::TABLE_NAME)
             ->where(
@@ -129,5 +136,16 @@ final class BatchItemRepository extends Repository
             )
             ->executeQuery()
             ->fetchAllAssociative();
+
+        $items = [];
+        foreach ($rows as $row) {
+            $items[] = [
+                'uid' => (int)$row['uid'],
+                'pid' => (int)$row['pid'],
+                'error' => (string)$row['error'],
+            ];
+        }
+
+        return $items;
     }
 }

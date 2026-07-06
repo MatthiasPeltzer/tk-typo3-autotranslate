@@ -33,8 +33,11 @@ jobs:
           composer require --no-update typo3/cms-core "${{ matrix.typo3 }}"
           composer install --no-interaction --no-progress
 
+      - name: Coding standards
+        run: composer cs
+
       - name: PHPStan
-        run: composer analyse
+        run: composer phpstan
 
       - name: Unit tests
         run: composer test:unit

@@ -1,0 +1,59 @@
+  0/41 [ÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæÔûæ]   0%[1G[2K 41/41 [ÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûôÔûô] 100%
+
+/var/www/html/packages/autotranslate/Classes/Command/BatchTranslation.php:79:Cannot call method info() on Psr\Log\LoggerInterface|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:98:Cannot call method findAll() on ThieleUndKlose\Autotranslate\Domain\Repository\LogRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:105:Cannot call method countAll() on ThieleUndKlose\Autotranslate\Domain\Repository\LogRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:125:Cannot call method deleteByRequestId() on ThieleUndKlose\Autotranslate\Domain\Repository\LogRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:132:Cannot call method deleteAll() on ThieleUndKlose\Autotranslate\Domain\Repository\LogRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:153:Cannot call method persistAll() on TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:267:Cannot call method findAll() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:322:Cannot call method clearCache() on ThieleUndKlose\Autotranslate\Service\TranslationCacheService|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:343:Cannot call method remove() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:370:Cannot call method findByUid() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:406:Cannot call method translate() on ThieleUndKlose\Autotranslate\Service\BatchTranslationService|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:419:Cannot call method update() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:433:Cannot call method update() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:440:Cannot call method getCacheStatistics() on ThieleUndKlose\Autotranslate\Service\TranslationCacheService|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:505:Cannot call method findAllRecursive() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:522:Parameter #2 $uid of static method TYPO3\CMS\Backend\Utility\BackendUtility::getRecordWSOL() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:538:Parameter #1 $pageId of method TYPO3\CMS\Core\Site\SiteFinder::getSiteByPageId() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:630:Parameter #1 $pid of method TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject::setPid() expects int<0, max>, int given.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:765:Cannot call method getCacheStatistics() on ThieleUndKlose\Autotranslate\Service\TranslationCacheService|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:805:Parameter #1 $pid of method ThieleUndKlose\Autotranslate\Controller\BatchTranslationBaseController::userCanCreateForPage() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:823:Parameter #1 $pid of method ThieleUndKlose\Autotranslate\Controller\BatchTranslationBaseController::collectErrorDetails() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:825:Cannot call method hasPendingItem() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:828:Cannot call method add() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:870:Cannot call method modify() on DateTime|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:871:Parameter #1 $translate of method ThieleUndKlose\Autotranslate\Domain\Model\BatchItem::setTranslate() expects DateTime, DateTime|null given.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:899:Cannot call method hasPendingItem() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:905:Parameter #1 $pid of method TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject::setPid() expects int<0, max>, int given.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:906:Cannot call method add() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationBaseController.php:920:Cannot call method findErroredItems() on ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationController.php:50:Cannot call method create() on TYPO3\CMS\Backend\Template\ModuleTemplateFactory|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationController.php:133:Cannot call method getRequestUri() on TYPO3\CMS\Core\Http\NormalizedParams|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationController.php:202:Cannot call method getRequestUri() on TYPO3\CMS\Core\Http\NormalizedParams|null.
+/var/www/html/packages/autotranslate/Classes/Controller/BatchTranslationController.php:225:Parameter #1 $pid of method TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject::setPid() expects int<0, max>, int given.
+/var/www/html/packages/autotranslate/Classes/Domain/Model/BatchItem.php:128:Parameter #1 $uid of method TYPO3\CMS\Core\Domain\Repository\PageRepository::getPage() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Domain/Model/BatchItem.php:139:Parameter #1 $pageId of method TYPO3\CMS\Core\Site\SiteFinder::getSiteByPageId() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Domain/Model/BatchItem.php:238:Parameter #1 $interval of method DateTime::add() expects DateInterval, DateInterval|null given.
+/var/www/html/packages/autotranslate/Classes/Domain/Repository/BatchItemRepository.php:128:Method ThieleUndKlose\Autotranslate\Domain\Repository\BatchItemRepository::findErroredItems() should return array<int, array{uid: int, pid: int, error: string}> but returns list<array<string, mixed>>.
+/var/www/html/packages/autotranslate/Classes/EventListener/GlossarySyncButtonBarListener.php:70:Call to function method_exists() with TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent and 'getRequest' will always evaluate to false.
+/var/www/html/packages/autotranslate/Classes/Service/BatchTranslationRunner.php:195:Cannot call method getTimestamp() on DateTime|null.
+/var/www/html/packages/autotranslate/Classes/Service/BatchTranslationService.php:63:Parameter #1 $pageId of method TYPO3\CMS\Core\Site\SiteFinder::getSiteByPageId() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Service/BatchTranslationService.php:104:Parameter #2 $uid of static method ThieleUndKlose\Autotranslate\Utility\Records::getRecord() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Service/BatchTranslationService.php:141:Parameter #2 $recordUid of method ThieleUndKlose\Autotranslate\Utility\Translator::translate() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Service/BatchTranslationService.php:145:Parameter #2 $pid of method ThieleUndKlose\Autotranslate\Service\BatchTranslationService::buildConstraints() expects int, int<0, max>|null given.
+/var/www/html/packages/autotranslate/Classes/Service/GlossaryService.php:101:Parameter #1 $row of static method ThieleUndKlose\Autotranslate\Domain\Dto\Glossary::fromDatabase() expects array{uid: int|string, glossary_id: string}, array<string, mixed> given.
+/var/www/html/packages/autotranslate/Classes/Service/HtmlAttributeProcessor.php:110:Argument of an invalid type DOMNodeList<DOMNameSpaceNode|DOMNode>|false supplied for foreach, only iterables are supported.
+/var/www/html/packages/autotranslate/Classes/Service/HtmlAttributeProcessor.php:128:Argument of an invalid type DOMNodeList<DOMNameSpaceNode|DOMNode>|false supplied for foreach, only iterables are supported.
+/var/www/html/packages/autotranslate/Classes/Service/HtmlAttributeProcessor.php:137:Cannot access property $childNodes on DOMElement|null.
+/var/www/html/packages/autotranslate/Classes/Service/L10nStateBuilder.php:50:Method ThieleUndKlose\Autotranslate\Service\L10nStateBuilder::build() should return string but returns string|false.
+/var/www/html/packages/autotranslate/Classes/Service/TranslationCacheService.php:409:Possibly invalid array key type float|int.
+/var/www/html/packages/autotranslate/Classes/Utility/DeeplApiHelper.php:69:Method ThieleUndKlose\Autotranslate\Utility\DeeplApiHelper::checkApiKeyForDisplay() should return array{isValid: bool, usageText: string|null, charactersLeft: int|null, error: string|null} but returns array<mixed, mixed>.
+/var/www/html/packages/autotranslate/Classes/Utility/GlossaryBackendUtility.php:22:Access to property $pageId on an unknown class TYPO3\CMS\Backend\Context\PageContext.
+/var/www/html/packages/autotranslate/Classes/Utility/GlossaryBackendUtility.php:23:Access to property $pageId on an unknown class TYPO3\CMS\Backend\Context\PageContext.
+/var/www/html/packages/autotranslate/Classes/Utility/Translator.php:274:Parameter #5 $localizedUid of method ThieleUndKlose\Autotranslate\Utility\Translator::translateRecordProperties() expects int, int<min, -1>|int<1, max>|true given.
+/var/www/html/packages/autotranslate/Classes/Utility/Translator.php:277:Parameter #2 $uid of static method ThieleUndKlose\Autotranslate\Utility\Records::updateRecord() expects int, int<min, -1>|int<1, max>|true given.
+/var/www/html/packages/autotranslate/Classes/Utility/Translator.php:287:Parameter #2 $uid of method ThieleUndKlose\Autotranslate\Utility\Translator::generateSlugs() expects int, int<min, -1>|int<1, max>|true given.
+/var/www/html/packages/autotranslate/Classes/Utility/Translator.php:856:Access to an undefined property object::$text.
+/var/www/html/packages/autotranslate/Classes/Utility/Translator.php:869:Access to an undefined property object::$text.

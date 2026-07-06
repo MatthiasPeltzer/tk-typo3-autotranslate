@@ -124,9 +124,14 @@ class BatchItem extends AbstractEntity
      */
     public function getPageTitle(): string
     {
+        $pid = $this->getPid();
+        if ($pid === null || $pid <= 0) {
+            return '[unknown page]';
+        }
+
         $pageRepository = GeneralUtility::makeInstance(PageRepository::class);
-        $page = $pageRepository->getPage($this->pid);
-        return trim(($page['title'] ?? '') . ' [' . $this->pid . ']');
+        $page = $pageRepository->getPage($pid);
+        return trim(($page['title'] ?? '') . ' [' . $pid . ']');
     }
 
     /**
@@ -134,9 +139,14 @@ class BatchItem extends AbstractEntity
      */
     public function getSysLanguageTitle(): string
     {
+        $pid = $this->getPid();
+        if ($pid === null || $pid <= 0) {
+            return 'not found';
+        }
+
         $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
         try {
-            $site = $siteFinder->getSiteByPageId($this->pid);
+            $site = $siteFinder->getSiteByPageId($pid);
             foreach ($site->getAllLanguages() as $siteLanguage) {
                 if ($siteLanguage->getLanguageId() === $this->getSysLanguageUid()) {
                     return $siteLanguage->getTitle();
@@ -233,9 +243,10 @@ class BatchItem extends AbstractEntity
      */
     public function setNextTranslationDate(): bool
     {
-        if ($this->getFrequencyDateInterval() !== null) {
+        $interval = $this->getFrequencyDateInterval();
+        if ($interval !== null) {
             $this->translate = new \DateTime();
-            $this->translate->add($this->getFrequencyDateInterval());
+            $this->translate->add($interval);
 
             return true;
         }

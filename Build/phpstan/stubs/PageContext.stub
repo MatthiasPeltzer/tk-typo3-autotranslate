@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+namespace TYPO3\CMS\Backend\Context;
+
+/**
+ * Minimal stub for PHPStan when analysing against TYPO3 13 (PageContext ships in v14).
+ */
+final class PageContext
+{
+    public int $pageId = 0;
+}

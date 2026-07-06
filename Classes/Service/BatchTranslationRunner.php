@@ -184,6 +184,11 @@ final class BatchTranslationRunner
      */
     private function persistBatchItem(BatchItem $item): void
     {
+        $translateAt = $item->getTranslate();
+        if ($translateAt === null) {
+            return;
+        }
+
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_NAME);
 
         $queryBuilder
@@ -192,7 +197,7 @@ final class BatchTranslationRunner
                 $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($item->getUid(), Connection::PARAM_INT))
             )
             ->set('error', $item->getError())
-            ->set('translate', $item->getTranslate()->getTimestamp());
+            ->set('translate', $translateAt->getTimestamp());
 
         if ($item->getTranslated()) {
             $queryBuilder->set('translated', $item->getTranslated()->getTimestamp());

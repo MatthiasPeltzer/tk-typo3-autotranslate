@@ -40,11 +40,11 @@ class BatchTranslationBaseController extends ActionController
     /** @var list<string> */
     private const MUTATION_ARGUMENTS = ['clearCache', 'delete', 'execute', 'reset', 'deleteAll'];
 
-    protected ?TranslationCacheService $translationCacheService = null;
-    protected ?PersistenceManager $persistenceManager = null;
-    protected ?BatchTranslationService $batchTranslationService = null;
-    protected ?BatchItemRepository $batchItemRepository = null;
-    protected ?LogRepository $logRepository = null;
+    protected TranslationCacheService $translationCacheService;
+    protected PersistenceManager $persistenceManager;
+    protected BatchTranslationService $batchTranslationService;
+    protected BatchItemRepository $batchItemRepository;
+    protected LogRepository $logRepository;
 
     /** @var array<string, mixed> */
     protected array $queryParams = [];
@@ -519,7 +519,12 @@ class BatchTranslationBaseController extends ActionController
      */
     private function isBatchItemAccessible(BatchItem $item, ?array $languages = null): bool
     {
-        $pageRecord = BackendUtility::getRecordWSOL('pages', $item->getPid());
+        $pid = $this->resolvePageId($item->getPid());
+        if ($pid === null) {
+            return false;
+        }
+
+        $pageRecord = BackendUtility::getRecordWSOL('pages', $pid);
         if ($pageRecord === null) {
             return false;
         }
@@ -535,7 +540,7 @@ class BatchTranslationBaseController extends ActionController
 
         if ($languages === null) {
             try {
-                $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($item->getPid());
+                $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pid);
                 $languages = TranslationHelper::possibleTranslationLanguages($site->getLanguages());
             } catch (\Exception) {
                 return false;
@@ -550,6 +555,18 @@ class BatchTranslationBaseController extends ActionController
      * page and target language. Mirrors isBatchItemAccessible() and guards the
      * creation path against crafted requests bypassing the form's offered values.
      */
+    /**
+     * @return int<0, max>|null
+     */
+    private function resolvePageId(?int $pid): ?int
+    {
+        if ($pid === null || $pid < 0) {
+            return null;
+        }
+
+        return $pid;
+    }
+
     protected function userCanCreateForPage(int $pid, int $sysLanguageUid): bool
     {
         if ($pid <= 0) {
@@ -627,7 +644,7 @@ class BatchTranslationBaseController extends ActionController
 
         if ($pageRecord && $backendUser->doesUserHaveAccess($pageRecord, Permission::CONTENT_EDIT)) {
             $batchItem = new BatchItem();
-            $batchItem->setPid($this->pageUid);
+            $batchItem->setPid(max(0, $this->pageUid));
             $batchItem->setTranslate(new \DateTime());
         } else {
             $this->showWarning('No translations available', 'Please choose another page or contact the administrator.');
@@ -802,12 +819,13 @@ class BatchTranslationBaseController extends ActionController
 
     protected function createActionAbstract(BatchItem $batchItem, int $levels): void
     {
-        if (!$this->userCanCreateForPage($batchItem->getPid(), $batchItem->getSysLanguageUid())) {
+        $pageId = $this->resolvePageId($batchItem->getPid());
+        if ($pageId === null || !$this->userCanCreateForPage($pageId, $batchItem->getSysLanguageUid())) {
             $this->showWarning(
                 'Access denied',
                 sprintf(
                     'You do not have permission to queue translations for page %d in the selected language.',
-                    $batchItem->getPid()
+                    $batchItem->getPid() ?? 0
                 )
             );
             return;
@@ -820,9 +838,9 @@ class BatchTranslationBaseController extends ActionController
         $errorDetails = [];
 
         // Check for errored items on the root page
-        $this->collectErrorDetails($batchItem->getPid(), $batchItem->getSysLanguageUid(), $errorDetails);
+        $this->collectErrorDetails($pageId, $batchItem->getSysLanguageUid(), $errorDetails);
 
-        if ($this->batchItemRepository->hasPendingItem($batchItem->getPid(), $batchItem->getSysLanguageUid())) {
+        if ($this->batchItemRepository->hasPendingItem($pageId, $batchItem->getSysLanguageUid())) {
             $skippedCount++;
         } else {
             $this->batchItemRepository->add($batchItem);
@@ -861,14 +879,19 @@ class BatchTranslationBaseController extends ActionController
 
     private function adjustTimezoneOffset(BatchItem $batchItem): void
     {
+        $translateTime = $batchItem->getTranslate();
+        if ($translateTime === null) {
+            return;
+        }
+
         $context = GeneralUtility::makeInstance(Context::class);
         $timezone = new \DateTimeZone($context->getPropertyFromAspect('date', 'timezone'));
         $offset = $timezone->getOffset(new \DateTime('now'));
 
         if ($offset !== 0) {
-            $translateTime = $batchItem->getTranslate();
-            $translateTime->modify("-{$offset} seconds");
-            $batchItem->setTranslate($translateTime);
+            $adjustedTime = clone $translateTime;
+            $adjustedTime->modify("-{$offset} seconds");
+            $batchItem->setTranslate($adjustedTime);
         }
     }
 
@@ -902,7 +925,7 @@ class BatchTranslationBaseController extends ActionController
             }
 
             $newItem = clone $batchItem;
-            $newItem->setPid($subPageUid);
+            $newItem->setPid(max(0, $subPageUid));
             $this->batchItemRepository->add($newItem);
             $created++;
         }

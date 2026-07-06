@@ -195,6 +195,8 @@ final class Translator implements LoggerAwareInterface
                 continue;
             }
 
+            $localizedUid = (int)$localizedUid;
+
             $columnsForLanguage = $this->scopeResolver->resolveColumnsForRecord(
                 $columns,
                 $existingTranslation,
@@ -853,7 +855,10 @@ final class Translator implements LoggerAwareInterface
 
                     $field = $keys[$k];
                     if (str_starts_with($field, '__ATTR__')) {
-                        $translatedAttributes[$field] = $v->text;
+                        $text = $this->getTranslationText($v);
+                        if ($text !== null) {
+                            $translatedAttributes[$field] = $text;
+                        }
                     }
                 }
 
@@ -866,7 +871,11 @@ final class Translator implements LoggerAwareInterface
                     if (str_starts_with($field, '__ATTR__')) {
                         continue;
                     }
-                    $translatedValue = $this->htmlProcessor->restoreAttributes($v->text, $translatedAttributes);
+                    $translationText = $this->getTranslationText($v);
+                    if ($translationText === null) {
+                        continue;
+                    }
+                    $translatedValue = $this->htmlProcessor->restoreAttributes($translationText, $translatedAttributes);
                     $translatedColumns[$field] = $translatedValue;
                 }
             }
@@ -927,6 +936,18 @@ final class Translator implements LoggerAwareInterface
         }
 
         return null;
+    }
+
+    private function getTranslationText(object $translationResult): ?string
+    {
+        if (!property_exists($translationResult, 'text')) {
+            return null;
+        }
+
+        /** @var object{text: mixed} $translationResult */
+        return is_scalar($translationResult->text) || $translationResult->text === null
+            ? (string)$translationResult->text
+            : null;
     }
 
     /**

@@ -58,11 +58,17 @@ final class BatchTranslationService implements LoggerAwareInterface
      */
     private function getSiteForItem(BatchItem $item): ?Site
     {
+        $pid = $item->getPid();
+        if ($pid === null || $pid <= 0) {
+            $this->logError($item, 'No site configuration found for pid {pid}.', ['pid' => $pid ?? 0]);
+            return null;
+        }
+
         try {
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-            return $siteFinder->getSiteByPageId($item->getPid());
+            return $siteFinder->getSiteByPageId($pid);
         } catch (\Exception $e) {
-            $this->logError($item, 'No site configuration found for pid {pid}.', ['pid' => $item->getPid()]);
+            $this->logError($item, 'No site configuration found for pid {pid}.', ['pid' => $pid]);
             return null;
         }
     }
@@ -101,7 +107,13 @@ final class BatchTranslationService implements LoggerAwareInterface
      */
     private function validatePage(BatchItem $item): bool
     {
-        $pageRecord = Records::getRecord('pages', $item->getPid());
+        $pid = $item->getPid();
+        if ($pid === null || $pid <= 0) {
+            LogUtility::log($this->logger, 'Page not found ({pid}).', ['pid' => $pid ?? 0], LogUtility::MESSAGE_WARNING);
+            return false;
+        }
+
+        $pageRecord = Records::getRecord('pages', $pid);
 
         if ($pageRecord === null) {
             LogUtility::log($this->logger, 'Page not found ({pid}).', ['pid' => $item->getPid()], LogUtility::MESSAGE_WARNING);
@@ -116,13 +128,18 @@ final class BatchTranslationService implements LoggerAwareInterface
      */
     private function translateAllTables(BatchItem $item, Site $site): void
     {
-        $translator = GeneralUtility::makeInstance(Translator::class, $item->getPid());
+        $pid = $item->getPid();
+        if ($pid === null || $pid <= 0) {
+            return;
+        }
+
+        $translator = GeneralUtility::makeInstance(Translator::class, $pid);
         $defaultLanguage = TranslationHelper::defaultLanguageFromSiteConfiguration($site);
         $targetLanguageUid = $item->getSysLanguageUid();
         $mode = $item->getMode();
 
         foreach (TranslationHelper::tablesToTranslate() as $table) {
-            $this->translateTable($translator, $table, $item, $defaultLanguage, $targetLanguageUid, $mode);
+            $this->translateTable($translator, $table, $item, $defaultLanguage, $targetLanguageUid, $mode, $pid);
         }
     }
 
@@ -135,14 +152,15 @@ final class BatchTranslationService implements LoggerAwareInterface
         BatchItem $item,
         SiteLanguage $defaultLanguage,
         int $targetLanguageUid,
-        string $mode
+        string $mode,
+        int $pid
     ): void {
         if ($table === 'pages') {
-            $translator->translate($table, $item->getPid(), null, (string)$targetLanguageUid, $mode);
+            $translator->translate($table, $pid, null, (string)$targetLanguageUid, $mode);
             return;
         }
 
-        $constraints = $this->buildConstraints($table, $item->getPid(), $defaultLanguage->getLanguageId());
+        $constraints = $this->buildConstraints($table, $pid, $defaultLanguage->getLanguageId());
 
         if ($table === 'tt_content') {
             $this->translateContent($translator, $constraints, $targetLanguageUid, $mode);

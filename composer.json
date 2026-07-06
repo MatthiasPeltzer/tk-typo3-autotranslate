@@ -21,8 +21,11 @@
         "deeplcom/deepl-php": "^1.5"
     },
     "require-dev": {
-        "typo3/testing-framework": "^8.0 || ^9.0",
+        "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^10.5 || ^11.5",
+        "saschaegerer/phpstan-typo3": "^3.0",
+        "typo3/testing-framework": "^8.0 || ^9.0",
         "typo3/coding-standards": "^0.8.0"
     },
     "autoload": {
@@ -44,7 +47,8 @@
         "allow-plugins": {
             "typo3/cms-composer-installers": true,
             "typo3/class-alias-loader": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "phpstan/extension-installer": true
         }
     },
     "scripts": {
@@ -53,7 +57,9 @@
         ],
         "test:unit": "phpunit -c Build/phpunit/UnitTests.xml",
         "test:functional": "phpunit -c Build/phpunit/FunctionalTests.xml",
-        "analyse": "phpstan analyse -c Build/phpstan.neon --memory-limit=1G",
+        "test:coverage": "phpunit -c Build/phpunit/UnitTests.xml --coverage-text --coverage-html .Build/coverage",
+        "phpstan": "phpstan analyse -c Build/phpstan.neon --memory-limit=1G",
+        "analyse": "@phpstan",
         "cs": [
             "@putenv PHP_CS_FIXER_IGNORE_ENV=1",
             "php .Build/bin/php-cs-fixer fix --dry-run -v --config .php-cs-fixer.dist.php"

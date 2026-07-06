@@ -76,7 +76,7 @@ final class BatchTranslation extends Command implements LoggerAwareInterface
 
     private function logResults(int $successCount, int $totalCount): void
     {
-        $this->logger->info('Batch translation completed: {success} succeeded, {failed} failed', [
+        $this->logger?->info('Batch translation completed: {success} succeeded, {failed} failed', [
             'success' => $successCount,
             'failed' => $totalCount - $successCount,
         ]);

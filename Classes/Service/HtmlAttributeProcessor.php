@@ -107,7 +107,12 @@ class HtmlAttributeProcessor implements SingletonInterface
 
         $xpath = new \DOMXPath($doc);
         $query = '//' . $tagName . '[@' . $attributeName . ']';
-        foreach ($xpath->query($query) as $node) {
+        $nodes = $xpath->query($query);
+        if ($nodes === false) {
+            return $values;
+        }
+
+        foreach ($nodes as $node) {
             /** @var \DOMElement $node */
             $values[] = $node->getAttribute($attributeName);
         }
@@ -124,8 +129,12 @@ class HtmlAttributeProcessor implements SingletonInterface
         @$doc->loadHTML('<?xml encoding="utf-8" ?>' . $html);
         $xpath = new \DOMXPath($doc);
         $query = '//' . $tag . '[@' . $attr . ']';
+        $nodes = $xpath->query($query);
+        if ($nodes === false) {
+            return $html;
+        }
 
-        foreach ($xpath->query($query) as $node) {
+        foreach ($nodes as $node) {
             /** @var \DOMElement $node */
             if ($node->getAttribute($attr) === $original) {
                 $node->setAttribute($attr, $placeholder);
@@ -133,6 +142,10 @@ class HtmlAttributeProcessor implements SingletonInterface
         }
 
         $body = $doc->getElementsByTagName('body')->item(0);
+        if ($body === null) {
+            return $html;
+        }
+
         $innerHTML = '';
         foreach ($body->childNodes as $child) {
             $innerHTML .= $doc->saveHTML($child);

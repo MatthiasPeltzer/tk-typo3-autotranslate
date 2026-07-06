@@ -47,7 +47,7 @@ class L10nStateBuilder implements SingletonInterface, LoggerAwareInterface
                 $l10nState[$field] = 'custom';
             }
 
-            return json_encode($l10nState);
+            return json_encode($l10nState) ?: '{}';
         } catch (\Exception $e) {
             LogUtility::log($this->logger, 'Error building l10n_state: {error}', [
                 'error' => $e->getMessage(),

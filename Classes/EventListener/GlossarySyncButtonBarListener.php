@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\EventListener;
 
+use Composer\InstalledVersions;
+use Psr\Http\Message\ServerRequestInterface;
 use ThieleUndKlose\Autotranslate\Utility\GlossaryBackendUtility;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\Buttons\GenericButton;
@@ -21,7 +23,11 @@ final readonly class GlossarySyncButtonBarListener
 
     public function __invoke(ModifyButtonBarEvent $event): void
     {
-        $request = $event->getRequest();
+        $request = $this->resolveRequest($event);
+        if ($request === null) {
+            return;
+        }
+
         $pageId = GlossaryBackendUtility::resolvePageId($request);
         if ($pageId <= 0 || !GlossaryBackendUtility::canUserSyncFolder($pageId)) {
             return;
@@ -58,5 +64,30 @@ final readonly class GlossarySyncButtonBarListener
         }
 
         return GeneralUtility::makeInstance(GenericButton::class);
+    }
+
+    private function resolveRequest(ModifyButtonBarEvent $event): ?ServerRequestInterface
+    {
+        if ($this->backendProvidesEventRequest()) {
+            /** @var ServerRequestInterface|null $request */
+            // getRequest() is available on ModifyButtonBarEvent since TYPO3 v14.
+            // @phpstan-ignore argument.type
+            $request = call_user_func([$event, 'getRequest']);
+
+            return $request instanceof ServerRequestInterface ? $request : null;
+        }
+
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+
+        return $request instanceof ServerRequestInterface ? $request : null;
+    }
+
+    private function backendProvidesEventRequest(): bool
+    {
+        return version_compare(
+            InstalledVersions::getVersion('typo3/cms-backend') ?? '13.0.0',
+            '14.0.0',
+            '>='
+        );
     }
 }

@@ -6,7 +6,6 @@ namespace ThieleUndKlose\Autotranslate\Utility;
 
 use Psr\Http\Message\ServerRequestInterface;
 use ThieleUndKlose\Autotranslate\Service\GlossarySyncService;
-use TYPO3\CMS\Backend\Context\PageContext;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -20,11 +19,17 @@ final class GlossaryBackendUtility
     public static function resolvePageId(ServerRequestInterface $request): int
     {
         $pageContext = $request->getAttribute('pageContext');
-        if ($pageContext instanceof PageContext && $pageContext->pageId > 0) {
-            return $pageContext->pageId;
+        if (is_object($pageContext) && property_exists($pageContext, 'pageId')) {
+            $pageId = (int)$pageContext->pageId;
+            if ($pageId > 0) {
+                return $pageId;
+            }
         }
 
-        return (int)($request->getQueryParams()['id'] ?? $request->getParsedBody()['id'] ?? 0);
+        $parsedBody = $request->getParsedBody();
+        $bodyId = is_array($parsedBody) ? ($parsedBody['id'] ?? 0) : 0;
+
+        return (int)($request->getQueryParams()['id'] ?? $bodyId);
     }
 
     public static function canUserSyncFolder(int $pageId): bool

@@ -98,7 +98,12 @@ final class GlossaryService
             ->executeQuery()
             ->fetchAssociative();
 
-        return is_array($row) ? Glossary::fromDatabase($row) : null;
+        return is_array($row) && isset($row['uid'], $row['glossary_id']) && is_string($row['glossary_id'])
+            ? Glossary::fromDatabase([
+                'uid' => $row['uid'],
+                'glossary_id' => $row['glossary_id'],
+            ])
+            : null;
     }
 
     /**

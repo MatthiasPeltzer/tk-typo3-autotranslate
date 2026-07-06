@@ -1,8 +1,5 @@
-includes:
-    - phpstan-baseline.neon
-
 parameters:
-    level: 6
+    level: 8
     phpVersion: 80200
     paths:
         - ../Classes
@@ -16,5 +13,11 @@ parameters:
             - ../Classes/Xclass/*
     scanDirectories:
         - ../.Build/vendor/typo3
+    stubFiles:
+        - phpstan/stubs/PageContext.stub
     treatPhpDocTypesAsCertain: false
-    reportUnmatchedIgnoredErrors: false
+    typo3:
+        contextApiGetAspectMapping:
+            page: int
+        requestGetAttributeMapping:
+            pageContext: object

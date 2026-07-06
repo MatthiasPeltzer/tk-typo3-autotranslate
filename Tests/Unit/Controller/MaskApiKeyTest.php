@@ -14,7 +14,6 @@ final class MaskApiKeyTest extends UnitTestCase
     {
         $controller = new BatchTranslationController();
         $method = new \ReflectionMethod($controller, 'maskApiKey');
-        $method->setAccessible(true);
 
         return $method->invoke($controller, $key);
     }

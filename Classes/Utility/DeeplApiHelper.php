@@ -66,7 +66,12 @@ final class DeeplApiHelper
         if ($cache?->has($cacheIdentifier)) {
             $data = $cache->get($cacheIdentifier);
             if (is_array($data)) {
-                return $data;
+                return [
+                    'isValid' => (bool)($data['isValid'] ?? false),
+                    'usageText' => isset($data['usageText']) ? (string)$data['usageText'] : null,
+                    'charactersLeft' => isset($data['charactersLeft']) ? (int)$data['charactersLeft'] : null,
+                    'error' => isset($data['error']) ? (string)$data['error'] : null,
+                ];
             }
         }
 
