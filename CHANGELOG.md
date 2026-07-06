@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [3.0.8] - 2026-07-06
 
 ### Changed
 - Adopt TYPO3 coding standards (`typo3/coding-standards`): `.php-cs-fixer.dist.php`, `.editorconfig`, and `composer cs` / `composer cs:fix` scripts.
