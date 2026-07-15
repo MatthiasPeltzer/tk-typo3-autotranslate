@@ -1,131 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-    <file source-language="en" original="EXT:autotranslate/Resources/Private/Language/locallang.xlf" datatype="plaintext" product-name="autotranslate" date="2024-04-17T12:00:00Z">
-        <header/>
-        <body>
-            <trans-unit id="function_links_add_item" resname="function_links_add_item">
-                <source>Add new batch translation(s) for selected page</source>
-            </trans-unit>
-            <trans-unit id="confirm" resname="confirm">
-                <source>Are you sure you want to delete the batch translation item '%s'?</source>
-            </trans-unit>
-            <trans-unit id="confirm_log" resname="confirm_log">
-                <source>Are you sure you want to delete all logs?</source>
-            </trans-unit>
-            <trans-unit id="confirm_log.delete.yes" resname="confirm_log.delete.yes">
-                <source>Yes</source>
-            </trans-unit>
-            <trans-unit id="function_links_add_items" resname="function_links_add_items">
-                <source>Add to translations</source>
-            </trans-unit>
-            <trans-unit id="mlang_labels_page" resname="mlang_labels_page">
-                <source>Selected Page</source>
-            </trans-unit>
-            <trans-unit id="mlang_labels_recursive" resname="mlang_labels_recursive">
-                <source>Recursive</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.title">
-                <source>DeepL Settings Autotranslate</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.auth_key.label">
-                <source>DeepL API key (overwrites the one from the extension settings to use a special key for this page configuration)</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.auth_key.help">
-                <source>Enter your generated API key or generate a new one at https://www.deepl.com/account/</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.auth_key.defined_prefix">
-                <source>Defined:</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.auth_key.characters_suffix">
-                <source>Characters</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.glossary.label">
-                <source>Enable DeepL glossary for autotranslation</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.glossary.description">
-                <source>Use glossary records from Autotranslate glossary folders in this site. Glossaries must be synchronized to DeepL before translations use them.</source>
-            </trans-unit>
-            <trans-unit id="glossary.sync.button">
-                <source>Synchronize glossaries</source>
-            </trans-unit>
-            <trans-unit id="glossary.sync.help">
-                <source>Manage glossary terms in this folder, then synchronize them to DeepL. Repeat synchronization after every change.</source>
-            </trans-unit>
-            <trans-unit id="glossary.sync.no_records">
-                <source>No glossary records found yet. Create a glossary record for each language pair.</source>
-            </trans-unit>
-            <trans-unit id="glossary.sync.status.ready">
-                <source>synced</source>
-            </trans-unit>
-            <trans-unit id="glossary.sync.status.pending">
-                <source>not synced</source>
-            </trans-unit>
-            <trans-unit id="glossary.sync.last_sync">
-                <source>last sync</source>
-            </trans-unit>
-            <trans-unit id="glossary.sync.never">
-                <source>never</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.formality.label">
-                <source>DeepL formality</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.formality.description">
-                <source>Choose translation tone. "Informal" and "Formal" use DeepL fallbacks for unsupported languages.</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.formality.option.default">
-                <source>Default</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.formality.option.informal">
-                <source>Informal</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.formality.option.formal">
-                <source>Formal</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.enabled.label_prefix">
-                <source>Enable Autotranslation for</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.languages.label">
-                <source>Translate into the following languages by default</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.languages.description_prefix">
-                <source>Comma separated list of language uids.</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.languages.description_no_languages">
-                <source>First define Languages in Site Configuration.</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.textfields.label">
-                <source>Text fields</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.file_references.label">
-                <source>File references</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.reference_textfields.label_prefix">
-                <source>Autotranslation textfields for</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.columns_comma_list.description">
-                <source>Comma separated list of columns.</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.table.unused_prefix">
-                <source>Unused:</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.select.invalid_api_key">
-                <source>Please define valid DeepL api key first</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.select.please_choose">
-                <source>Please Choose</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.source_language.label">
-                <source>Source language (Iso code)</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.source_language.description">
-                <source>Select the source language for DeepL translations. The automatic language detection may be inaccurate for individual words.</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.target_language.label">
-                <source>Target language (Iso code)</source>
-            </trans-unit>
-            <trans-unit id="site_configuration.deepl.target_language.description">
-                <source>Select the target language into which DeepL should translate.</source>
-            </trans-unit>
-        </body>
-    </file>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" original="EXT:autotranslate/Resources/Private/Language/locallang.xlf" datatype="plaintext" product-name="autotranslate" date="2024-04-17T12:00:00Z">
+    <header/>
+    <body>
+      <trans-unit id="confirm" resname="confirm">
+        <source>Are you sure you want to delete the batch translation item '%s'?</source>
+      </trans-unit>
+      <trans-unit id="confirm_log" resname="confirm_log">
+        <source>Are you sure you want to delete all logs?</source>
+      </trans-unit>
+      <trans-unit id="confirm_log.delete.yes" resname="confirm_log.delete.yes">
+        <source>Yes</source>
+      </trans-unit>
+      <trans-unit id="function_links_add_item" resname="function_links_add_item">
+        <source>Add new batch translation(s) for selected page</source>
+      </trans-unit>
+      <trans-unit id="function_links_add_items" resname="function_links_add_items">
+        <source>Add to translations</source>
+      </trans-unit>
+      <trans-unit id="glossary.sync.button">
+        <source>Synchronize glossaries</source>
+      </trans-unit>
+      <trans-unit id="glossary.sync.help">
+        <source>Manage glossary terms in this folder, then synchronize them to DeepL. Repeat synchronization after every change.</source>
+      </trans-unit>
+      <trans-unit id="glossary.sync.last_sync">
+        <source>last sync</source>
+      </trans-unit>
+      <trans-unit id="glossary.sync.never">
+        <source>never</source>
+      </trans-unit>
+      <trans-unit id="glossary.sync.no_records">
+        <source>No glossary records found yet. Create a glossary record for each language pair.</source>
+      </trans-unit>
+      <trans-unit id="glossary.sync.status.pending">
+        <source>not synced</source>
+      </trans-unit>
+      <trans-unit id="glossary.sync.status.ready">
+        <source>synced</source>
+      </trans-unit>
+      <trans-unit id="mlang_labels_page" resname="mlang_labels_page">
+        <source>Selected Page</source>
+      </trans-unit>
+      <trans-unit id="mlang_labels_recursive" resname="mlang_labels_recursive">
+        <source>Recursive</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.auth_key.characters_suffix">
+        <source>Characters</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.auth_key.defined_prefix">
+        <source>Defined:</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.auth_key.help">
+        <source>Enter your generated API key or generate a new one at https://www.deepl.com/account/</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.auth_key.label">
+        <source>DeepL API key (overwrites the one from the extension settings to use a special key for this page configuration)</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.formality.description">
+        <source>Choose translation tone. "Informal" and "Formal" use DeepL fallbacks for unsupported languages.</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.formality.label">
+        <source>DeepL formality</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.formality.option.default">
+        <source>Default</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.formality.option.formal">
+        <source>Formal</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.formality.option.informal">
+        <source>Informal</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.glossary.description">
+        <source>Use glossary records from Autotranslate glossary folders in this site. Glossaries must be synchronized to DeepL before translations use them.</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.glossary.label">
+        <source>Enable DeepL glossary for autotranslation</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.select.invalid_api_key">
+        <source>Please define valid DeepL api key first</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.select.please_choose">
+        <source>Please Choose</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.source_language.description">
+        <source>Select the source language for DeepL translations. The automatic language detection may be inaccurate for individual words.</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.source_language.label">
+        <source>Source language (Iso code)</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.target_language.description">
+        <source>Select the target language into which DeepL should translate.</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.target_language.label">
+        <source>Target language (Iso code)</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.deepl.title">
+        <source>DeepL Settings Autotranslate</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.columns_comma_list.description">
+        <source>Comma separated list of columns.</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.enabled.label_prefix">
+        <source>Enable Autotranslation for</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.file_references.label">
+        <source>File references</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.languages.description_no_languages">
+        <source>First define Languages in Site Configuration.</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.languages.description_prefix">
+        <source>Comma separated list of language uids.</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.languages.label">
+        <source>Translate into the following languages by default</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.reference_textfields.label_prefix">
+        <source>Autotranslation textfields for</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.textfields.label">
+        <source>Text fields</source>
+      </trans-unit>
+      <trans-unit id="site_configuration.table.unused_prefix">
+        <source>Unused:</source>
+      </trans-unit>
+    </body>
+  </file>
 </xliff>

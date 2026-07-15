@@ -21,7 +21,9 @@ return [
         ],
     ],
     'types' => [
-        ['showitem' => 'priority, sys_language_uid, hidden, crdate, tstamp, translate, translated, mode, frequency, error'],
+        '1' => [
+            'showitem' => 'priority, sys_language_uid, hidden, translate, translated, mode, frequency, error',
+        ],
     ],
     'columns' => [
         'priority' => [

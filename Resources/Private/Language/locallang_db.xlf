@@ -1,212 +1,212 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2016-12-12T11:07:00Z" product-name="autotranslate">
-		<header/>
-		<body>
-			<trans-unit id="tabs.autotranslate" xml:space="preserve">
-				<source>Autotranslate</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_exclude" xml:space="preserve">
-				<source>Exclude from autotranslation</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_languages" xml:space="preserve">
-				<source>Translate automatically to selected languages</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_last" xml:space="preserve">
-				<source>Last execution of autotranslation</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch" xml:space="preserve">
+  <file source-language="en" datatype="plaintext" original="messages" date="2016-12-12T11:07:00Z" product-name="autotranslate">
+    <header/>
+    <body>
+      <trans-unit id="autotranslate_batch" xml:space="preserve">
 				<source>Batch Translation</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.uid" xml:space="preserve">
-				<source>UID</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.page" xml:space="preserve">
-				<source>Page to Translate - uid</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.priority" xml:space="preserve">
-				<source>Priority</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.priority.01_low" xml:space="preserve">
-				<source>Low</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.priority.02_medium" xml:space="preserve">
-				<source>Medium</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.priority.03_high" xml:space="preserve">
-				<source>High</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.disabled" xml:space="preserve">
+      <trans-unit id="autotranslate_batch.disabled" xml:space="preserve">
 				<source>Disable item execution</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.sys_language_uid" xml:space="preserve">
-				<source>Target language</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.state" xml:space="preserve">
-				<source>State</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.translate" xml:space="preserve">
-				<source>Execution date</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.translated" xml:space="preserve">
-				<source>Translated (last)</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.mode" xml:space="preserve">
-				<source>Translation Mode</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.mode.create_update" xml:space="preserve">
-				<source>Create and update translations</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.mode.update_only" xml:space="preserve">
-				<source>Update translation only</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.mode.create_only" xml:space="preserve">
-				<source>Create new (missing) translation only</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.frequency" xml:space="preserve">
-				<source>Frequency</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.frequency.once" xml:space="preserve">
-				<source>Once</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.frequency.weekly" xml:space="preserve">
-				<source>Weekly</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.frequency.recurring" xml:space="preserve">
-				<source>Recurring</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.frequency.daily" xml:space="preserve">
-				<source>Daily</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.error" xml:space="preserve">
+      <trans-unit id="autotranslate_batch.error" xml:space="preserve">
 				<source>Error</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.noselect" xml:space="preserve">
-				<source>Nothing selected</source>
+      <trans-unit id="autotranslate_batch.frequency" xml:space="preserve">
+				<source>Frequency</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.status.error" xml:space="preserve">
-				<source>error</source>
+      <trans-unit id="autotranslate_batch.frequency.daily" xml:space="preserve">
+				<source>Daily</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.status.done" xml:space="preserve">
-				<source>done</source>
+      <trans-unit id="autotranslate_batch.frequency.once" xml:space="preserve">
+				<source>Once</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.status.pending" xml:space="preserve">
-				<source>pending</source>
+      <trans-unit id="autotranslate_batch.frequency.recurring" xml:space="preserve">
+				<source>Recurring</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.status.recurring" xml:space="preserve">
-				<source>recurring</source>
+      <trans-unit id="autotranslate_batch.frequency.weekly" xml:space="preserve">
+				<source>Weekly</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.add" xml:space="preserve">
+      <trans-unit id="autotranslate_batch.function.add" xml:space="preserve">
 				<source>New batch translation</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.delete" xml:space="preserve">
-				<source>Delete</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.delete.title" xml:space="preserve">
-				<source>Delete selected</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.delete.content" xml:space="preserve">
-				<source>Are you sure you want to delete all selected records?</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.disable" xml:space="preserve">
-				<source>Disable</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.translate" xml:space="preserve">
-				<source>Translate</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.reset" xml:space="preserve">
-				<source>Reset</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.reset.title" xml:space="preserve">
-				<source>Reset selected</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.reset.content" xml:space="preserve">
-				<source>Are you sure you want to reset all selected records?</source>
-			</trans-unit>
-            <trans-unit id="autotranslate_log.request_id" xml:space="preserve">
-				<source>Request ID</source>
-			</trans-unit>
-            <trans-unit id="autotranslate_log.data" xml:space="preserve">
-				<source>Log(s)</source>
-			</trans-unit>
-            <trans-unit id="autotranslate_log.clear_all_logs" xml:space="preserve">
-				<source>Clear All</source>
-			</trans-unit>
-			<trans-unit id="autotranslate_batch.function.clearCache" xml:space="preserve">
+      <trans-unit id="autotranslate_batch.function.clearCache" xml:space="preserve">
 				<source>Clear Cache</source>
 			</trans-unit>
-			<trans-unit id="scheduler.lastRun" xml:space="preserve">
-				<source>Last scheduler run</source>
+      <trans-unit id="autotranslate_batch.function.delete" xml:space="preserve">
+				<source>Delete</source>
 			</trans-unit>
-			<trans-unit id="scheduler.minutesAgo" xml:space="preserve">
-				<source>min ago</source>
+      <trans-unit id="autotranslate_batch.function.delete.content" xml:space="preserve">
+				<source>Are you sure you want to delete all selected records?</source>
 			</trans-unit>
-			<trans-unit id="scheduler.succeeded" xml:space="preserve">
-				<source>succeeded</source>
+      <trans-unit id="autotranslate_batch.function.delete.title" xml:space="preserve">
+				<source>Delete selected</source>
 			</trans-unit>
-			<trans-unit id="scheduler.failed" xml:space="preserve">
-				<source>failed</source>
+      <trans-unit id="autotranslate_batch.function.disable" xml:space="preserve">
+				<source>Disable</source>
 			</trans-unit>
-			<trans-unit id="scheduler.remaining" xml:space="preserve">
-				<source>remaining</source>
+      <trans-unit id="autotranslate_batch.function.reset" xml:space="preserve">
+				<source>Reset</source>
 			</trans-unit>
-			<trans-unit id="scheduler.nothingPending" xml:space="preserve">
-				<source>Nothing was pending</source>
+      <trans-unit id="autotranslate_batch.function.reset.content" xml:space="preserve">
+				<source>Are you sure you want to reset all selected records?</source>
 			</trans-unit>
-			<trans-unit id="scheduler.neverRun" xml:space="preserve">
-				<source>Scheduler has not run yet. Set up the "autotranslate:batch:run" command in the Scheduler module.</source>
+      <trans-unit id="autotranslate_batch.function.reset.title" xml:space="preserve">
+				<source>Reset selected</source>
 			</trans-unit>
-			<trans-unit id="scheduler.task.title" xml:space="preserve">
-				<source>Autotranslate: Batch Translation</source>
+      <trans-unit id="autotranslate_batch.function.translate" xml:space="preserve">
+				<source>Translate</source>
 			</trans-unit>
-			<trans-unit id="scheduler.task.description" xml:space="preserve">
-				<source>Processes queued translation tasks via DeepL API. Shows progress and statistics in the task list.</source>
+      <trans-unit id="autotranslate_batch.mode" xml:space="preserve">
+				<source>Translation Mode</source>
 			</trans-unit>
-			<trans-unit id="scheduler.field.itemsPerRun" xml:space="preserve">
-				<source>Items per run</source>
+      <trans-unit id="autotranslate_batch.mode.create_only" xml:space="preserve">
+				<source>Create new (missing) translation only</source>
 			</trans-unit>
-			<trans-unit id="pages.module.autotranslate_glossary" xml:space="preserve">
-				<source>Autotranslate Glossary</source>
+      <trans-unit id="autotranslate_batch.mode.create_update" xml:space="preserve">
+				<source>Create and update translations</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary" xml:space="preserve">
-				<source>DeepL Glossary</source>
+      <trans-unit id="autotranslate_batch.mode.update_only" xml:space="preserve">
+				<source>Update translation only</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary.tab.sync" xml:space="preserve">
-				<source>DeepL Sync</source>
+      <trans-unit id="autotranslate_batch.noselect" xml:space="preserve">
+				<source>Nothing selected</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary.source_lang" xml:space="preserve">
-				<source>Source language</source>
+      <trans-unit id="autotranslate_batch.page" xml:space="preserve">
+				<source>Page to Translate - uid</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary.target_lang" xml:space="preserve">
+      <trans-unit id="autotranslate_batch.priority" xml:space="preserve">
+				<source>Priority</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.priority.01_low" xml:space="preserve">
+				<source>Low</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.priority.02_medium" xml:space="preserve">
+				<source>Medium</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.priority.03_high" xml:space="preserve">
+				<source>High</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.state" xml:space="preserve">
+				<source>State</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.status.done" xml:space="preserve">
+				<source>done</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.status.error" xml:space="preserve">
+				<source>error</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.status.pending" xml:space="preserve">
+				<source>pending</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.status.recurring" xml:space="preserve">
+				<source>recurring</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.sys_language_uid" xml:space="preserve">
 				<source>Target language</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary.entries" xml:space="preserve">
+      <trans-unit id="autotranslate_batch.translate" xml:space="preserve">
+				<source>Execution date</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.translated" xml:space="preserve">
+				<source>Translated (last)</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_batch.uid" xml:space="preserve">
+				<source>UID</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_exclude" xml:space="preserve">
+				<source>Exclude from autotranslation</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_glossary" xml:space="preserve">
+				<source>DeepL Glossary</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_glossary.entries" xml:space="preserve">
 				<source>Glossary entries</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary.glossary_id" xml:space="preserve">
+      <trans-unit id="autotranslate_glossary.glossary_id" xml:space="preserve">
 				<source>DeepL glossary ID</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary.last_sync" xml:space="preserve">
+      <trans-unit id="autotranslate_glossary.last_sync" xml:space="preserve">
 				<source>Last synchronization</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary.sync_ready" xml:space="preserve">
-				<source>Synchronized with DeepL</source>
+      <trans-unit id="autotranslate_glossary.source_lang" xml:space="preserve">
+				<source>Source language</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary.sync_error" xml:space="preserve">
+      <trans-unit id="autotranslate_glossary.sync_error" xml:space="preserve">
 				<source>Last synchronization error</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary_entry" xml:space="preserve">
+      <trans-unit id="autotranslate_glossary.sync_ready" xml:space="preserve">
+				<source>Synchronized with DeepL</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_glossary.tab.sync" xml:space="preserve">
+				<source>DeepL Sync</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_glossary.target_lang" xml:space="preserve">
+				<source>Target language</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_glossary_entry" xml:space="preserve">
 				<source>Glossary entry</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary_entry.source_term" xml:space="preserve">
+      <trans-unit id="autotranslate_glossary_entry.source_term" xml:space="preserve">
 				<source>Source term</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary_entry.target_term" xml:space="preserve">
+      <trans-unit id="autotranslate_glossary_entry.target_term" xml:space="preserve">
 				<source>Target term</source>
 			</trans-unit>
-			<trans-unit id="autotranslate_glossary_entry.target_term.description" xml:space="preserve">
+      <trans-unit id="autotranslate_glossary_entry.target_term.description" xml:space="preserve">
 				<source>Use the same term as in the source language to prevent translation (for example brand names).</source>
 			</trans-unit>
-		</body>
-	</file>
+      <trans-unit id="autotranslate_languages" xml:space="preserve">
+				<source>Translate automatically to selected languages</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_last" xml:space="preserve">
+				<source>Last execution of autotranslation</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_log.clear_all_logs" xml:space="preserve">
+				<source>Clear All</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_log.data" xml:space="preserve">
+				<source>Log(s)</source>
+			</trans-unit>
+      <trans-unit id="autotranslate_log.request_id" xml:space="preserve">
+				<source>Request ID</source>
+			</trans-unit>
+      <trans-unit id="pages.module.autotranslate_glossary" xml:space="preserve">
+				<source>Autotranslate Glossary</source>
+			</trans-unit>
+      <trans-unit id="scheduler.failed" xml:space="preserve">
+				<source>failed</source>
+			</trans-unit>
+      <trans-unit id="scheduler.field.itemsPerRun" xml:space="preserve">
+				<source>Items per run</source>
+			</trans-unit>
+      <trans-unit id="scheduler.lastRun" xml:space="preserve">
+				<source>Last scheduler run</source>
+			</trans-unit>
+      <trans-unit id="scheduler.minutesAgo" xml:space="preserve">
+				<source>min ago</source>
+			</trans-unit>
+      <trans-unit id="scheduler.neverRun" xml:space="preserve">
+				<source>Scheduler has not run yet. Set up the "autotranslate:batch:run" command in the Scheduler module.</source>
+			</trans-unit>
+      <trans-unit id="scheduler.nothingPending" xml:space="preserve">
+				<source>Nothing was pending</source>
+			</trans-unit>
+      <trans-unit id="scheduler.remaining" xml:space="preserve">
+				<source>remaining</source>
+			</trans-unit>
+      <trans-unit id="scheduler.succeeded" xml:space="preserve">
+				<source>succeeded</source>
+			</trans-unit>
+      <trans-unit id="scheduler.task.description" xml:space="preserve">
+				<source>Processes queued translation tasks via DeepL API. Shows progress and statistics in the task list.</source>
+			</trans-unit>
+      <trans-unit id="scheduler.task.title" xml:space="preserve">
+				<source>Autotranslate: Batch Translation</source>
+			</trans-unit>
+      <trans-unit id="tabs.autotranslate" xml:space="preserve">
+				<source>Autotranslate</source>
+			</trans-unit>
+    </body>
+  </file>
 </xliff>
