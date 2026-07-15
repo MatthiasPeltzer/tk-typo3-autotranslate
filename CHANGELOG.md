@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.9] - 2026-07-15
+
+### Tests
+- Functional TCA bootstrap and showitem integrity tests for batch/glossary tables and core-table autotranslate field overrides.
+
+### Fixed
+- Batch item TCA: use proper type key `1` and drop `crdate`/`tstamp` from showitem (fields were not defined in `columns`).
+
 ## [3.0.8] - 2026-07-06
 
 ### Changed
