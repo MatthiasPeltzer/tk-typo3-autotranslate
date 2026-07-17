@@ -23,3 +23,7 @@
 # OS / editor noise
 .DS_Store
 Thumbs.db
+
+# Codeception generated output
+/Tests/Acceptance/_output/
+/Tests/Acceptance/Support/_generated/
