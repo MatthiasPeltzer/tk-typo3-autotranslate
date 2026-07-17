@@ -71,7 +71,6 @@ final readonly class GlossarySyncButtonBarListener
         if ($this->backendProvidesEventRequest()) {
             /** @var ServerRequestInterface|null $request */
             // getRequest() is available on ModifyButtonBarEvent since TYPO3 v14.
-            // @phpstan-ignore argument.type
             $request = call_user_func([$event, 'getRequest']);
 
             return $request instanceof ServerRequestInterface ? $request : null;

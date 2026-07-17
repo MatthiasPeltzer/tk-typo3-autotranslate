@@ -16,6 +16,14 @@ parameters:
     stubFiles:
         - phpstan/stubs/PageContext.stub
     treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # ModifyButtonBarEvent::getRequest() exists on TYPO3 14 but not on 13.4, so
+        # the method is resolved via call_user_func(). On 13.4 PHPStan reports the
+        # callable as an invalid argument; on 14 it resolves and the ignore is unused.
+        -
+            identifier: argument.type
+            path: ../Classes/EventListener/GlossarySyncButtonBarListener.php
+            reportUnmatched: false
     typo3:
         contextApiGetAspectMapping:
             page: int
