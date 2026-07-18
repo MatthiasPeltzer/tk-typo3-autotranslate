@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.10] - 2026-07-18
+
+### Tests
+- Align CI with mpc-vidply: Docker `runTests.sh` runner, Codeception backend acceptance smoke test, PHP/YAML/TypoScript linters, quality matrix (PHP × TYPO3 13/14), functional DB matrix, and acceptance Docker job.
+- Acceptance: add extension test that the Batch Translations backend module is registered in the module menu.
+
+### Fixed
+- Codeception acceptance: set `support_namespace: Support`, add Docker `--network-alias chrome`, and pass `TYPO3_PATH_*` to the acceptance PHP stack only (not the Codeception bootstrap container).
+- Functional CI: require `typo3/testing-framework` ^9.3 for TYPO3 14; PostgreSQL CI uses `postgres` superuser; acceptance CI prefers Docker on GHA.
+- PHPStan (TYPO3 13/14 matrix): scope the `ModifyButtonBarEvent::getRequest()` argument-type ignore so it no longer reports as unmatched on TYPO3 14.
+
 ## [3.0.9] - 2026-07-15
 
 ### Tests
