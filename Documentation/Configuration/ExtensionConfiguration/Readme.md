@@ -3,6 +3,8 @@
 Configure the DeepL API key (fallback), supported tables, caching, and translation scope.
 
 **After adding tables or upgrading to 3.0.4+, run the database compare in the Install Tool.**
+The tracking columns for tables listed in `additionalTables` and `additionalReferenceTables`
+are contributed to the schema automatically, so the compare is all that is needed.
 
 ![DeepL](../../Images/ExtensionConfiguration.png)
 

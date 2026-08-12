@@ -25,6 +25,12 @@ services:
         identifier: 'autotranslate/glossary-sync-page-info'
         event: TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent
 
+  ThieleUndKlose\Autotranslate\EventListener\AdditionalTablesSchemaListener:
+    tags:
+      - name: event.listener
+        identifier: 'autotranslate/additional-tables-schema'
+        event: TYPO3\CMS\Core\Database\Event\AlterTableDefinitionStatementsEvent
+
   ThieleUndKlose\Autotranslate\Controller\BatchTranslationController:
     public: true
 

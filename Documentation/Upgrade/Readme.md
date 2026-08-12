@@ -11,7 +11,8 @@ Run the **database analyzer** (Install Tool or CLI) to add `autotranslate_source
 - `tx_news_domain_model_news`
 - `sys_file_reference`
 
-Custom tables from `additionalTables` / `additionalReferenceTables` need the same column in your site package schema if you manage them yourself.
+Custom tables from `additionalTables` / `additionalReferenceTables` receive the same columns
+automatically; the database analyzer adds them without a change to your site package schema.
 
 ### Behavior
 
