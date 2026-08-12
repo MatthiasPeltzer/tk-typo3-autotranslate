@@ -27,14 +27,16 @@ if (!empty($siteConfiguration['deeplAuthKey'])) {
     ['key' => $apiKey, 'source' => $source] = TranslationHelper::apiKey();
 }
 
-$deeplApiKeyDetails = DeeplApiHelper::checkApiKey($apiKey);
+// The cached variant is used on purpose: this file is evaluated every time the
+// site configuration form is built, and a live usage request per render adds
+// avoidable DeepL API traffic.
+$deeplApiKeyDetails = DeeplApiHelper::checkApiKeyForDisplay($apiKey);
 if ($source) {
     $maskedApiKey = str_repeat('*', 20) . substr($apiKey, 20);
     $deeplAuthKeyDescription[] = $translate('site_configuration.deepl.auth_key.defined_prefix') . ' ' . $source . ' (' . $maskedApiKey . ')';
 }
-if ($deeplApiKeyDetails['usage']) {
-    $usage = (string)$deeplApiKeyDetails['usage'];
-    $usage = str_replace([PHP_EOL, 'Characters: '], [' ', ''], $usage);
+if ($deeplApiKeyDetails['usageText']) {
+    $usage = str_replace([PHP_EOL, 'Characters: '], [' ', ''], $deeplApiKeyDetails['usageText']);
     $deeplAuthKeyDescription[] = trim($usage) . ' ' . $translate('site_configuration.deepl.auth_key.characters_suffix');
 }
 if ($deeplApiKeyDetails['error']) {

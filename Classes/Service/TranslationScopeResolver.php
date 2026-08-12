@@ -109,7 +109,8 @@ class TranslationScopeResolver implements SingletonInterface
             $columns,
             $existingTranslation,
             $changedFields,
-            $datamapStatus
+            $datamapStatus,
+            $sourceRecord
         );
     }
 
@@ -138,8 +139,14 @@ class TranslationScopeResolver implements SingletonInterface
 
         if ($datamapStatus === 'update' && $changedFields !== null) {
             $changedFieldNames = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
+            $columns = array_values(array_intersect($configuredColumns, $changedFieldNames));
 
-            return array_values(array_intersect($configuredColumns, $changedFieldNames));
+            // FormEngine submits whole forms, so a field being part of the datamap says
+            // nothing about its content having changed. Comparing against the stored
+            // hashes avoids paying DeepL for a re-save of unchanged text.
+            return $sourceRecord === null
+                ? $columns
+                : SourceHashUtility::filterUnchangedColumns($sourceRecord, $columns);
         }
 
         if ($datamapStatus === null && $changedFields === null && $sourceRecord !== null) {
@@ -164,13 +171,15 @@ class TranslationScopeResolver implements SingletonInterface
      * @param list<string> $columns
      * @param array<string, mixed>|null $existingTranslation
      * @param array<string, mixed>|null $changedFields
+     * @param array<string, mixed>|null $sourceRecord
      * @return list<string>
      */
     private function filterColumnsRespectingCustomTranslation(
         array $columns,
         ?array $existingTranslation,
         ?array $changedFields,
-        ?string $datamapStatus
+        ?string $datamapStatus,
+        ?array $sourceRecord = null
     ): array {
         if ($existingTranslation === null || empty($existingTranslation['l10n_state'])) {
             return $columns;
@@ -184,16 +193,16 @@ class TranslationScopeResolver implements SingletonInterface
         $sourceChangedFields = null;
         if ($datamapStatus === 'update' && $changedFields !== null) {
             $sourceChangedFields = array_diff(array_keys($changedFields), self::CHANGE_DETECTION_IGNORE_FIELDS);
+        } elseif ($datamapStatus === null && $changedFields === null && $sourceRecord !== null) {
+            // Batch and scheduler runs have no datamap, so the stored hashes decide whether
+            // a manually corrected translation may be overwritten.
+            $sourceChangedFields = SourceHashUtility::filterUnchangedColumns($sourceRecord, $columns);
         }
 
         return array_values(array_filter(
             $columns,
-            static function (string $column) use ($l10nState, $sourceChangedFields, $datamapStatus, $changedFields): bool {
+            static function (string $column) use ($l10nState, $sourceChangedFields): bool {
                 if (($l10nState[$column] ?? null) !== 'custom') {
-                    return true;
-                }
-
-                if ($datamapStatus === null && $changedFields === null) {
                     return true;
                 }
 

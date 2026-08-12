@@ -27,12 +27,13 @@ final class BatchTranslationRunner
         private readonly DataMapper $dataMapper,
         private readonly BatchTranslationService $batchTranslationService,
         private readonly Registry $registry,
+        private readonly DeeplTranslationClientInterface $deeplClient,
     ) {}
 
     /**
      * Run a batch of translations and return statistics.
      *
-     * @return array{processed: int, succeeded: int, failed: int, remaining: int}
+     * @return array{processed: int, succeeded: int, failed: int, remaining: int, billedCharacters: int}
      */
     public function processBatch(int $limit): array
     {
@@ -40,10 +41,11 @@ final class BatchTranslationRunner
         $items = $this->findPendingItems($limit);
 
         if (empty($items)) {
-            $this->storeRunStatistics(0, 0, 0, 0);
-            return ['processed' => 0, 'succeeded' => 0, 'failed' => 0, 'remaining' => 0];
+            $this->storeRunStatistics(0, 0, 0, 0, 0);
+            return ['processed' => 0, 'succeeded' => 0, 'failed' => 0, 'remaining' => 0, 'billedCharacters' => 0];
         }
 
+        $billedCharactersBefore = $this->deeplClient->getBilledCharacters();
         $succeeded = 0;
         $processed = count($items);
 
@@ -61,10 +63,11 @@ final class BatchTranslationRunner
 
         $failed = $processed - $succeeded;
         $remaining = max(0, $totalPending - $processed);
+        $billedCharacters = $this->deeplClient->getBilledCharacters() - $billedCharactersBefore;
 
-        $this->storeRunStatistics($processed, $succeeded, $failed, $remaining);
+        $this->storeRunStatistics($processed, $succeeded, $failed, $remaining, $billedCharacters);
 
-        return compact('processed', 'succeeded', 'failed', 'remaining');
+        return compact('processed', 'succeeded', 'failed', 'remaining', 'billedCharacters');
     }
 
     /**
@@ -172,7 +175,7 @@ final class BatchTranslationRunner
     /**
      * Get the last run statistics from the registry.
      *
-     * @return array{timestamp: int, processed: int, succeeded: int, failed: int, remainingPending: int}|null
+     * @return array{timestamp: int, processed: int, succeeded: int, failed: int, remainingPending: int, billedCharacters: int}|null
      */
     public function getLastRunStatistics(): ?array
     {
@@ -209,7 +212,7 @@ final class BatchTranslationRunner
     /**
      * Store run statistics in the TYPO3 registry.
      */
-    private function storeRunStatistics(int $processed, int $succeeded, int $failed, int $remainingPending): void
+    private function storeRunStatistics(int $processed, int $succeeded, int $failed, int $remainingPending, int $billedCharacters): void
     {
         $this->registry->set(self::REGISTRY_NAMESPACE, self::REGISTRY_KEY_LAST_RUN, [
             'timestamp' => time(),
@@ -217,6 +220,7 @@ final class BatchTranslationRunner
             'succeeded' => $succeeded,
             'failed' => $failed,
             'remainingPending' => $remainingPending,
+            'billedCharacters' => $billedCharacters,
         ]);
     }
 }

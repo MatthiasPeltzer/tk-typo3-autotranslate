@@ -64,6 +64,9 @@
                             <f:if condition="{schedulerStatus.remainingPending}">
                                 <span class="badge badge-warning">{schedulerStatus.remainingPending} <f:translate key="LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:scheduler.remaining" default="remaining" /></span>
                             </f:if>
+                            <f:if condition="{schedulerStatus.billedCharacters}">
+                                <span class="badge badge-info">{schedulerStatus.billedCharacters} <f:translate key="LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:scheduler.billedCharacters" default="characters billed" /></span>
+                            </f:if>
                             <f:if condition="!{schedulerStatus.processed} && !{schedulerStatus.remainingPending}">
                                 <span class="text-body-secondary"><f:translate key="LLL:EXT:autotranslate/Resources/Private/Language/locallang_db.xlf:scheduler.nothingPending" default="Nothing was pending" /></span>
                             </f:if>

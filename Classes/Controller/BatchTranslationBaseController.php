@@ -814,6 +814,7 @@ class BatchTranslationBaseController extends ActionController
             'succeeded' => $lastRun['succeeded'] ?? 0,
             'failed' => $lastRun['failed'] ?? 0,
             'remainingPending' => $lastRun['remainingPending'] ?? 0,
+            'billedCharacters' => $lastRun['billedCharacters'] ?? 0,
         ];
     }
 

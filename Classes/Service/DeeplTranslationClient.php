@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ThieleUndKlose\Autotranslate\Service;
 
+use DeepL\TextResult;
 use DeepL\TranslateTextOptions;
 use DeepL\Translator as DeeplTranslator;
 use Psr\Log\LoggerAwareInterface;
@@ -31,10 +32,18 @@ class DeeplTranslationClient implements DeeplTranslationClientInterface, Singlet
     /** @var array<string, array{isValid: bool, usage: mixed, charactersLeft: ?int, error: ?string}> Memoized per API key */
     private array $apiKeyDetails = [];
 
+    /** Characters DeepL billed within this request, cache hits excluded */
+    private int $billedCharacters = 0;
+
     public function __construct(
         private readonly TranslationCacheService $cacheService,
         private readonly GlossaryService $glossaryService,
     ) {}
+
+    public function getBilledCharacters(): int
+    {
+        return $this->billedCharacters;
+    }
 
     public function assertApiKeyUsable(?string $apiKey): void
     {
@@ -262,6 +271,21 @@ class DeeplTranslationClient implements DeeplTranslationClientInterface, Singlet
                 $targetLang,
                 $options
             );
+
+            $billedCharacters = 0;
+            foreach ($freshTranslations as $result) {
+                if ($result instanceof TextResult) {
+                    $billedCharacters += $result->billedCharacters;
+                }
+            }
+            $this->billedCharacters += $billedCharacters;
+
+            LogUtility::log($this->logger, 'DeepL billed {billed} characters for {sourceLang} to {targetLang} ({requestTotal} in this request).', [
+                'billed' => $billedCharacters,
+                'sourceLang' => $sourceLang ?? 'auto',
+                'targetLang' => $targetLang,
+                'requestTotal' => $this->billedCharacters,
+            ]);
 
             foreach ($freshTranslations as $resultIndex => $result) {
                 $originalIndex = $partialCache['mapping'][$resultIndex];

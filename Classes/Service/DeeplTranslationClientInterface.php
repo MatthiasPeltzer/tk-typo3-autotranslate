@@ -18,6 +18,12 @@ interface DeeplTranslationClientInterface
      */
     public function assertApiKeyUsable(?string $apiKey): void;
 
+    /**
+     * Characters billed by DeepL since this instance was created, so callers can
+     * report the cost of a save or batch run. Cache hits are not counted.
+     */
+    public function getBilledCharacters(): int;
+
     public function resolveGlossary(?string $sourceLang, ?string $targetLang, int $pageId, ?string $apiKey): ?Glossary;
 
     /**

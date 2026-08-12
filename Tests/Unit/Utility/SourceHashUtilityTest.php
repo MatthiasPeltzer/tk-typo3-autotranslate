@@ -92,6 +92,31 @@ final class SourceHashUtilityTest extends UnitTestCase
     }
 
     #[Test]
+    public function filterUnchangedColumnsDropsOnlyColumnsMatchingStoredHash(): void
+    {
+        $columns = ['header', 'bodytext'];
+        $original = ['header' => 'Title', 'bodytext' => 'Body'];
+        $stored = SourceHashUtility::mergeHashesForTranslatedFields($original, $columns, $columns);
+
+        $record = ['header' => 'Title', 'bodytext' => 'Body changed', SourceHashUtility::FIELD_NAME => $stored];
+
+        self::assertSame(['bodytext'], SourceHashUtility::filterUnchangedColumns($record, $columns));
+    }
+
+    #[Test]
+    public function filterUnchangedColumnsKeepsColumnsWithoutStoredHash(): void
+    {
+        $stored = SourceHashUtility::mergeHashesForTranslatedFields(['header' => 'Title'], ['header'], ['header']);
+        $record = ['header' => 'Title', 'subheader' => 'Sub', SourceHashUtility::FIELD_NAME => $stored];
+
+        self::assertSame(
+            ['subheader'],
+            SourceHashUtility::filterUnchangedColumns($record, ['header', 'subheader']),
+            'a column that was never tracked must not be treated as unchanged'
+        );
+    }
+
+    #[Test]
     public function decodeStoredHashesIgnoresInvalidPayloads(): void
     {
         self::assertSame([], SourceHashUtility::decodeStoredHashes(''));

@@ -83,7 +83,7 @@ final class BatchTranslation extends Command implements LoggerAwareInterface
     }
 
     /**
-     * @param array{processed: int, succeeded: int, failed: int, remaining: int} $result
+     * @param array{processed: int, succeeded: int, failed: int, remaining: int, billedCharacters: int} $result
      */
     private function outputResults(OutputInterface $output, array $result): void
     {
@@ -95,6 +95,7 @@ final class BatchTranslation extends Command implements LoggerAwareInterface
             $result['failed'],
             $result['remaining']
         ));
+        $output->writeln(sprintf('<info>DeepL billed %d characters for this run.</info>', $result['billedCharacters']));
 
         if ($result['failed'] > 0) {
             $output->writeln(sprintf('<error>%d translation(s) failed. Check the batch items for error details.</error>', $result['failed']));

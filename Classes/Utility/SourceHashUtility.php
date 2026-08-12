@@ -75,6 +75,32 @@ final class SourceHashUtility
     }
 
     /**
+     * Drops columns whose content still matches the last successfully translated
+     * content. Columns without a stored hash are kept, so nothing is skipped
+     * before a first translation has been recorded.
+     *
+     * @param array<string, mixed> $record
+     * @param list<string> $columns
+     * @return list<string>
+     */
+    public static function filterUnchangedColumns(array $record, array $columns): array
+    {
+        $stored = self::decodeStoredHashes((string)($record[self::FIELD_NAME] ?? ''));
+
+        if ($stored === []) {
+            return $columns;
+        }
+
+        $current = self::computeFieldHashes($record, $columns);
+
+        return array_values(array_filter(
+            $columns,
+            static fn (string $column): bool => !isset($stored[$column], $current[$column])
+                || $stored[$column] !== $current[$column]
+        ));
+    }
+
+    /**
      * @return array<string, string>
      */
     public static function decodeStoredHashes(string $json): array

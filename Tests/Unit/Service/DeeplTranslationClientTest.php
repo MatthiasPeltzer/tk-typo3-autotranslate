@@ -159,4 +159,23 @@ final class DeeplTranslationClientTest extends UnitTestCase
         self::assertSame([], $this->subject->translateTexts([], 'tt_content', [], 'EN', 'DE', 'default', null, 'key'));
         self::assertSame([], $this->calls);
     }
+
+    #[Test]
+    public function accumulatesBilledCharactersOfFreshTranslations(): void
+    {
+        self::assertSame(0, $this->subject->getBilledCharacters());
+
+        $this->subject->translateTexts(
+            ['header' => 'Hello', 'subheader' => 'World'],
+            'tt_content',
+            ['header' => 'Hello', 'subheader' => 'World'],
+            'EN',
+            'DE',
+            'default',
+            null,
+            'key'
+        );
+
+        self::assertSame(10, $this->subject->getBilledCharacters(), 'the fake translator bills one character per input character');
+    }
 }

@@ -89,11 +89,12 @@ class BatchTranslationTask extends AbstractTask implements ProgressProviderInter
             $timestamp = $lastRun['timestamp'] ?? 0;
             $agoMinutes = (int)floor((time() - $timestamp) / 60);
             $lastRunLine = sprintf(
-                ' | Last: %s (%d min ago), %d OK, %d failed',
+                ' | Last: %s (%d min ago), %d OK, %d failed, %d characters billed',
                 date('d.m.Y H:i', $timestamp),
                 $agoMinutes,
                 $lastRun['succeeded'] ?? 0,
-                $lastRun['failed'] ?? 0
+                $lastRun['failed'] ?? 0,
+                $lastRun['billedCharacters'] ?? 0
             );
         }
 

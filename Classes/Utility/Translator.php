@@ -646,11 +646,9 @@ final class Translator implements LoggerAwareInterface
             return array_intersect($referenceColumns, $changedFieldNames) !== [];
         }
 
-        if ($datamapStatus === null && $changedFields === null) {
-            return $this->referenceRecordsNeedTranslation($table, $recordUid, $singleTargetLanguageId);
-        }
-
-        return true;
+        // Any remaining combination carries no reliable change information, so fall back
+        // to inspecting the reference records themselves instead of translating blindly.
+        return $this->referenceRecordsNeedTranslation($table, $recordUid, $singleTargetLanguageId);
     }
 
     /**
@@ -818,7 +816,8 @@ final class Translator implements LoggerAwareInterface
 
         try {
             $toTranslateObject = array_intersect_key($record, array_flip($columns));
-            $toTranslate = array_filter($toTranslateObject, static fn ($value) => is_string($value) && $value !== '');
+            // Whitespace-only values carry no content but would still be billed by DeepL.
+            $toTranslate = array_filter($toTranslateObject, static fn ($value) => is_string($value) && trim($value) !== '');
             $deeplSourceLang = $this->deeplSourceLanguage();
             $deeplTargetLang = $this->deeplTargetLanguage($targetLanguageUid);
             $result = null;
@@ -831,7 +830,19 @@ final class Translator implements LoggerAwareInterface
                 );
             }
 
-            if (count($toTranslate) > 0) {
+            // Translating a language into itself produces no new content but is billed
+            // by DeepL, so the request is skipped and only "fieldsToCopy" is carried over.
+            $sameLanguage = $deeplSourceLang !== null
+                && strtoupper(trim($deeplSourceLang)) === strtoupper(trim($deeplTargetLang));
+
+            if ($sameLanguage) {
+                LogUtility::log($this->logger, 'Skipping DeepL request for {table}: source and target language are identical ({lang}).', [
+                    'table' => $table,
+                    'lang' => $deeplTargetLang,
+                ]);
+            }
+
+            if (!$sameLanguage && count($toTranslate) > 0) {
                 $toTranslate = $this->htmlProcessor->extractAttributes($toTranslate);
 
                 // Get optional glossary handled by 3rd party extension

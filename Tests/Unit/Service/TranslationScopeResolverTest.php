@@ -6,6 +6,7 @@ namespace ThieleUndKlose\Autotranslate\Tests\Unit\Service;
 
 use PHPUnit\Framework\Attributes\Test;
 use ThieleUndKlose\Autotranslate\Service\TranslationScopeResolver;
+use ThieleUndKlose\Autotranslate\Utility\SourceHashUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
@@ -72,6 +73,59 @@ final class TranslationScopeResolverTest extends UnitTestCase
         );
 
         self::assertSame(['bodytext'], $result, 'only configured + changed (ignoring tstamp) survive');
+    }
+
+    #[Test]
+    public function resolveColumnsToTranslateSkipsSubmittedFieldWithUnchangedContent(): void
+    {
+        $this->enableChangedFieldsOnly(true);
+
+        $columns = ['header', 'bodytext'];
+        $record = ['header' => 'Title', 'bodytext' => 'Body'];
+        $record[SourceHashUtility::FIELD_NAME] = SourceHashUtility::mergeHashesForTranslatedFields($record, $columns, $columns);
+        $record['bodytext'] = 'Body changed';
+
+        $result = $this->subject->resolveColumnsToTranslate(
+            $columns,
+            'update',
+            ['header' => 'Title', 'bodytext' => 'Body changed'],
+            $record
+        );
+
+        self::assertSame(['bodytext'], $result, 'header was submitted unchanged and must not be translated again');
+    }
+
+    #[Test]
+    public function batchRunKeepsCustomTranslationWhileSourceIsUnchanged(): void
+    {
+        $this->enableChangedFieldsOnly(false);
+
+        $columns = ['header', 'bodytext'];
+        $record = ['header' => 'Title', 'bodytext' => 'Body'];
+        $record[SourceHashUtility::FIELD_NAME] = SourceHashUtility::mergeHashesForTranslatedFields($record, $columns, $columns);
+
+        $existingTranslation = ['l10n_state' => json_encode(['header' => 'custom'])];
+
+        $result = $this->subject->resolveColumnsForRecord($columns, $existingTranslation, null, null, $record);
+
+        self::assertSame(['bodytext'], $result, 'a manually corrected translation is not overwritten by a batch run');
+    }
+
+    #[Test]
+    public function batchRunReTranslatesCustomTranslationAfterSourceChanged(): void
+    {
+        $this->enableChangedFieldsOnly(false);
+
+        $columns = ['header', 'bodytext'];
+        $original = ['header' => 'Title', 'bodytext' => 'Body'];
+        $stored = SourceHashUtility::mergeHashesForTranslatedFields($original, $columns, $columns);
+
+        $record = ['header' => 'New title', 'bodytext' => 'Body', SourceHashUtility::FIELD_NAME => $stored];
+        $existingTranslation = ['l10n_state' => json_encode(['header' => 'custom'])];
+
+        $result = $this->subject->resolveColumnsForRecord($columns, $existingTranslation, null, null, $record);
+
+        self::assertSame(['header', 'bodytext'], $result, 'the custom field follows its source once that source changes');
     }
 
     #[Test]

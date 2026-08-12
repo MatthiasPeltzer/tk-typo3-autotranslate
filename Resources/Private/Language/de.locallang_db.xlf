@@ -231,6 +231,10 @@
         <source>Autotranslate Glossary</source>
         <target>Autotranslate-Glossar</target>
       </trans-unit>
+      <trans-unit id="scheduler.billedCharacters">
+        <source>characters billed</source>
+        <target>Zeichen berechnet</target>
+      </trans-unit>
       <trans-unit id="scheduler.failed">
         <source>failed</source>
         <target>fehlgeschlagen</target>

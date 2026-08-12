@@ -114,7 +114,12 @@ class HtmlAttributeProcessor implements SingletonInterface
 
         foreach ($nodes as $node) {
             /** @var \DOMElement $node */
-            $values[] = $node->getAttribute($attributeName);
+            $attributeValue = $node->getAttribute($attributeName);
+            if (trim($attributeValue) === '') {
+                continue;
+            }
+
+            $values[] = $attributeValue;
         }
 
         return $values;

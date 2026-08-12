@@ -53,6 +53,16 @@ final class HtmlAttributeProcessorTest extends UnitTestCase
     }
 
     #[Test]
+    public function skipsWhitespaceOnlyAttributeValues(): void
+    {
+        $input = ['bodytext' => '<p>See <a href="#" title="   ">here</a></p>'];
+
+        $result = $this->subject->extractAttributes($input);
+
+        self::assertSame($input, $result, 'a blank title is not worth a billed translation entry');
+    }
+
+    #[Test]
     public function roundTripRestoresTranslatedAttribute(): void
     {
         $extracted = $this->subject->extractAttributes([
