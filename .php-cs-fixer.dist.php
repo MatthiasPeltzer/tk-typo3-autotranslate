@@ -13,6 +13,8 @@ $config->getFinder()
         'vendor',
         '.Build',
         'packages',
+        'var',
+        'public',
         'Resources/Vendor',
         'Tests/Acceptance/Support/_generated',
     ])
