@@ -12,6 +12,7 @@ $config->getFinder()
         'node_modules',
         'vendor',
         '.Build',
+        'packages',
         'Resources/Vendor',
         'Tests/Acceptance/Support/_generated',
     ])
