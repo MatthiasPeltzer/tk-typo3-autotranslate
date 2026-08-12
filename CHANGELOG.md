@@ -1,5 +1,24 @@
 # Changelog
 
+## [3.0.11] - 2026-08-12
+
+### Performance
+- Skip the DeepL request entirely when a language is configured to translate into itself (identical `deeplSourceLang` and `deeplTargetLang`), which was billed without producing new content
+- Compare stored source hashes on editor saves instead of trusting the submitted field list, so re-saving a record in the backend no longer re-translates fields whose text is unchanged
+- Never send whitespace-only field values or blank HTML `title` attributes to DeepL
+- Show the cached DeepL quota in the site configuration form instead of requesting usage from the API on every render
+
+### Fixed
+- Batch and scheduler runs no longer overwrite manually corrected translations (`l10n_state = custom`) while the source text is unchanged, matching the behaviour of the on-save path
+- Determine whether file and inline references need translating from the reference records themselves when a save carries no reliable change information, instead of always translating them
+
+### Added
+- Report the characters DeepL billed: in the debug log per request, in the `autotranslate:batch:run` output, and in the scheduler task and backend module status for the last batch run
+- Contribute the `autotranslate_*` tracking columns to the database schema for every table configured in `additionalTables` and `additionalReferenceTables`. Configured tables previously received the TCA fields but no columns, so translation silently did nothing until the columns were added to a site package by hand
+
+### Tests
+- Unit coverage for hash-based change detection on saves, custom-translation protection in batch runs, blank attribute handling, billed-character accounting, and schema contribution for configured tables
+
 ## [3.0.10] - 2026-07-18
 
 ### Tests

@@ -1,6 +1,7 @@
 {
     "name": "thieleundklose/autotranslate",
     "type": "typo3-cms-extension",
+	"title": "Autotranslate content with DeepL",
     "description": "This extension provides automatic translation of pages and content elements via DeepL API.",
     "authors": [
         {
@@ -10,7 +11,7 @@
             "role": "Developer"
         }
     ],
-    "version": "3.0.10",
+    "version": "3.0.11",
     "license": "GPL-2.0-or-later",
     "require": {
         "php": ">= 8.2 < 8.6",
