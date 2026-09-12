@@ -167,6 +167,15 @@ Translate queued items via command line:
    # Translate 10 items
    vendor/bin/typo3 autotranslate:batch:run 10
 
+Repair translated reference records left behind by earlier versions (duplicates,
+unlinked copies, pointers to deleted records). Reports by default, writes with
+``--apply``:
+
+.. code-block:: bash
+
+   vendor/bin/typo3 autotranslate:references:repair
+   vendor/bin/typo3 autotranslate:references:repair --apply
+
 Translation status
 ----------------
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.12] - 2026-09-12
+
+### Fixed
+- Images and other file references are no longer duplicated in translations. Translation now runs in `processDatamap_afterAllOperations`, after DataHandler resolved its remap stack: for a newly added relation the translation TYPO3 creates itself still carries an unresolved `NEW...` pointer to its default language record, so autotranslate did not recognise it and attached a second reference to the same record
+- Reconnect translated references that already sit on a translated record but lost the pointer to their default language record, instead of adding yet another copy of the same file on every run
+
+### Added
+- `autotranslate:references:repair` command to clean up translated reference records left behind by earlier runs: duplicates of the same source record, unlinked copies, and pointers to records that no longer exist (which made the backend fail with `DatabaseDefaultLanguageException`). Reports by default, writes with `--apply`
+
+### Tests
+- Functional coverage that an image added to an already translated page is localized exactly once, and that an unlinked translated reference is reused instead of duplicated
+
 ## [3.0.11] - 2026-08-12
 
 ### Performance

@@ -71,6 +71,13 @@ services:
         description: "Set autotranslate_languages field for existing records."
         schedulable: false
 
+  ThieleUndKlose\Autotranslate\Command\RepairReferences:
+    tags:
+      - name: console.command
+        command: "autotranslate:references:repair"
+        description: "Repair duplicated, orphaned and dangling translated reference records."
+        schedulable: false
+
   ThieleUndKlose\Autotranslate\TsConfig\Loader:
     public: true
     tags:

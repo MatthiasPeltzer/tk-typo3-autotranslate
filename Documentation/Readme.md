@@ -5,6 +5,7 @@
 - [Installation](Installation/Readme.md)
 - [Configuration](Configuration/Readme.md)
 - [Batch Translation](BatchTranslation/Readme.md)
+- [Maintenance](Maintenance/Readme.md)
 - [Upgrade Instructions](Upgrade/Readme.md)
 
 ## Quick Links

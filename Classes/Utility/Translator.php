@@ -511,6 +511,18 @@ final class Translator implements LoggerAwareInterface
     ): array {
         $referenceTranslation = Records::getRecordTranslation($referenceTable, $referenceUid, $languageId);
 
+        if (empty($referenceTranslation)) {
+            $referenceTranslation = $this->adoptUnlinkedReferenceTranslation(
+                $referenceTable,
+                $referenceUid,
+                $localizedParentUid,
+                $foreignField,
+                $parentTable,
+                $referenceColumn,
+                $languageId
+            );
+        }
+
         if ($translateMode === self::TRANSLATE_MODE_UPDATE_ONLY && empty($referenceTranslation)) {
             LogUtility::log($this->logger, 'No {referenceTable} {referenceUid} Translation of {parentTable} with uid {uid} because mode "update only".', [
                 'referenceTable' => $referenceTable,
@@ -599,6 +611,82 @@ final class Translator implements LoggerAwareInterface
         Records::updateRecord($referenceTable, $translatedReferenceUid, $translatedColumns);
 
         return array_values(array_intersect(array_keys($translatedColumns), $columnsReference));
+    }
+
+    /**
+     * Reconnect a translated reference that already sits on the localized parent but lost
+     * the pointer to its default language record.
+     *
+     * Such orphans stay invisible to Records::getRecordTranslation(), so without adopting
+     * them every run would attach yet another copy of the same file to the translation.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function adoptUnlinkedReferenceTranslation(
+        string $referenceTable,
+        int $referenceUid,
+        int $localizedParentUid,
+        string $foreignField,
+        string $parentTable,
+        string $referenceColumn,
+        int $languageId
+    ): ?array {
+        $parentField = TranslationHelper::translationOrigPointerField($referenceTable);
+        if ($parentField === null || $localizedParentUid <= 0) {
+            return null;
+        }
+
+        $sourceRecord = Records::getRecord($referenceTable, $referenceUid);
+        if (!is_array($sourceRecord)) {
+            return null;
+        }
+
+        $constraints = [
+            $foreignField => $localizedParentUid,
+            'sys_language_uid' => $languageId,
+            $parentField => 0,
+        ];
+
+        // Narrow the match down to the very same relation, so unrelated orphans are left alone.
+        foreach (['tablenames' => $parentTable, 'fieldname' => $referenceColumn] as $column => $value) {
+            if (array_key_exists($column, $sourceRecord)) {
+                $constraints[$column] = $value;
+            }
+        }
+        if (array_key_exists('uid_local', $sourceRecord)) {
+            $constraints['uid_local'] = (int)$sourceRecord['uid_local'];
+        }
+
+        $candidates = Records::getRecords($referenceTable, 'uid', static function (QueryBuilder $queryBuilder) use ($constraints): void {
+            foreach ($constraints as $column => $value) {
+                $queryBuilder->andWhere(
+                    $queryBuilder->expr()->eq(
+                        $column,
+                        is_int($value)
+                            ? $queryBuilder->createNamedParameter($value, Connection::PARAM_INT)
+                            : $queryBuilder->createNamedParameter($value)
+                    )
+                );
+            }
+            $queryBuilder->orderBy('uid');
+        });
+
+        $adoptedUid = (int)($candidates[0] ?? 0);
+        if ($adoptedUid <= 0) {
+            return null;
+        }
+
+        Records::updateRecord($referenceTable, $adoptedUid, [$parentField => $referenceUid]);
+
+        LogUtility::log($this->logger, 'Reconnected orphaned {referenceTable}:{adoptedUid} to source record {referenceUid} instead of creating another translation.', [
+            'referenceTable' => $referenceTable,
+            'adoptedUid' => $adoptedUid,
+            'referenceUid' => $referenceUid,
+        ]);
+
+        $adopted = Records::getRecord($referenceTable, $adoptedUid);
+
+        return is_array($adopted) ? $adopted : null;
     }
 
     private function getReferenceForeignField(string $parentTable, string $referenceColumn): ?string

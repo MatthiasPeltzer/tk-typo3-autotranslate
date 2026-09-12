@@ -23,7 +23,22 @@ final class DataHandler implements SingletonInterface
     private bool $suspended = false;
 
     /**
-     * Handle after database operations for automatic translation
+     * Records collected per DataHandler run, keyed by spl_object_id() of that run.
+     *
+     * @var array<int, list<array{status: string, table: string, uid: int|string, fields: array<string, mixed>}>>
+     */
+    private array $queuedRecords = [];
+
+    private bool $processingQueue = false;
+
+    /**
+     * Collect records for automatic translation.
+     *
+     * Translation itself is deferred to processDatamap_afterAllOperations(): at this
+     * point DataHandler has not run processRemapStack() yet, so translations that were
+     * just created for a brand new relation still carry an unresolved "NEW..." pointer
+     * in their transOrigPointerField. Acting now would not recognise them as existing
+     * translations and would attach a second, duplicate child to the same record.
      *
      * @param array<string, mixed> $fields
      */
@@ -34,10 +49,67 @@ final class DataHandler implements SingletonInterface
         array $fields,
         CoreDataHandler $parentObject
     ): void {
-        if ($this->suspended) {
+        if ($this->suspended || $this->processingQueue) {
             return;
         }
 
+        if (!isset($GLOBALS['TCA'][$table]['columns']['autotranslate_languages'])
+            && !in_array($table, TranslationHelper::additionalReferenceTables(), true)
+        ) {
+            return;
+        }
+
+        $this->queuedRecords[spl_object_id($parentObject)][] = [
+            'status' => $status,
+            'table' => $table,
+            'uid' => $recordUid,
+            'fields' => $fields,
+        ];
+    }
+
+    /**
+     * Translate the records collected for this DataHandler run.
+     *
+     * Runs after processRemapStack(), so every "NEW..." pointer is resolved and
+     * existing translations are reliably detectable.
+     */
+    public function processDatamap_afterAllOperations(CoreDataHandler $parentObject): void
+    {
+        $queueKey = spl_object_id($parentObject);
+        $queue = $this->queuedRecords[$queueKey] ?? [];
+        unset($this->queuedRecords[$queueKey]);
+
+        if ($queue === [] || $this->suspended || $this->processingQueue) {
+            return;
+        }
+
+        $this->processingQueue = true;
+
+        try {
+            foreach ($queue as $record) {
+                $this->translateRecord(
+                    $record['status'],
+                    $record['table'],
+                    $record['uid'],
+                    $record['fields'],
+                    $parentObject
+                );
+            }
+        } finally {
+            $this->processingQueue = false;
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $fields
+     */
+    private function translateRecord(
+        string $status,
+        string $table,
+        int|string $recordUid,
+        array $fields,
+        CoreDataHandler $parentObject
+    ): void {
         $languageField = $GLOBALS['TCA'][$table]['ctrl']['languageField'] ?? 'sys_language_uid';
         $languageUid = isset($parentObject->datamap[$table][$recordUid][$languageField])
             ? (int)$parentObject->datamap[$table][$recordUid][$languageField]

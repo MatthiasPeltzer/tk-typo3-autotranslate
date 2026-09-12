@@ -77,6 +77,38 @@ final class ReferenceTranslationTest extends FunctionalTestCase
         );
     }
 
+    #[Test]
+    public function unlinkedTranslatedReferenceIsReusedInsteadOfDuplicated(): void
+    {
+        $parentUid = $this->createParentContentWithTranslation();
+        $localizedParentUid = (int)($this->fetchTranslatedContent($parentUid)['uid'] ?? 0);
+        self::assertGreaterThan(0, $localizedParentUid);
+
+        $storageUid = $this->createSysFileStorage();
+        $fileUid = $this->createSysFile($storageUid);
+        $referenceUid = $this->createFileReference($parentUid, $fileUid, [
+            'title' => 'Cat',
+            'alternative' => 'A cat',
+        ]);
+
+        // An orphan from an earlier run: it already sits on the translation, but its
+        // pointer to the default language record was never written.
+        $orphanUid = $this->createFileReference($localizedParentUid, $fileUid, [
+            'sys_language_uid' => 1,
+            'title' => 'Katze',
+        ]);
+
+        $translator = GeneralUtility::makeInstance(Translator::class, 1);
+        $translator->translateReferenceRecord('sys_file_reference', $referenceUid, null, 'new', null);
+
+        $translated = $this->fetchReferencesOfParent($localizedParentUid, 1);
+
+        self::assertCount(1, $translated, 'the orphan is reused instead of adding a second reference');
+        self::assertSame($orphanUid, (int)$translated[0]['uid']);
+        self::assertSame($referenceUid, (int)$translated[0]['l10n_parent'], 'the orphan is reconnected to its source');
+        self::assertSame('DE:Cat', $translated[0]['title']);
+    }
+
     private function writeAutotranslateSite(): void
     {
         $this->get(SiteWriter::class)->write('autotranslate-test', [
@@ -206,6 +238,26 @@ final class ReferenceTranslationTest extends FunctionalTestCase
             ->fetchAssociative();
 
         return $row === false ? null : $row;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function fetchReferencesOfParent(int $parentUid, int $languageId): array
+    {
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $this->getConnectionPool()
+            ->getConnectionForTable('sys_file_reference')
+            ->select(
+                ['*'],
+                'sys_file_reference',
+                ['uid_foreign' => $parentUid, 'sys_language_uid' => $languageId, 'deleted' => 0],
+                [],
+                ['uid' => 'ASC']
+            )
+            ->fetchAllAssociative();
+
+        return $rows;
     }
 
     /**

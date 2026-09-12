@@ -11,7 +11,7 @@
             "role": "Developer"
         }
     ],
-    "version": "3.0.11",
+    "version": "3.0.12",
     "license": "GPL-2.0-or-later",
     "require": {
         "php": ">= 8.2 < 8.6",
